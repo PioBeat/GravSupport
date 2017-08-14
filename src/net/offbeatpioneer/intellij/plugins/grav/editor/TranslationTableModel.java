@@ -1,6 +1,9 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor;
 
-import org.jetbrains.yaml.psi.YAMLKeyValue;
+
+import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
+import org.jetbrains.yaml.YAMLUtil;
+import org.jetbrains.yaml.psi.*;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.*;
@@ -48,6 +51,19 @@ public class TranslationTableModel extends AbstractTableModel {
         data.get(lang).put(key, value);
     }
 
+    private void addElement0(String language, YAMLKeyValue value) {
+        dataMap.get(language).add(value);
+    }
+
+    public void addElement(String lang, YAMLKeyValue value) {
+        addElement0(lang, value);
+        availableKeys.add(value.getKeyText());
+    }
+
+    public void fireChange() {
+        fireTableDataChanged();
+    }
+
     /**
      * Adds a key value pair for a specific langauge and inserts for all
      * other present language an empty value. Furthermore the availableKeys
@@ -57,6 +73,7 @@ public class TranslationTableModel extends AbstractTableModel {
      * @param key
      * @param value
      */
+    @Deprecated
     public void addElement(String lang, String key, String value) {
         addElement0(lang, key, value);
         availableKeys.add(key);
@@ -66,7 +83,6 @@ public class TranslationTableModel extends AbstractTableModel {
                 data.get(each).put(key, "");
             }
         }
-//        fireTableRowsInserted(data.get(lang).size() - 1, data.get(lang).size() - 1);
         fireTableDataChanged();
     }
 
@@ -96,17 +112,56 @@ public class TranslationTableModel extends AbstractTableModel {
             case 0:
                 return keys.get(rowIndex);
             default:
-                return data.get(languages[columnIndex - 1]).get(keys.get(rowIndex));
+                Collection<YAMLKeyValue> collection = dataMap.get(languages[columnIndex - 1]);
+                YAMLKeyValue correctKeyValue = findByKey(keys.get(rowIndex), collection);
+                if (collection.size() == 0) {
+                    return "";
+                }
+                YAMLFile yamlFile;
+                if (correctKeyValue == null) { //may be null because keys can be also written with dots and the above function couldn't find it
+                    yamlFile = (YAMLFile) new ArrayList<YAMLKeyValue>(collection).get(0).getContainingFile();
+                } else {
+                    yamlFile = (YAMLFile) correctKeyValue.getContainingFile();
+                }
+                String[] keySplitted = GravYAMLUtils.splitKey(keys.get(rowIndex));
+                YAMLKeyValue keyValue = YAMLUtil.getQualifiedKeyInFile(
+                        yamlFile,
+                        Arrays.asList(keySplitted));
+                if (keyValue == null) {
+                    //additional search because intellij yaml support doesn't know about keys with dot notation ...
+                    //so try to find it in the previous collected list
+
+                    return correctKeyValue == null ? "" : correctKeyValue.getValueText();
+                }
+                return keyValue.getValueText();
+//                return data.get(languages[columnIndex - 1]).get();
         }
+    }
+
+    YAMLKeyValue findByKey(String key, Collection<YAMLKeyValue> valueCollection) {
+        for (YAMLKeyValue each : valueCollection) {
+            if (each.getKeyText().equalsIgnoreCase(key)) {
+                return each;
+            }
+        }
+        return null;
+    }
+
+    public String getValueOfYamlKeyValue(YAMLKeyValue keyValue, YAMLValue value) {
+        if (!(value instanceof YAMLCompoundValue))
+            return value.getText();
+        if (value instanceof YAMLSequence) { //
+            return ((YAMLSequence) value).getTextValue();
+        }
+        return getValueOfYamlKeyValue(keyValue, keyValue.getValue());
     }
 
     public int getStatus(int row, int col) {
         String value = (String) getValueAt(row, col);
-        if(value == null || value.isEmpty())
+        if (value == null || value.isEmpty())
             return EMPTY;
         return OK;
     }
-
 
 
     /**

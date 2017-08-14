@@ -17,7 +17,9 @@ import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLUtil;
-import org.jetbrains.yaml.psi.YAMLKeyValue;
+import org.jetbrains.yaml.psi.*;
+import org.jetbrains.yaml.psi.impl.YAMLArrayImpl;
+import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
 import javax.swing.*;
@@ -88,12 +90,49 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
                 String lang = each.getValue().getNameWithoutExtension();
                 dataMap.put(lang, new HashSet<>());
                 for (YAMLKeyValue keyValue : YAMLUtil.getTopLevelKeys(yamlFile)) {
-                    availableKeys.add(keyValue.getKeyText());
-                    dataMap.get(lang).add(keyValue);
+
+                    if (keyValue.getValue() instanceof YAMLCompoundValue) {
+                        List<String> keysBuffer = new ArrayList<>();
+                        getCompoundKeys0(keyValue, keyValue.getKeyText(), keysBuffer, dataMap, lang);
+                        availableKeys.addAll(keysBuffer);
+                    } else {
+                        availableKeys.add(keyValue.getKeyText());
+                        dataMap.get(lang).add(keyValue);
+                    }
                 }
             }
         }
         return new TranslationTableModel(languages, availableKeys, dataMap);
+    }
+
+    public void getCompoundKeys0(YAMLKeyValue keyValue, String compKey, List<String> keysList, ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap, String lang) {
+
+        if (!(keyValue.getValue() instanceof YAMLMapping)) {
+//            String k = getCompKey(keyValue, compKey);
+            keysList.add(compKey);
+            dataMap.get(lang).add(keyValue);
+        } else {
+            Collection<YAMLKeyValue> collection = ((YAMLBlockMappingImpl) keyValue.getValue()).getKeyValues();
+            for (YAMLKeyValue each : collection) {
+                getCompoundKeys0(each, compKey + "." + each.getKeyText(), keysList, dataMap, lang);
+            }
+        }
+    }
+
+    public void getCompoundKeys(Collection<YAMLKeyValue> childs, String compKey, List<String> keysList) {
+        for (YAMLKeyValue each : childs) {
+            if (each.getYAMLElements() != null && each.getYAMLElements().size() >= 1) {
+                Collection<YAMLKeyValue> collection = ((YAMLBlockMappingImpl) each.getValue()).getKeyValues();
+                getCompoundKeys(collection, getCompKey(each, compKey), keysList);
+            } else {
+                String k = getCompKey(each, compKey);
+                keysList.add(k);
+            }
+        }
+    }
+
+    public String getCompKey(YAMLKeyValue keyValue, String compKey) {
+        return compKey + "." + keyValue.getKeyText();
     }
 
     /**

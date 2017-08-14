@@ -1,6 +1,7 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor;
 
 import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.project.DumbAware;
@@ -10,6 +11,7 @@ import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 //TODO file deleted and created -> update fileMap
@@ -58,12 +60,12 @@ public class GravLanguageEditorProvider implements FileEditorProvider, VirtualFi
             fileMap.put(languages[cnt], each);
             cnt++;
         }
-//        FileEditor[] fileEditors = FileEditorManager.getInstance(project).getAllEditors();
-//        for(FileEditor each: fileEditors) {
-//            if(Objects.equals(each.getName(), GravLangFileEditor.NAME)) {
-//                return each;
-//            }
-//        }
+        FileEditor[] fileEditors = FileEditorManager.getInstance(project).getAllEditors();
+        for(FileEditor each: fileEditors) {
+            if(Objects.equals(each.getName(), GravLangFileEditor.NAME)) {
+                return each;
+            }
+        }
         if (gravLangFileEditor == null) {
             gravLangFileEditor = new GravLangFileEditor(this, project, fileMap);
         }

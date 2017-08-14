@@ -1,11 +1,13 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor;
 
+import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
 import com.intellij.openapi.editor.impl.EditorImpl;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
@@ -17,9 +19,15 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.LineSeparator;
 import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
+import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.apache.commons.logging.Log;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.yaml.YAMLUtil;
+import org.jetbrains.yaml.psi.YAMLFile;
+import org.jetbrains.yaml.psi.YAMLKeyValue;
+import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -34,7 +42,7 @@ public class LanguageFileEditorGUI {
     private String currentLang = "de"; //TODO detect current language by selected tab
     private GravLangFileEditor editor;
     private ConcurrentHashMap<String, Editor> editorMap;
-    ConcurrentHashMap<String, VirtualFile> fileMap;
+    private ConcurrentHashMap<String, VirtualFile> fileMap;
     private JPanel mainPanel;
     private JTable table1;
     private JScrollPane scrollPane1;
@@ -84,17 +92,21 @@ public class LanguageFileEditorGUI {
                     String key = dialog.getDialogUI().getKeyText();
                     String value = dialog.getDialogUI().getValueText();
                     if (currentLang != null && !currentLang.isEmpty()) {
-                        model.addElement(currentLang, key, value);
                         Editor ieditor = editorMap.get(currentLang);
                         Document document = ieditor.getDocument();
-                        if(!document.isWritable()) {
-                            return;
-                        }
-                        int l = document.getTextLength();
+
                         WriteCommandAction.runWriteCommandAction(editor.getProject(), new Runnable() {
                             @Override
                             public void run() {
-                                document.insertString(l, LineSeparator.LF.getSeparatorString() + key + ": " + value);
+                                updateDocument(document, ieditor.getProject(), currentLang, key, value);
+                                for (String eachLang : model.getLanguages()) {
+                                    if (!eachLang.equalsIgnoreCase(currentLang)) {
+                                        Editor ieditor = editorMap.get(eachLang);
+                                        Document document = ieditor.getDocument();
+                                        updateDocument(document, ieditor.getProject(), eachLang, key, "");
+                                    }
+                                }
+                                model.fireChange();
                             }
                         });
                     } else {
@@ -103,7 +115,18 @@ public class LanguageFileEditorGUI {
                 }
             }
         });
+    }
 
+    private void updateDocument(Document document, Project project, String lang, String key, String value) {
+        if (!document.isWritable()) {
+            return;
+        }
+        int l = document.getTextLength();
+        document.insertString(l, LineSeparator.LF.getSeparatorString() + key + ": " + value);
+        PsiDocumentManager.getInstance(project).commitDocument(document);
+        PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
+        YAMLKeyValue keyValue = YAMLUtil.getQualifiedKeyInFile((YAMLFile) psiFile, GravYAMLUtils.splitKey(key));
+        model.addElement(lang, keyValue);
     }
 
     private void setCellRenderer() {
