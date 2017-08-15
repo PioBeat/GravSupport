@@ -1,5 +1,7 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor;
 
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.ui.JBColor;
 
 import javax.swing.*;
@@ -18,7 +20,13 @@ public class ValueEnteredTableCellRenderer extends DefaultTableCellRenderer {
         TranslationTableModel tableModel = (TranslationTableModel) table.getModel();
         if (col != 0 && tableModel.getStatus(row, col) == TranslationTableModel.EMPTY) {
             l.setBackground(new JBColor(new Color(244, 128, 36, 60), new Color(244, 128, 36)));
+        } else {
+            if(isSelected) {
+                l.setForeground(EditorColorsManager.getInstance().getSchemeForCurrentUITheme().getDefaultForeground());
+            }
+            l.setBackground(EditorColorsManager.getInstance().getSchemeForCurrentUITheme().getDefaultBackground());
         }
+
         return l;
     }
 }

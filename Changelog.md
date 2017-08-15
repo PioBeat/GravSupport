@@ -33,6 +33,9 @@
     - Language selection in "Add new key value pair" dialog
     - Pretty print for sequence values
 
+### Bugfix
+- colors are now set correctly when values are missing in the localization file editor
+
 ## [0.1-beta] - 2017-08-12
 
 Initial project start
