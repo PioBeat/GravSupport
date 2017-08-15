@@ -28,6 +28,10 @@
 
 - internationalizing the plugin, extract string resources to resource bundle
 
+### Added
+- localization file editor
+    - Language selection in "Add new key value pair" dialog
+    - Pretty print for sequence values
 
 ## [0.1-beta] - 2017-08-12
 
@@ -35,7 +39,7 @@ Initial project start
 
 Grav version support: 1.3.1
 
-## Features
+### Features
 
 - Create new theme from Tools Menu or when a module is selected (Right mouse button -> New -> Grav Create Theme)
 A dialog opens and then a theme will be created with the details provided
@@ -57,7 +61,7 @@ language yaml file is responsible for this
 
 - Icons and recognition of grav specific config files
 
-## Issues
+### Issues
 
 - if the localization file editor shows wrong results try to close
 and reopen it.
