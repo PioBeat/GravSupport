@@ -127,19 +127,26 @@ public class TranslationTableModel extends AbstractTableModel {
                 YAMLKeyValue keyValue = YAMLUtil.getQualifiedKeyInFile(
                         yamlFile,
                         Arrays.asList(keySplitted));
+                if (keyValue == null && correctKeyValue == null) return "";
                 if (keyValue == null) {
                     //additional search because intellij yaml support doesn't know about keys with dot notation ...
                     //so try to find it in the previous collected list
-
-                    return correctKeyValue == null ? "" : correctKeyValue.getValueText();
+                    keyValue = correctKeyValue;
                 }
-                return keyValue.getValueText();
-//                return data.get(languages[columnIndex - 1]).get();
+
+                String valueText;
+                if (keyValue.getValue() instanceof YAMLSequence) {
+                    valueText = GravYAMLUtils.prettyPrint((YAMLSequence) keyValue.getValue());
+                } else {
+                    valueText = keyValue.getValueText();
+                }
+
+                return valueText;
         }
     }
 
     YAMLKeyValue findByKey(String key, Collection<YAMLKeyValue> valueCollection) {
-        if(valueCollection == null) return null;
+        if (valueCollection == null) return null;
         for (YAMLKeyValue each : valueCollection) {
             if (each.getKeyText().equalsIgnoreCase(key)) {
                 return each;

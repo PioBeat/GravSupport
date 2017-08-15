@@ -17,8 +17,9 @@ import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLUtil;
-import org.jetbrains.yaml.psi.*;
-import org.jetbrains.yaml.psi.impl.YAMLArrayImpl;
+import org.jetbrains.yaml.psi.YAMLCompoundValue;
+import org.jetbrains.yaml.psi.YAMLKeyValue;
+import org.jetbrains.yaml.psi.YAMLMapping;
 import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
@@ -204,7 +205,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
         System.out.println(e.getType());
         if (e.getType() == TableModelEvent.INSERT) {
             //TODO update all files
-            TranslationTableModel model = (TranslationTableModel) editor.getTable1().getModel();
+//            TranslationTableModel model = (TranslationTableModel) editor.getTable1().getModel();
             String lang = editor.getCurrentLang();
             VirtualFile file = fileMap.get(lang);
             if (file.exists()) {
