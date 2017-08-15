@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.1-beta</version>
+    <version>0.1-beta2</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net">OffbeatPioneer</vendor>
 
     <description><![CDATA[
@@ -9,6 +9,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>0.1-beta2</p>
+    <ul>
+        <li>localization file editor improvements/li>
+    </ul>
     <p>0.1-beta</p>
     <ul>
         <li>Create SDK for Grav</li>

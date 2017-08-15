@@ -7,6 +7,7 @@ public class InsertKeyValueDialogUI extends JDialog {
     private JPanel contentPane;
     private JTextField keyText;
     private JTextField valueText;
+    private JComboBox<String> languageCombobox;
 
     public InsertKeyValueDialogUI() {
         setContentPane(contentPane);
@@ -31,5 +32,9 @@ public class InsertKeyValueDialogUI extends JDialog {
 
     public JTextField getValueField() {
         return valueText;
+    }
+
+    public JComboBox<String> getLanguageCombobox() {
+        return languageCombobox;
     }
 }

@@ -114,7 +114,7 @@ public class TranslationTableModel extends AbstractTableModel {
             default:
                 Collection<YAMLKeyValue> collection = dataMap.get(languages[columnIndex - 1]);
                 YAMLKeyValue correctKeyValue = findByKey(keys.get(rowIndex), collection);
-                if (collection.size() == 0) {
+                if (collection == null || collection.size() == 0) {
                     return "";
                 }
                 YAMLFile yamlFile;
@@ -139,6 +139,7 @@ public class TranslationTableModel extends AbstractTableModel {
     }
 
     YAMLKeyValue findByKey(String key, Collection<YAMLKeyValue> valueCollection) {
+        if(valueCollection == null) return null;
         for (YAMLKeyValue each : valueCollection) {
             if (each.getKeyText().equalsIgnoreCase(key)) {
                 return each;

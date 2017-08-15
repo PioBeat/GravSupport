@@ -21,6 +21,21 @@ public class InsertKeyValueDialog extends DialogWrapper {
         init();
     }
 
+    @Override
+    protected void init() {
+        super.init();
+        for (String lang : model.getLanguages()) {
+            dialogUI.getLanguageCombobox().addItem(lang);
+        }
+    }
+
+    @Nullable
+    @Override
+    public JComponent getPreferredFocusedComponent() {
+        if (dialogUI == null) return super.getPreferredFocusedComponent();
+        return dialogUI.getKeyField();
+    }
+
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
@@ -43,5 +58,9 @@ public class InsertKeyValueDialog extends DialogWrapper {
 
     public InsertKeyValueDialogUI getDialogUI() {
         return dialogUI;
+    }
+
+    public String getSelectedLangauge() {
+        return (String) dialogUI.getLanguageCombobox().getSelectedItem();
     }
 }

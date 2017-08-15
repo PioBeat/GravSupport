@@ -91,6 +91,7 @@ public class LanguageFileEditorGUI {
                 if (exitCode != CANCEL_EXIT_CODE) {
                     String key = dialog.getDialogUI().getKeyText();
                     String value = dialog.getDialogUI().getValueText();
+                    currentLang = dialog.getSelectedLangauge();
                     if (currentLang != null && !currentLang.isEmpty()) {
                         Editor ieditor = editorMap.get(currentLang);
                         Document document = ieditor.getDocument();
