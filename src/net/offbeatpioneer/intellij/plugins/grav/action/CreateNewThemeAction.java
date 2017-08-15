@@ -75,8 +75,9 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
         themeData = dialog.showDialog();
 
         //Todo validate themedata in case in dialog went something wrong
-
-        createTheme(project, module);
+        if(dialog.EXIT_CODE == CreateThemeDialog.OK) {
+            createTheme(project, module);
+        }
     }
 
     private void createTheme(Project project, Module module) {

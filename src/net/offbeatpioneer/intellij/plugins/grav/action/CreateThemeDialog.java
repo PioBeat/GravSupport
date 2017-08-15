@@ -13,6 +13,10 @@ public class CreateThemeDialog extends JDialog implements CaretListener {
     private JTextField textField2;
     private JTextField textField3;
     private JTextField textField4;
+    public static final int CANCELED = -1;
+    public static final int OK = 0;
+
+    public int EXIT_CODE = CANCELED;
 
     private NewThemeData themeData = new NewThemeData();
 
@@ -56,10 +60,11 @@ public class CreateThemeDialog extends JDialog implements CaretListener {
 
     private void onOK() {
         boolean valid = validateData();
-        if (valid)
+        if (valid) {
+            EXIT_CODE = OK;
             // add your code here
             dispose();
-        else {
+        } else {
 
         }
     }
