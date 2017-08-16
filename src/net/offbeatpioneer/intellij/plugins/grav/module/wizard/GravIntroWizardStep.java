@@ -6,6 +6,7 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 

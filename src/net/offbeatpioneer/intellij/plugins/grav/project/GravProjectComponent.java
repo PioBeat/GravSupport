@@ -15,6 +15,7 @@ public class GravProjectComponent implements ProjectComponent {
     @Override
     public void projectOpened() {
         LOG.debug("projectOpened");
+        System.out.println("projectOpened");
     }
 
     @Override
@@ -25,6 +26,7 @@ public class GravProjectComponent implements ProjectComponent {
     @Override
     public void initComponent() {
         LOG.debug("initComponent");
+        System.out.println("initComponent");
     }
 
     @Override

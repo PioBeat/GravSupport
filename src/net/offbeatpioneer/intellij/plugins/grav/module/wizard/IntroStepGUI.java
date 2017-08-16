@@ -19,6 +19,7 @@ import com.intellij.util.download.DownloadableFileDescription;
 import com.intellij.util.download.DownloadableFileService;
 import com.intellij.util.download.FileDownloader;
 import com.intellij.util.io.ZipUtil;
+import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder;
 
 import javax.swing.*;
 import java.io.File;

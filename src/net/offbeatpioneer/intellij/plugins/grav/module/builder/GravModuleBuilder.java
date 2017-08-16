@@ -1,4 +1,4 @@
-package net.offbeatpioneer.intellij.plugins.grav.module.wizard;
+package net.offbeatpioneer.intellij.plugins.grav.module.builder;
 
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleBuilderListener;
@@ -32,6 +32,8 @@ import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.helper.ProcessUtils;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleWizardStep;
+import net.offbeatpioneer.intellij.plugins.grav.module.wizard.CopyFileVisitor;
+import net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravIntroWizardStep;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +48,6 @@ import static com.intellij.ide.projectView.actions.MarkRootActionBase.findConten
 
 public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
     private Project project;
-    private final List<Pair<String, String>> myModuleLibraries = new ArrayList<>();
 
     private VirtualFile gravInstallPath;
 
@@ -213,10 +214,6 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     private static String getUrlByPath(final String path) {
         return VfsUtil.getUrlForLibraryRoot(new File(path));
-    }
-
-    public void addModuleLibrary(String moduleLibraryPath, String sourcePath) {
-        myModuleLibraries.add(Pair.create(moduleLibraryPath, sourcePath));
     }
 
     public Project getProject() {

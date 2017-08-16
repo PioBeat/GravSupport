@@ -2,7 +2,7 @@ package net.offbeatpioneer.intellij.plugins.grav.module;
 
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.options.ConfigurationException;
-import net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravModuleBuilder;
+import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder;
 
 import javax.swing.*;
 

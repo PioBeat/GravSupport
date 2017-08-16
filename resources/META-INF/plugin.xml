@@ -37,11 +37,12 @@
     -->
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.platform</depends>
+    <!--<depends>com.intellij.modules.xml</depends>-->
+    <!--<depends>com.intellij.modules.json</depends>-->
     <depends>org.jetbrains.plugins.yaml</depends>
     <!--<depends optional="true">com.jetbrains.twig</depends>-->
-    <depends optional="true" config-file="grav-php-features.xml">
-        com.jetbrains.php
-    </depends>
+    <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
+    <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
 
 
@@ -61,7 +62,7 @@
         <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType"/>
         <moduleType id="GRAV_TYPE" implementationClass="net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType"/>
         <!--<framework.type implementation="net.offbeatpioneer.module.GravFrameworkType"/>-->
-        <moduleBuilder order="first" builderClass="net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravModuleBuilder"/>
+        <moduleBuilder order="first" builderClass="net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder"/>
         <!--ModuleConfigurationExtensionProvider-->
         <!--<fileTypeFactory implementation="com.jetbrains.php.PhpFileTypeFactory"/>-->
 
