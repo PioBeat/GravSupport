@@ -45,9 +45,6 @@ Php should be found in the ``PATH``.
 The plugin uses the scripts in the ``bin`` directory of Grav to offer
 the functionality Grav supports via those scripts.
 
-Support for PhpStorm 2017.2.* is planned. Please see the Contributing
-section.
-
 ## Help
 
 **Supported Grav versions**
