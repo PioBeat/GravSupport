@@ -40,16 +40,17 @@ public class GravProjectGeneratorUtil {
                 try {
 
                     ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
-                    VirtualFile src1 = src.createChildDirectory(this, "src");
-                    findContentEntry(model, src1).addSourceFolder(src1, false);
+                    if (settings.withSrcDirectory) {
+                        VirtualFile src1 = src.createChildDirectory(this, "src");
+                        findContentEntry(model, src1).addSourceFolder(src1, false);
 
-                    VirtualFile test = src.createChildDirectory(this, "test");
-                    findContentEntry(model, test).addSourceFolder(test, true);
+                        VirtualFile test = src.createChildDirectory(this, "test");
+                        findContentEntry(model, test).addSourceFolder(test, true);
 
-                    model.commit();
-                    test.refresh(false, true);
-                    src1.refresh(false, true);
-
+                        model.commit();
+                        test.refresh(false, true);
+                        src1.refresh(false, true);
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -68,7 +69,12 @@ public class GravProjectGeneratorUtil {
             e.printStackTrace();
         }
         if (tmp == null) return false;
-        Path targetPath = new File(new File(tmp) + File.separator + "src").toPath();
+        Path targetPath;
+        if (!settings.withSrcDirectory) {
+            targetPath = new File(tmp).toPath();
+        } else {
+            targetPath = new File(new File(tmp) + File.separator + "src").toPath();
+        }
 
 
         String[] commands = new String[]{"bin/gpm", "install", "devtools"};
@@ -95,6 +101,7 @@ public class GravProjectGeneratorUtil {
             }
         };
 
+        Path finalTargetPath = targetPath;
         Task.Backgroundable t = new Task.Backgroundable(project, "Copying Grav SDK to Module Folder") {
 
             @Override
@@ -110,7 +117,7 @@ public class GravProjectGeneratorUtil {
 
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
-                    Files.walkFileTree(new File(settings.getGravInstallationPath()).toPath(), new CopyFileVisitor(targetPath));
+                    Files.walkFileTree(new File(settings.gravInstallationPath).toPath(), new CopyFileVisitor(finalTargetPath));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

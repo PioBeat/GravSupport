@@ -57,6 +57,7 @@ public class GravSdkType extends SdkType {
         return SdkType.findInstance(GravSdkType.class);
     }
 
+    //TODO
     @Nullable
     @Override
     public String getVersionString(Sdk sdk) {
@@ -73,7 +74,7 @@ public class GravSdkType extends SdkType {
 //            if (lib != null) {
 //                for (VirtualFile jar : lib.getChildren()) {
 //                    String name = jar.getName();
-//                    if (name.startsWith("redline-") && "jar".equalsIgnoreCase(jar.getExtension())) {
+//                    if (name.startsWith("grav-") && "jar".equalsIgnoreCase(jar.getExtension())) {
 //                        name = name.substring(8);
 //                        name = name.replace("-SNAPSHOT", "");
 //                        name = name.replace(".jar", "");

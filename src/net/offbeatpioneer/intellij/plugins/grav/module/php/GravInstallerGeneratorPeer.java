@@ -29,7 +29,7 @@ import static net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravIntroWi
 public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProjectSettings> {
     private IntroStepGUI form;
     private GravPersistentStateComponent storage;
-    GravProjectSettings settings;
+    private GravProjectSettings settings;
 
     public GravInstallerGeneratorPeer() {
         this.storage = GravPersistentStateComponent.getInstance();
@@ -74,7 +74,8 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     @NotNull
     @Override
     public GravProjectSettings getSettings() {
-        settings.setGravInstallationPath(form.getGravDirectory());
+        settings.gravInstallationPath = form.getGravDirectory();
+        settings.pluginEnabled = true;
         return settings;
     }
 

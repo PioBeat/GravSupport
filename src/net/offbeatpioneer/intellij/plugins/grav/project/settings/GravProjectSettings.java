@@ -1,25 +1,40 @@
 package net.offbeatpioneer.intellij.plugins.grav.project.settings;
 
-public class GravProjectSettings {
-    private String gravInstallationPath;
-    private boolean withSrcDirectory;
+import com.intellij.openapi.components.*;
+import com.intellij.openapi.project.Project;
+import com.intellij.util.xmlb.XmlSerializerUtil;
+import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+@State(
+        name = "GravProjectSettings",
+        storages = {
+                @Storage("grav-plugin.xml")
+        }
+)
+public class GravProjectSettings implements PersistentStateComponent<GravProjectSettings> {
+    public String gravInstallationPath = "";
+    public boolean withSrcDirectory = true;
+    public boolean pluginEnabled = false;
+    public boolean dismissEnableNotification = false;
 
     public GravProjectSettings() {
     }
 
-    public String getGravInstallationPath() {
-        return gravInstallationPath;
+    @Nullable
+    public static GravProjectSettings getInstance(@NotNull Project project) {
+        return ServiceManager.getService(project, GravProjectSettings.class);
     }
 
-    public void setGravInstallationPath(String gravInstallationPath) {
-        this.gravInstallationPath = gravInstallationPath;
+    @Nullable
+    @Override
+    public GravProjectSettings getState() {
+        return this;
     }
 
-    public boolean isWithSrcDirectory() {
-        return withSrcDirectory;
-    }
-
-    public void setWithSrcDirectory(boolean withSrcDirectory) {
-        this.withSrcDirectory = withSrcDirectory;
+    @Override
+    public void loadState(GravProjectSettings state) {
+        XmlSerializerUtil.copyBean(state, this);
     }
 }

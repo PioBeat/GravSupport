@@ -2,7 +2,15 @@ package net.offbeatpioneer.intellij.plugins.grav.project;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import net.offbeatpioneer.intellij.plugins.grav.helper.IdeHelper;
+import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
+import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
  * Project component gets instantiated for every GRAV project created
@@ -11,22 +19,26 @@ import org.jetbrains.annotations.NotNull;
  */
 public class GravProjectComponent implements ProjectComponent {
     final private static Logger LOG = Logger.getInstance("Grav-Plugin");
+    private GravProjectSettings settings;
+    private Project project;
+
+    public GravProjectComponent(Project project) {
+        this.project = project;
+    }
+
 
     @Override
     public void projectOpened() {
-        LOG.debug("projectOpened");
-        System.out.println("projectOpened");
+        notifyPluginEnableDialog();
     }
 
     @Override
     public void projectClosed() {
-        LOG.debug("projectClosed");
     }
 
     @Override
     public void initComponent() {
-        LOG.debug("initComponent");
-        System.out.println("initComponent");
+        settings = GravProjectSettings.getInstance(project);
     }
 
     @Override
@@ -38,5 +50,17 @@ public class GravProjectComponent implements ProjectComponent {
     @Override
     public String getComponentName() {
         return "GravProjectComponent";
+    }
+
+    private void notifyPluginEnableDialog() {
+        // Enable Project dialog
+        if(!settings.pluginEnabled && !settings.dismissEnableNotification) {
+            VirtualFile vf = project.getBaseDir();
+            vf = settings.withSrcDirectory ? vf.findChild("src") : vf;
+            if(vf == null) return;
+            if(GravSdkType.isValidGravSDK(vf)) { //grav module found
+                IdeHelper.notifyEnableMessage(project);
+            }
+        }
     }
 }

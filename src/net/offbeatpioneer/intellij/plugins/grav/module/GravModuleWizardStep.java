@@ -6,6 +6,7 @@ import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder
 
 import javax.swing.*;
 
+@Deprecated
 public class GravModuleWizardStep extends ModuleWizardStep {
     private GravModuleBuilder myBuilder;
 

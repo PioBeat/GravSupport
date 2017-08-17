@@ -66,7 +66,7 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
     public void generateProject(@NotNull Project project, @NotNull VirtualFile baseDir, @NotNull GravProjectSettings settings, @NotNull Module module) {
         System.out.println("generate project");
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-        VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(settings.getGravInstallationPath()));
+        VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(settings.gravInstallationPath));
         if (vf == null || !GravSdkType.isValidGravSDK(vf)) {
             JBPopupFactory.getInstance()
                     .createHtmlTextBalloonBuilder("Project couldn't be created because Grav Installation isn't valid", MessageType.ERROR, null)

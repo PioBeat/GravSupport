@@ -9,23 +9,37 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <p>0.1-beta2</p>
-    <ul>
-        <li>localization file editor improvements</li>
-    </ul>
-    <p>0.1-beta</p>
-    <ul>
-        <li>Create SDK for Grav</li>
-        <li>Create a Grav module using IntelliJ Wizard</li>
-        <li>Ability to download and install Grav from the Module Wizard</li>
-        <li>Create specific configuration files for a theme in the theme directory (blueprints.yaml, THEME_NAME.yaml)</li>
-        <li>Recognition of basic Grav configuration files</li>
-        <li>New icons</li>
-        <li>Create new theme</li>
-        <li>Settings menu (application and project)</li>
-        <li>Special localization file editor</li>
-    </ul>
-    ]]>
+        <p>
+            <span>0.1-beta2</span>
+
+        <ul>
+            <li>localization file editor improvements</li>
+            <li>
+                PhpStorm support
+                <ul>
+                    <li>create new Grav project (File -> New Project ...)</li>
+                    <li>code refactoring</li>
+                </ul>
+            </li>
+        </ul>
+        </p>
+        <p>
+            <span>0.1-beta</span>
+        <ul>
+            <li>Create SDK for Grav</li>
+            <li>Create a Grav module using IntelliJ Wizard</li>
+            <li>Ability to download and install Grav from the Module Wizard</li>
+            <li>Create specific configuration files for a theme in the theme directory (blueprints.yaml,
+                THEME_NAME.yaml)
+            </li>
+            <li>Recognition of basic Grav configuration files</li>
+            <li>New icons</li>
+            <li>Create new theme</li>
+            <li>Settings menu (application and project)</li>
+            <li>Special localization file editor</li>
+        </ul>
+        </p>
+        ]]>
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
@@ -53,16 +67,19 @@
 
     <project-components>
         <component>
-            <implementation-class>net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent</implementation-class>
+            <implementation-class>net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent
+            </implementation-class>
         </component>
     </project-components>
 
 
     <extensions defaultExtensionNs="com.intellij">
         <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType"/>
-        <moduleType id="GRAV_TYPE" implementationClass="net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType"/>
+        <moduleType id="GRAV_TYPE"
+                    implementationClass="net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType"/>
         <!--<framework.type implementation="net.offbeatpioneer.module.GravFrameworkType"/>-->
-        <moduleBuilder order="first" builderClass="net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder"/>
+        <moduleBuilder order="first"
+                       builderClass="net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder"/>
         <!--ModuleConfigurationExtensionProvider-->
         <!--<fileTypeFactory implementation="com.jetbrains.php.PhpFileTypeFactory"/>-->
 
@@ -74,27 +91,35 @@
         <!--EIntragung in Settings-->
         <!--http://corochann.com/intellij-plugin-development-introduction-applicationconfigurable-projectconfigurable-873.html-->
         <!--projectConfigurable-->
-        <applicationService serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"
-                            serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"/>
+        <applicationService
+                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"
+                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"/>
+        <projectService
+            serviceInterface="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"
+            serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"/>
         <applicationConfigurable groupId="languages"
                                  displayName="Grav"
                                  id="preferences.Grav.AppSettings"
                                  instance="net.offbeatpioneer.intellij.plugins.grav.application.settings.GravApplicationConfigurable"/>
-        <projectConfigurable instance="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConfigurable"
-                             displayName="Grav"
-                             groupId="language"
-                             id="preferences.Grav.ProjectSettings"
-                             nonDefaultProject="true"
+        <projectConfigurable
+                instance="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConfigurable"
+                displayName="Grav"
+                groupId="language"
+                id="preferences.Grav.ProjectSettings"
+                nonDefaultProject="true"
         />
 
 
-        <fileEditorProvider implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>
+        <fileEditorProvider
+                implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>
         <fileType.fileViewProviderFactory filetype="yml"
                                           implementationClass="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageFileViewProvider"/>
-        <treeStructureProvider implementation="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageTreeStructureProvider"/>
+        <treeStructureProvider
+                implementation="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageTreeStructureProvider"/>
 
 
-        <fileTypeFactory implementation="net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileTypeFactory"/>
+        <fileTypeFactory
+                implementation="net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileTypeFactory"/>
         <!--File type support-->
         <internalFileTemplate name="Grav Theme Blueprints"/>
         <internalFileTemplate name="Grav Theme Configuration"/>
@@ -108,7 +133,8 @@
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
         </action>
 
-        <action id="Grav.NewFile" class="net.offbeatpioneer.intellij.plugins.grav.action.NewThemeConfigurationFileAction"
+        <action id="Grav.NewFile"
+                class="net.offbeatpioneer.intellij.plugins.grav.action.NewThemeConfigurationFileAction"
                 text="Grav Theme Config File" description="Create New Theme Configuration File">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
         </action>
