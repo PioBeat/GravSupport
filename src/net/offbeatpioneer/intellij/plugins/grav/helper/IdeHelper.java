@@ -13,15 +13,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class IdeHelper {
     public static void notifyEnableMessage(@NotNull final Project project) {
-        Notification notification = new Notification("Grav Plugin", "Grav Plugin", "Enable the Grav Plugin <a href=\"enable\">with auto configuration now</a>, open <a href=\"config\">Project Settings</a> or <a href=\"dismiss\">dismiss</a> further messages", NotificationType.INFORMATION, (notification1, event) -> {
+        Notification notification = new Notification("Grav Plugin", "Grav Plugin",
+                "<a href=\"enable\">Enable</a> the Grav Plugin now, or open <a href=\"config\">Project Settings</a>. <br/>" +
+                        "<a href=\"dismiss\">Do not</a> ask again.", NotificationType.INFORMATION, (notification1, event) -> {
             // handle html click events
-            if("config".equals(event.getDescription())) {
+            if ("config".equals(event.getDescription())) {
                 // open settings dialog and show panel
                 GravProjectConfigurable.show(project);
-            } else if("enable".equals(event.getDescription())) {
+            } else if ("enable".equals(event.getDescription())) {
                 enablePluginAndConfigure(project);
                 Notifications.Bus.notify(new Notification("Grav Plugin", "Grav Plugin", "Plugin enabled", NotificationType.INFORMATION), project);
-            } else if("dismiss".equals(event.getDescription())) {
+            } else if ("dismiss".equals(event.getDescription())) {
                 // user dont want to show notification again
                 GravProjectSettings.getInstance(project).dismissEnableNotification = true;
             }

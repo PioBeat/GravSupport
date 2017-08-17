@@ -54,11 +54,16 @@ public class GravProjectComponent implements ProjectComponent {
 
     private void notifyPluginEnableDialog() {
         // Enable Project dialog
-        if(!settings.pluginEnabled && !settings.dismissEnableNotification) {
-            VirtualFile vf = project.getBaseDir();
-            vf = settings.withSrcDirectory ? vf.findChild("src") : vf;
-            if(vf == null) return;
-            if(GravSdkType.isValidGravSDK(vf)) { //grav module found
+        VirtualFile vf = project.getBaseDir();
+        if (!settings.pluginEnabled && !settings.dismissEnableNotification) {
+            //is a src directory present?
+            if (settings.withSrcDirectory && vf.findChild("src") != null) {
+                vf = vf.findChild("src");
+                if (!GravSdkType.isValidGravSDK(vf)) vf = project.getBaseDir();
+            }
+//            vf = settings.withSrcDirectory && vf.findChild("src") == null ? vf : vf.findChild("src");
+            if (vf == null) return;
+            if (GravSdkType.isValidGravSDK(vf)) { //grav module found
                 IdeHelper.notifyEnableMessage(project);
             }
         }
