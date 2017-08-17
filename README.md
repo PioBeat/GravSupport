@@ -26,7 +26,7 @@ and then search for "Plugins" -> "Install plugins from disk"
         <li>Create a Grav module or project (PhpStorm) using IntelliJ Wizard</li>
         <li>Ability to download and install Grav from the Module Wizard</li>
         <li>Create specific configuration files for a theme in the theme directory
-        (blueprints.yaml, THEME_NAME.yaml)</li>
+        (<code>blueprints.yaml</code>, <code>THEME_NAME.yaml</code>)</li>
         <li>Recognition of basic Grav configuration files</li>
          <li>Create new theme (Tools menu or context menu on a module)</li>
          <li>Special localization file editor</li>
