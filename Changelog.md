@@ -14,6 +14,7 @@
     - jump to entry in language yaml file via context menu or shortcut
     - general improvements
     - set language in add dialog
+    - Bugfix: exceptions when opening the language dir in the systems folder
 
 - Twig support and helpers
     - convert HTML comments in twig comments
@@ -25,6 +26,8 @@
 - develop project settings
 
 - internationalizing the plugin, extract string resources to resource bundle
+
+## [0.1-beta3]
 
 ### Added
 - localization file editor (works only properly for theme language directory not inside the system directory)

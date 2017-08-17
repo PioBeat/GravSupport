@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.1-beta2</version>
+    <version>0.1-beta3</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net">OffbeatPioneer</vendor>
 
     <description><![CDATA[
@@ -10,7 +10,7 @@
 
     <change-notes><![CDATA[
         <p>
-            <span>0.1-beta2</span>
+            <span>0.1-beta3</span>
 
         <ul>
             <li>localization file editor improvements</li>
@@ -88,7 +88,7 @@
         <!--<projectStructureDetector implementation="st.redline.smalltalk.module.RsProjectStructureDetector"/>-->
 
 
-        <!--EIntragung in Settings-->
+
         <!--http://corochann.com/intellij-plugin-development-introduction-applicationconfigurable-projectconfigurable-873.html-->
         <!--projectConfigurable-->
         <applicationService
