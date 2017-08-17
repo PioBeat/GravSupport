@@ -14,7 +14,7 @@ Tested with:
 
 ## Install
 
-[Download the latest plugin]() and install it in the settings menu.
+[Download the latest plugin](https://github.com/PioBeat/GravSupport/releases) and install it in the settings menu.
 <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
 and then search for "Plugins" -> "Install plugins from disk"
 
