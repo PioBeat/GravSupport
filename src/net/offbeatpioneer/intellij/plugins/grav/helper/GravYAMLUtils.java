@@ -20,7 +20,7 @@ public class GravYAMLUtils {
         for (YAMLSequenceItem each : yamlSequence.getItems()) {
             builder.append(each.getText()).append(",");
         }
-        builder.deleteCharAt(builder.lastIndexOf(",")).append("]");
+        builder.deleteCharAt(builder.lastIndexOf(",")).append("]"); //TODO bugfix
         return builder.toString();
     }
 }

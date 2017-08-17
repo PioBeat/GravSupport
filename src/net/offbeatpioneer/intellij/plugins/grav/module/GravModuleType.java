@@ -49,7 +49,6 @@ public class GravModuleType extends ModuleType<GravModuleBuilder> {
 //    @NotNull
 //    @Override
 //    public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull GravModuleBuilder moduleBuilder, @NotNull ModulesProvider modulesProvider) {
-//        //TODO mehr schritte einfügen
 //        return super.createWizardSteps(wizardContext, moduleBuilder, modulesProvider);
 //    }
 }

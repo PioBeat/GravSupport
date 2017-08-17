@@ -124,9 +124,14 @@ public class TranslationTableModel extends AbstractTableModel {
                     yamlFile = (YAMLFile) correctKeyValue.getContainingFile();
                 }
                 String[] keySplitted = GravYAMLUtils.splitKey(keys.get(rowIndex));
-                YAMLKeyValue keyValue = YAMLUtil.getQualifiedKeyInFile(
-                        yamlFile,
-                        Arrays.asList(keySplitted));
+                YAMLKeyValue keyValue = null;
+                try {
+                    keyValue = YAMLUtil.getQualifiedKeyInFile(
+                            yamlFile,
+                            Arrays.asList(keySplitted));
+                } catch (NullPointerException npe) {
+
+                }
                 if (keyValue == null && correctKeyValue == null) return "";
                 if (keyValue == null) {
                     //additional search because intellij yaml support doesn't know about keys with dot notation ...

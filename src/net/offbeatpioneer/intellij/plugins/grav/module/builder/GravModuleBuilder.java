@@ -66,12 +66,12 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     @Override
     public String getBuilderId() {
-        return "grav";
+        return "grav-builder";
     }
 
     @Override
     public String getPresentableName() {
-        return "Grav Module";
+        return "Grav";
     }
 
     @Override
@@ -107,7 +107,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     }
 
     @Override
-    public ModuleWizardStep[] createWizardSteps(WizardContext wizardContext, ModulesProvider modulesProvider) {
+    public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
         return new ModuleWizardStep[]{
 //                new GravIntroWizardStep(this),
 //                new GravModuleWizardStep(this)
