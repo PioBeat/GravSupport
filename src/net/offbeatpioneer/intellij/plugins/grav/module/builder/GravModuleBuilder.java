@@ -34,6 +34,7 @@ import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleWizardStep;
 import net.offbeatpioneer.intellij.plugins.grav.module.wizard.CopyFileVisitor;
 import net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravIntroWizardStep;
+import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,100 +116,94 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     @Override
     public void moduleCreated(@NotNull Module module) {
-        VirtualFile baseDir = module.getProject().getBaseDir();
-        String baseDirStr = getModuleFileDirectory();
-        String msg = String.format("Module for project %s created", project.getName());
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+        String msg = String.format("Please wait while module for project %s is created", project.getName());
 
-        msg = String.format("Please wait while module for project %s is created", project.getName());
         JBPopupFactory.getInstance()
                 .createHtmlTextBalloonBuilder(msg, MessageType.WARNING, null)
                 .setFadeoutTime(4000)
                 .createBalloon()
                 .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
 
-
-//        String source = new File(module.getModuleFilePath()).getParent();
-
-
-//        PhpEmptyProjectGenerator generator = new PhpEmptyProjectGenerator();
-        VirtualFile[] roots0 = ProjectRootManager.getInstance(project).getContentSourceRoots();
-        VirtualFile[] roots = ModuleRootManager.getInstance(module).getSourceRoots();
         VirtualFile[] roots1 = ModuleRootManager.getInstance(module).getContentRoots();
         if (roots1.length != 0) {
             final VirtualFile src = roots1[0];
+            GravProjectSettings settings = new GravProjectSettings();
+            settings.setGravInstallationPath(getGravInstallPath().getPath());
+            GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil();
+            generatorUtil.generateProject(project, src, settings, module);
 
-            ApplicationManager.getApplication().runWriteAction(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-
-                        ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
-                        VirtualFile src1 = src.createChildDirectory(this, "src");
-                        findContentEntry(model, src1).addSourceFolder(src1, false);
-
-                        VirtualFile test = src.createChildDirectory(this, "test");
-                        findContentEntry(model, test).addSourceFolder(test, true);
-
-                        model.commit();
-                        test.refresh(false, true);
-                        src1.refresh(false, true);
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            Path targetPath = new File(new File(module.getModuleFilePath()).getParent() + File.separator + "src").toPath();
-
-            String[] commands = new String[]{"bin/gpm", "install", "devtools"};
-            ProcessUtils processUtils = new ProcessUtils(commands, new File(targetPath.toUri()));
-
-            Task.Backgroundable installDevtools = new Task.Backgroundable(project, "Installing Devtools Plugin") {
-                @Override
-                public void onSuccess() {
-                    super.onSuccess();
-                    if (processUtils.getErrorOutput() != null && !processUtils.getErrorOutput().isEmpty()) {
-                        NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, project);
-                    } else {
-                        JBPopupFactory.getInstance()
-                                .createHtmlTextBalloonBuilder("Devtools plugin installed", MessageType.INFO, null)
-                                .setFadeoutTime(3500)
-                                .createBalloon()
-                                .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
-                    }
-                }
-
-                @Override
-                public void run(@NotNull ProgressIndicator indicator) {
-                    processUtils.execute();
-                }
-            };
-
-            Task.Backgroundable t = new Task.Backgroundable(project, "Copying Grav SDK to Module Folder") {
-
-                @Override
-                public void onSuccess() {
-                    super.onSuccess();
-                    JBPopupFactory.getInstance()
-                            .createHtmlTextBalloonBuilder("Module created", MessageType.INFO, null)
-                            .setFadeoutTime(3500)
-                            .createBalloon()
-                            .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
-                    ProgressManager.getInstance().run(installDevtools);
-                }
-
-                public void run(@NotNull ProgressIndicator progressIndicator) {
-                    try {
-                        Files.walkFileTree(new File(getGravInstallPath().getPath()).toPath(), new CopyFileVisitor(targetPath));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            ProgressManager.getInstance().run(t);
+//            ApplicationManager.getApplication().runWriteAction(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    try {
+//
+//                        ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
+//                        VirtualFile src1 = src.createChildDirectory(this, "src");
+//                        findContentEntry(model, src1).addSourceFolder(src1, false);
+//
+//                        VirtualFile test = src.createChildDirectory(this, "test");
+//                        findContentEntry(model, test).addSourceFolder(test, true);
+//
+//                        model.commit();
+//                        test.refresh(false, true);
+//                        src1.refresh(false, true);
+//
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//            Path targetPath = new File(new File(module.getModuleFilePath()).getParent() + File.separator + "src").toPath();
+//
+//            String[] commands = new String[]{"bin/gpm", "install", "devtools"};
+//            ProcessUtils processUtils = new ProcessUtils(commands, new File(targetPath.toUri()));
+//
+//            Task.Backgroundable installDevtools = new Task.Backgroundable(project, "Installing Devtools Plugin") {
+//                @Override
+//                public void onSuccess() {
+//                    super.onSuccess();
+//                    if (processUtils.getErrorOutput() != null && !processUtils.getErrorOutput().isEmpty()) {
+//                        NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, project);
+//                    } else {
+//                        JBPopupFactory.getInstance()
+//                                .createHtmlTextBalloonBuilder("Devtools plugin installed", MessageType.INFO, null)
+//                                .setFadeoutTime(3500)
+//                                .createBalloon()
+//                                .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
+//                    }
+//                }
+//
+//                @Override
+//                public void run(@NotNull ProgressIndicator indicator) {
+//                    processUtils.execute();
+//                }
+//            };
+//
+//            Task.Backgroundable t = new Task.Backgroundable(project, "Copying Grav SDK to Module Folder") {
+//
+//                @Override
+//                public void onSuccess() {
+//                    super.onSuccess();
+//                    JBPopupFactory.getInstance()
+//                            .createHtmlTextBalloonBuilder("Module created", MessageType.INFO, null)
+//                            .setFadeoutTime(3500)
+//                            .createBalloon()
+//                            .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
+//                    ProgressManager.getInstance().run(installDevtools);
+//                }
+//
+//                public void run(@NotNull ProgressIndicator progressIndicator) {
+//                    try {
+//                        Files.walkFileTree(new File(getGravInstallPath().getPath()).toPath(), new CopyFileVisitor(targetPath));
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            };
+//            ProgressManager.getInstance().run(t);
         }
     }
 

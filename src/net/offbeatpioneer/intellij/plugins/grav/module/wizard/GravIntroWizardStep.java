@@ -28,7 +28,7 @@ public class GravIntroWizardStep extends ModuleWizardStep implements Disposable 
     @Override
     public JComponent getComponent() {
         if (form == null) {
-            form = new IntroStepGUI(builder);
+            form = new IntroStepGUI(builder.getProject());
             String path = storage.getDefaultGravDownloadPath();
             if ((path == null || path.isEmpty()) && PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME) != null) {
                 path = PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME);

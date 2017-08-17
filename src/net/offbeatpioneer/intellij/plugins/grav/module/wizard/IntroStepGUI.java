@@ -11,6 +11,7 @@ import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.FieldPanel;
@@ -40,7 +41,8 @@ import java.util.Properties;
  */
 public class IntroStepGUI {
     boolean downloaded = false;
-    GravModuleBuilder builder;
+//    GravModuleBuilder builder;
+    Project project;
 
     private JPanel mainPanel;
     private JLabel lblIntro;
@@ -50,8 +52,9 @@ public class IntroStepGUI {
     private JLabel lblHint;
     private BrowseFilesListener browseFilesListener;
 
-    public IntroStepGUI(GravModuleBuilder builder) {
-        this.builder = builder;
+    public IntroStepGUI(Project project) {
+//        this.builder = builder;
+        this.project = project;
     }
 
     public JPanel getMainPanel() {
@@ -116,7 +119,7 @@ public class IntroStepGUI {
                             descriptions.add(fileDescription);
                             FileDownloader downloader = fileService.createDownloader(descriptions, downloadProps.getProperty("presentableDownloadName"));
 
-                            List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.getPath(), builder.getProject(), mainPanel);//downloader.toDirectory(dir.getPath()).download();
+                            List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.getPath(), project, mainPanel);//downloader.toDirectory(dir.getPath()).download();
                             if (files != null && files.size() == 1) {
                                 try {
                                     VirtualFile finalDir = dir;
@@ -136,7 +139,7 @@ public class IntroStepGUI {
 //                                                accessToken.finish();
                                         }
 
-                                    }, "Extract zip file", false, builder.getProject(), mainPanel);
+                                    }, "Extract zip file", false, project, mainPanel);
 
 //                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
                                     if (completed) {
@@ -173,6 +176,10 @@ public class IntroStepGUI {
         if ((fieldPanel.getText() == null || fieldPanel.getText().isEmpty()) && path != null) {
             fieldPanel.setText(path);
         }
+    }
+
+    public FieldPanel getFieldPanel() {
+        return fieldPanel;
     }
 
     public String getGravDirectory() {

@@ -80,7 +80,7 @@
                                  displayName="Grav"
                                  id="preferences.Grav.AppSettings"
                                  instance="net.offbeatpioneer.intellij.plugins.grav.application.settings.GravApplicationConfigurable"/>
-        <projectConfigurable instance="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"
+        <projectConfigurable instance="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConfigurable"
                              displayName="Grav"
                              groupId="language"
                              id="preferences.Grav.ProjectSettings"
