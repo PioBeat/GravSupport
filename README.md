@@ -1,6 +1,6 @@
 # Grav Support Plugin
 
-This plugin for IntelliJ Community / Ultimate Edition helps to increase the
+This plugin for IntelliJ Community / Ultimate Edition and PhpStorm helps to increase the
 development speed for Grav-based projects.
 
 [Grav](https://getgrav.org/) is a flat-file CMS and it's open source.
