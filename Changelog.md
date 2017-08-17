@@ -19,8 +19,6 @@
     - convert HTML comments in twig comments
     - convert css/js href attributes to grav specific links
 
-- PHPStorm support
-
 - add more features to application settings
     - enable/disable if src directory should be created
     - specify download link for grav (currently hardcoded in a properties file)
@@ -29,9 +27,11 @@
 - internationalizing the plugin, extract string resources to resource bundle
 
 ### Added
-- localization file editor
+- localization file editor (works only properly for theme language directory not inside the system directory)
     - Language selection in "Add new key value pair" dialog
     - Pretty print for sequence values
+- PhpStorm support
+    - create new Grav project (File -> New Project ...)
 
 ### Bugfix
 - colors are now set correctly when values are missing in the localization file editor
@@ -51,8 +51,8 @@ A dialog opens and then a theme will be created with the details provided
 - Create ``blueprints.yaml`` and ``<theme-name>.yaml`` when right clicking on a
 theme directory
 
-- basic localization file editor. The language directory with its
-language yaml file is responsible for this
+- basic localization file editor for a theme language directory.
+The language directory with its language yaml file is responsible for this
     - Tabular overview of all keys for different languages possible
     (no editing yet in the table)
     - Comfortable switching between all languages through the tabs at

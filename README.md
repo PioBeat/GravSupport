@@ -10,10 +10,11 @@ Grav version support: 1.2.4 - 1.3.1
 Tested with:
 * IntelliJ IDEA Community 2017.2.1
 * IntelliJ IDEA Ultimate 2017.2.1
+* PhpStorm 2017.2.1
 
 ## Install
 
-[Download the plugin]() and install it in the settings menu.
+[Download the latest plugin]() and install it in the settings menu.
 <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
 and then search for "Plugins" -> "Install plugins from disk"
 
@@ -22,7 +23,7 @@ and then search for "Plugins" -> "Install plugins from disk"
 
 <ul>
         <li>Create SDK for Grav</li>
-        <li>Create a Grav module using IntelliJ Wizard</li>
+        <li>Create a Grav module or project (PhpStorm) using IntelliJ Wizard</li>
         <li>Ability to download and install Grav from the Module Wizard</li>
         <li>Create specific configuration files for a theme in the theme directory
         (blueprints.yaml, THEME_NAME.yaml)</li>
@@ -33,7 +34,7 @@ and then search for "Plugins" -> "Install plugins from disk"
 
 ## Requirements
 
-The plugin requires IDEA Community / Ultimate Edition 2017.2.*
+The plugin requires IDEA Community / Ultimate Edition 2017.2.* or PhpStorm 2017.2.1.
 With Ultimate you have also PHP support.
 
 **Additional**
