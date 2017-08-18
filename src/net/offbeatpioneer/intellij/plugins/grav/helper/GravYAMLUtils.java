@@ -1,12 +1,6 @@
 package net.offbeatpioneer.intellij.plugins.grav.helper;
 
-import org.jetbrains.yaml.psi.YAMLSequence;
-import org.jetbrains.yaml.psi.YAMLSequenceItem;
-import org.jetbrains.yaml.psi.YAMLValue;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.jetbrains.yaml.psi.*;
 
 public class GravYAMLUtils {
 

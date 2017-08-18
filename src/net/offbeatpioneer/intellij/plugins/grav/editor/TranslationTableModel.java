@@ -58,8 +58,20 @@ public class TranslationTableModel extends AbstractTableModel {
     }
 
     public void addElement(String lang, YAMLKeyValue value) {
+        this.addElement(lang, value, value.getKeyText());
+    }
+
+    /**
+     * Updates the model
+     * Possibility to add the name of the key by yourself. The models needs always the full qualified key name
+     * of the <code>value</code> for the {@code availableKeys} list
+     * @param lang language
+     * @param value value
+     * @param fullQualifiedKey full qualified key name of {@code value}
+     */
+    public void addElement(String lang, YAMLKeyValue value, String fullQualifiedKey) {
         addElement0(lang, value);
-        availableKeys.add(value.getKeyText());
+        availableKeys.add(fullQualifiedKey);
     }
 
     public void fireChange() {

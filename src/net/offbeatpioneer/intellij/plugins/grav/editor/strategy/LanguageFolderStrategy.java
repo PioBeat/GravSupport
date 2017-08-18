@@ -103,11 +103,11 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
         if (!document.isWritable()) {
             return;
         }
-        int l = document.getTextLength();
-        document.insertString(l, LineSeparator.LF.getSeparatorString() + key + ": " + value);
-        PsiDocumentManager.getInstance(project).commitDocument(document);
         PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document);
-        YAMLKeyValue keyValue = YAMLUtil.getQualifiedKeyInFile((YAMLFile) psiFile, GravYAMLUtils.splitKey(key));
-        model.addElement(lang, keyValue);
+        if (psiFile != null) {
+            YAMLKeyValue yamlKeyValue = yamlUtil.createI18nRecord((YAMLFile) psiFile, key, value);
+            model.addElement(lang, yamlKeyValue, key);
+            PsiDocumentManager.getInstance(project).commitDocument(document);
+        }
     }
 }

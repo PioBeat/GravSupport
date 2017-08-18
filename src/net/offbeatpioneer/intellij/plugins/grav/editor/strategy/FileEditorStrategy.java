@@ -5,6 +5,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.editor.GravLangFileEditor;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
+import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 import org.jetbrains.yaml.psi.YAMLMapping;
 import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
@@ -22,7 +23,7 @@ public abstract class FileEditorStrategy implements ActionListener {
     protected GravLangFileEditor editor;
     protected ConcurrentHashMap<String, Editor> editorMap;
     protected String currentLang;
-
+    YAMLUtil yamlUtil = new YAMLUtil();
     public FileEditorStrategy(String[] languages, Project project) {
         this.languages = languages;
         this.project = project;
@@ -40,7 +41,6 @@ public abstract class FileEditorStrategy implements ActionListener {
     public void getCompoundKeys0(YAMLKeyValue keyValue, String compKey, List<String> keysList, ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap, String lang) {
 
         if (!(keyValue.getValue() instanceof YAMLMapping)) {
-//            String k = getCompKey(keyValue, compKey);
             keysList.add(compKey);
             dataMap.get(lang).add(keyValue);
         } else {
@@ -50,19 +50,6 @@ public abstract class FileEditorStrategy implements ActionListener {
             }
         }
     }
-
-//    @Deprecated
-//    public void getCompoundKeys(Collection<YAMLKeyValue> childs, String compKey, List<String> keysList) {
-//        for (YAMLKeyValue each : childs) {
-//            if (each.getYAMLElements() != null && each.getYAMLElements().size() >= 1) {
-//                Collection<YAMLKeyValue> collection = ((YAMLBlockMappingImpl) each.getValue()).getKeyValues();
-//                getCompoundKeys(collection, getCompKey(each, compKey), keysList);
-//            } else {
-//                String k = getCompKey(each, compKey);
-//                keysList.add(k);
-//            }
-//        }
-//    }
 
     public String getCompKey(YAMLKeyValue keyValue, String compKey) {
         return compKey + "." + keyValue.getKeyText();

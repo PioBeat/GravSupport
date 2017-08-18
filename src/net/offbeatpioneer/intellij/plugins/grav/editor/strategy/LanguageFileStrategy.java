@@ -26,7 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.intellij.openapi.ui.DialogWrapper.CANCEL_EXIT_CODE;
 
 public class LanguageFileStrategy extends FileEditorStrategy {
-    YAMLUtil yamlUtil = new YAMLUtil();
 
     public LanguageFileStrategy(String[] languages, Project project) {
         super(languages, project);
@@ -109,8 +108,7 @@ public class LanguageFileStrategy extends FileEditorStrategy {
                         value0 = "";
                     }
                     YAMLKeyValue yamlKeyValue = yamlUtil.createI18nRecord(yamlFile, key0, value0);
-//                YAMLKeyValue keyValue = YAMLUtil.getQualifiedKeyInFile(yamlFile, GravYAMLUtils.splitKey(key));
-                    model.addElement(eachLang, yamlKeyValue);
+                    model.addElement(eachLang, yamlKeyValue, key);
                 }
                 PsiDocumentManager.getInstance(project).commitDocument(document);
 
