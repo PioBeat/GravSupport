@@ -61,6 +61,7 @@ public class LanguageFileEditorGUI {
         table1 = new JBTable(model);
         table1.setFillsViewportHeight(true);
         scrollPane1 = new JBScrollPane(table1);
+        table1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setCellRenderer();
         button1 = new JButton();
         button1.addActionListener(editor.editorStrategy);
