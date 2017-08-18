@@ -75,6 +75,10 @@ public class LanguageFileEditorGUI {
 
     public void initTabs(Project project, ConcurrentHashMap<String, VirtualFile> fileMap) {
         tabbedPane.removeAll();
+        if (project.isDisposed()) {
+            this.fileMap.clear();
+            return;
+        }
         this.fileMap = fileMap;
         tabbedPane.addTab("Overview", scrollPane1);
         switch (editor.getLanguageFileEditorType()) {
