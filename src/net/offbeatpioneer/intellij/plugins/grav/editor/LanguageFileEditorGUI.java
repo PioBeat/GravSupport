@@ -76,16 +76,34 @@ public class LanguageFileEditorGUI {
         tabbedPane.removeAll();
         this.fileMap = fileMap;
         tabbedPane.addTab("Overview", scrollPane1);
-        for (VirtualFile file : fileMap.values()) {
-            PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-            if (psiFile != null) {
-                Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
-                if (document != null) {
-                    Editor editorTextField = createEditor(document, project, psiFile.getFileType());
-                    editorMap.put(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField);
-                    tabbedPane.addTab(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField.getComponent());
+        switch (editor.getLanguageFileEditorType()) {
+            case LANGUAGE_FOLDER:
+                for (VirtualFile file : fileMap.values()) {
+                    PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+                    if (psiFile != null) {
+                        Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+                        if (document != null) {
+                            Editor editorTextField = createEditor(document, project, psiFile.getFileType());
+                            editorMap.put(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField);
+                            tabbedPane.addTab(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField.getComponent());
+                        }
+                    }
                 }
-            }
+                break;
+            case LANGUAGE_FILE:
+                VirtualFile file = fileMap.elements().nextElement();
+                PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+                if (psiFile != null) {
+                    Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+                    if (document != null) {
+                        for (String eachLang : languages) {
+                            Editor editorTextField = createEditor(document, project, psiFile.getFileType());
+                            editorMap.put(eachLang, editorTextField);
+                            tabbedPane.addTab(eachLang, editorTextField.getComponent());
+                        }
+                    }
+                }
+                break;
         }
         editor.editorStrategy.setUIElements(table1, editor, editorMap, currentLang);
         setCellRenderer();

@@ -3,7 +3,6 @@ package net.offbeatpioneer.intellij.plugins.grav.editor.strategy;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.table.JBTable;
 import net.offbeatpioneer.intellij.plugins.grav.editor.GravLangFileEditor;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
@@ -12,7 +11,8 @@ import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class FileEditorStrategy implements ActionListener {
@@ -51,22 +51,18 @@ public abstract class FileEditorStrategy implements ActionListener {
         }
     }
 
-    public List<String> removeDuplicateKeys(List<String> keys) {
-        Set<String> s = new LinkedHashSet<>(keys);
-        return new ArrayList<>(s);
-    }
-
-    public void getCompoundKeys(Collection<YAMLKeyValue> childs, String compKey, List<String> keysList) {
-        for (YAMLKeyValue each : childs) {
-            if (each.getYAMLElements() != null && each.getYAMLElements().size() >= 1) {
-                Collection<YAMLKeyValue> collection = ((YAMLBlockMappingImpl) each.getValue()).getKeyValues();
-                getCompoundKeys(collection, getCompKey(each, compKey), keysList);
-            } else {
-                String k = getCompKey(each, compKey);
-                keysList.add(k);
-            }
-        }
-    }
+//    @Deprecated
+//    public void getCompoundKeys(Collection<YAMLKeyValue> childs, String compKey, List<String> keysList) {
+//        for (YAMLKeyValue each : childs) {
+//            if (each.getYAMLElements() != null && each.getYAMLElements().size() >= 1) {
+//                Collection<YAMLKeyValue> collection = ((YAMLBlockMappingImpl) each.getValue()).getKeyValues();
+//                getCompoundKeys(collection, getCompKey(each, compKey), keysList);
+//            } else {
+//                String k = getCompKey(each, compKey);
+//                keysList.add(k);
+//            }
+//        }
+//    }
 
     public String getCompKey(YAMLKeyValue keyValue, String compKey) {
         return compKey + "." + keyValue.getKeyText();

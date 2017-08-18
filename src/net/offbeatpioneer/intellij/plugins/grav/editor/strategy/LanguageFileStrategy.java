@@ -1,22 +1,32 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor.strategy;
 
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.LineSeparator;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
+import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
+import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
+import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.yaml.YAMLUtil;
-import org.jetbrains.yaml.psi.YAMLCompoundValue;
-import org.jetbrains.yaml.psi.YAMLKeyValue;
-import org.jetbrains.yaml.psi.YAMLMapping;
-import org.jetbrains.yaml.psi.YAMLValue;
+import org.jetbrains.yaml.psi.*;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
 import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LanguageFileStrategy extends FileEditorStrategy {
+import static com.intellij.openapi.ui.DialogWrapper.CANCEL_EXIT_CODE;
 
+public class LanguageFileStrategy extends FileEditorStrategy {
+    YAMLUtil yamlUtil = new YAMLUtil();
 
     public LanguageFileStrategy(String[] languages, Project project) {
         super(languages, project);
@@ -58,6 +68,55 @@ public class LanguageFileStrategy extends FileEditorStrategy {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        TranslationTableModel model = (TranslationTableModel) table.getModel();
+        InsertKeyValueDialog dialog = new InsertKeyValueDialog(editor.getProject(), model);
+        dialog.show();
+        int exitCode = dialog.getExitCode();
+        if (exitCode != CANCEL_EXIT_CODE) {
+            String key = dialog.getDialogUI().getKeyText();
+            String value = dialog.getDialogUI().getValueText();
+            currentLang = dialog.getSelectedLangauge();
+            if (currentLang != null && !currentLang.isEmpty()) {
+                Editor ieditor = editorMap.get(currentLang);
+                Document document = ieditor.getDocument();
+                WriteCommandAction.runWriteCommandAction(editor.getProject(), new Runnable() {
+                    @Override
+                    public void run() {
+                        updateDocument(document, ieditor.getProject(), currentLang, key, value, model);
+                    }
+                });
+            } else {
+                NotificationHelper.showBaloon("No language file available", MessageType.WARNING, editor.getProject());
+            }
+        }
+    }
 
+    private void updateDocument(Document document, Project project, String lang, String key, String value, TranslationTableModel model) {
+        if (!document.isWritable()) {
+            return;
+        }
+        YAMLFile yamlFile = (YAMLFile) PsiDocumentManager.getInstance(project).getPsiFile(document);
+        if (yamlFile != null) {
+            try {
+                for (String eachLang : languages) {
+                    String value0;
+                    String key0;
+                    if (eachLang.equalsIgnoreCase(currentLang)) {
+                        key0 = currentLang + "." + key;
+                        value0 = value;
+                    } else {
+                        key0 = eachLang + "." + key;
+                        value0 = "";
+                    }
+                    YAMLKeyValue yamlKeyValue = yamlUtil.createI18nRecord(yamlFile, key0, value0);
+//                YAMLKeyValue keyValue = YAMLUtil.getQualifiedKeyInFile(yamlFile, GravYAMLUtils.splitKey(key));
+                    model.addElement(eachLang, yamlKeyValue);
+                }
+                PsiDocumentManager.getInstance(project).commitDocument(document);
+
+            } catch (IncorrectOperationException e) {
+
+            }
+        }
     }
 }

@@ -95,6 +95,10 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
         return editorStrategy.createTableModel(fileMap);
     }
 
+    public GravLanguageEditorProvider.LangFileEditorType getLanguageFileEditorType() {
+        return provider.langFileEditorType;
+    }
+
     /**
      * Tab change listener
      *
