@@ -13,6 +13,8 @@ import com.intellij.openapi.vfs.VirtualFileEvent;
 import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiManager;
+import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
+import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.LanguageFolderStrategy;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,6 +34,9 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider.LangFileEditorType.LANGUAGE_FOLDER;
+import static net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider.LangFileEditorType.NONE;
+
 //TODO
 //You should be performing modifications through a Document, not through a
 //VirtualFile.
@@ -46,6 +51,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
     private Project project;
     private GravLanguageEditorProvider provider;
     private TranslationTableModel model;
+    FileEditorStrategy editorStrategy;
 
     public GravLangFileEditor(GravLanguageEditorProvider provider, Project project, ConcurrentHashMap<String, VirtualFile> fileMap) {
         this.provider = provider;
@@ -76,64 +82,16 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
     }
 
     public TranslationTableModel createTableModel() {
-        ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap = new ConcurrentHashMap<>();
-        Collection<String> availableKeys = new TreeSet<>();
-        Collection<VirtualFile> removeFiles = new ArrayList<>();
-        Set<Map.Entry<String, VirtualFile>> set = fileMap.entrySet();
-        for (Map.Entry<String, VirtualFile> each : set) {
-            //this should never be accessed if VirtualFileListener works correctly
-            if (each.getValue() == null || !each.getValue().exists()) {
-                fileMap.remove(each.getKey());
-                continue;
-            }
-            YAMLFileImpl yamlFile = (YAMLFileImpl) PsiManager.getInstance(project).findFile(each.getValue());
-            if (yamlFile != null) {
-                String lang = each.getValue().getNameWithoutExtension();
-                dataMap.put(lang, new HashSet<>());
-                for (YAMLKeyValue keyValue : YAMLUtil.getTopLevelKeys(yamlFile)) {
 
-                    if (keyValue.getValue() instanceof YAMLCompoundValue) {
-                        List<String> keysBuffer = new ArrayList<>();
-                        getCompoundKeys0(keyValue, keyValue.getKeyText(), keysBuffer, dataMap, lang);
-                        availableKeys.addAll(keysBuffer);
-                    } else {
-                        availableKeys.add(keyValue.getKeyText());
-                        dataMap.get(lang).add(keyValue);
-                    }
-                }
-            }
+        switch (provider.langFileEditorType) {
+            case LANGUAGE_FOLDER:
+                editorStrategy = new LanguageFolderStrategy(languages, project);
+                break;
+            case LANGUAGE_FILE:
+                editorStrategy = null;
+                break;
         }
-        return new TranslationTableModel(languages, availableKeys, dataMap);
-    }
-
-    public void getCompoundKeys0(YAMLKeyValue keyValue, String compKey, List<String> keysList, ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap, String lang) {
-
-        if (!(keyValue.getValue() instanceof YAMLMapping)) {
-//            String k = getCompKey(keyValue, compKey);
-            keysList.add(compKey);
-            dataMap.get(lang).add(keyValue);
-        } else {
-            Collection<YAMLKeyValue> collection = ((YAMLBlockMappingImpl) keyValue.getValue()).getKeyValues();
-            for (YAMLKeyValue each : collection) {
-                getCompoundKeys0(each, compKey + "." + each.getKeyText(), keysList, dataMap, lang);
-            }
-        }
-    }
-
-    public void getCompoundKeys(Collection<YAMLKeyValue> childs, String compKey, List<String> keysList) {
-        for (YAMLKeyValue each : childs) {
-            if (each.getYAMLElements() != null && each.getYAMLElements().size() >= 1) {
-                Collection<YAMLKeyValue> collection = ((YAMLBlockMappingImpl) each.getValue()).getKeyValues();
-                getCompoundKeys(collection, getCompKey(each, compKey), keysList);
-            } else {
-                String k = getCompKey(each, compKey);
-                keysList.add(k);
-            }
-        }
-    }
-
-    public String getCompKey(YAMLKeyValue keyValue, String compKey) {
-        return compKey + "." + keyValue.getKeyText();
+        return editorStrategy.createTableModel(fileMap);
     }
 
     /**
@@ -148,7 +106,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
     @Override
     public void contentsChanged(@NotNull VirtualFileEvent event) {
         if (event.getFile().getParent().isDirectory() && event.getFile().getParent().getNameWithoutExtension().compareTo("languages") == 0) {
-            if (GravLanguageEditorProvider.isLanguageFile(event.getFile())) {
+            if (GravLanguageEditorProvider.isLanguageFile(event.getFile()) != NONE) {
                 for (VirtualFile each : fileMap.values()) {
                     if (each.getName().compareTo(event.getFile().getName()) == 0) {
                         //TODO make changes to model according to file changes
@@ -174,7 +132,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
     public void fileCreated(@NotNull VirtualFileEvent event) {
         //process only for files inside the language directory
         if (event.getFile().getParent().isDirectory() && event.getFile().getParent().getNameWithoutExtension().compareTo("languages") == 0) {
-            if (GravLanguageEditorProvider.isLanguageFile(event.getFile())) {
+            if (GravLanguageEditorProvider.isLanguageFile(event.getFile()) == LANGUAGE_FOLDER) {
                 boolean present = false;
                 for (VirtualFile each : fileMap.values()) {
                     if (each.getName().compareTo(event.getFile().getName()) == 0) {
