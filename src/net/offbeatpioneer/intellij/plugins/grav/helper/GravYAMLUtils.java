@@ -11,10 +11,15 @@ public class GravYAMLUtils {
 
     public static String prettyPrint(YAMLSequence yamlSequence) {
         StringBuilder builder = new StringBuilder("[");
-        for (YAMLSequenceItem each : yamlSequence.getItems()) {
-            builder.append(each.getText()).append(",");
+        if(yamlSequence.getItems().size() != 0) {
+            for (YAMLSequenceItem each : yamlSequence.getItems()) {
+                builder.append(each.getText()).append(",");
+            }
+            int ix = builder.lastIndexOf(",");
+            if (ix != -1)
+                builder.deleteCharAt(ix);
         }
-        builder.deleteCharAt(builder.lastIndexOf(",")).append("]"); //TODO bugfix
+        builder.append("]");
         return builder.toString();
     }
 }
