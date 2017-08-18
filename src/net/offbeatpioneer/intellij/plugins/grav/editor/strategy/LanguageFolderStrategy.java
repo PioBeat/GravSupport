@@ -9,9 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.ui.table.JBTable;
 import com.intellij.util.LineSeparator;
-import net.offbeatpioneer.intellij.plugins.grav.editor.GravLangFileEditor;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
 import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
@@ -20,8 +18,6 @@ import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLCompoundValue;
 import org.jetbrains.yaml.psi.YAMLFile;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
-import org.jetbrains.yaml.psi.YAMLMapping;
-import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
 import java.awt.event.ActionEvent;
@@ -39,7 +35,7 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
     @Override
     public TranslationTableModel createTableModel(ConcurrentHashMap<String, VirtualFile> fileMap) {
         ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap = new ConcurrentHashMap<>();
-        Collection<String> availableKeys = new TreeSet<>();
+        Collection<String> availableKeys = new LinkedHashSet<>();//preserve order, no dups
         Collection<VirtualFile> removeFiles = new ArrayList<>();
         Set<Map.Entry<String, VirtualFile>> set = fileMap.entrySet();
         for (Map.Entry<String, VirtualFile> each : set) {

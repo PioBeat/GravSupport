@@ -12,8 +12,7 @@ import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class FileEditorStrategy implements ActionListener {
@@ -50,6 +49,11 @@ public abstract class FileEditorStrategy implements ActionListener {
                 getCompoundKeys0(each, compKey + "." + each.getKeyText(), keysList, dataMap, lang);
             }
         }
+    }
+
+    public List<String> removeDuplicateKeys(List<String> keys) {
+        Set<String> s = new LinkedHashSet<>(keys);
+        return new ArrayList<>(s);
     }
 
     public void getCompoundKeys(Collection<YAMLKeyValue> childs, String compKey, List<String> keysList) {

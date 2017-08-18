@@ -19,8 +19,10 @@ public class TranslationTableModel extends AbstractTableModel {
     private Collection<String> availableKeys;
     private ArrayList<String> columnNames = new ArrayList<>();
     int rowCount = 0;
+    //should a language yaml key be prefixed when the value is fetched?
+    Boolean prefixKey = false;
 
-    public TranslationTableModel(ConcurrentHashMap<String, ConcurrentHashMap<String, String>> data) {
+    private TranslationTableModel(ConcurrentHashMap<String, ConcurrentHashMap<String, String>> data) {
         this.data = data;
     }
 
@@ -123,7 +125,8 @@ public class TranslationTableModel extends AbstractTableModel {
                 } else {
                     yamlFile = (YAMLFile) correctKeyValue.getContainingFile();
                 }
-                String[] keySplitted = GravYAMLUtils.splitKey(keys.get(rowIndex));
+                String keyValueText = prefixKey ? languages[columnIndex - 1] + "." + keys.get(rowIndex) : keys.get(rowIndex);
+                String[] keySplitted = GravYAMLUtils.splitKey(keyValueText);
                 YAMLKeyValue keyValue = null;
                 try {
                     keyValue = YAMLUtil.getQualifiedKeyInFile(
@@ -210,5 +213,10 @@ public class TranslationTableModel extends AbstractTableModel {
 
     public Collection<String> getAvailableKeys() {
         return availableKeys;
+    }
+
+    public TranslationTableModel setPrefixKey(Boolean prefixKey) {
+        this.prefixKey = prefixKey;
+        return this;
     }
 }

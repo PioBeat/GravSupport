@@ -14,6 +14,7 @@ import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiManager;
 import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
+import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.LanguageFileStrategy;
 import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.LanguageFolderStrategy;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +89,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
                 editorStrategy = new LanguageFolderStrategy(languages, project);
                 break;
             case LANGUAGE_FILE:
-                editorStrategy = null;
+                editorStrategy = new LanguageFileStrategy(languages, project);
                 break;
         }
         return editorStrategy.createTableModel(fileMap);
