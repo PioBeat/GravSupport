@@ -18,18 +18,27 @@ Tested with:
 <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
 and then search for "Plugins" -> "Install plugins from disk"
 
+**Configuration**
+
+If you create a new Grav project / module you will have all features enabled by default.
+
+If you're using PhpStorm and opening a previous project you may have to enable the plugin for the current project. The plugin
+tries to detect a Grav project automatically and notifies the user accordingly. Otherwise
+open the Settings menu (<kbd>CTRL+ALT+S</kbd>) and go to _Languages & Frameworks_ -> _Grav_ and
+enable the plugin for the current project.
+
 ## Features
 (see the changelog for a complete list)
 
 <ul>
-        <li>Create SDK for Grav</li>
-        <li>Create a Grav module or project (PhpStorm) using IntelliJ Wizard</li>
-        <li>Ability to download and install Grav from the Module Wizard</li>
-        <li>Create specific configuration files for a theme in the theme directory
+    <li>Create a Grav module (Community / Ultimate) or project (PhpStorm) using IntelliJ Wizard</li>
+    <li>Ability to download and install Grav from the Module Wizard</li>
+    <li>Special language file editor</li>
+    <li>Create specific configuration files for a theme in the theme directory
         (<code>blueprints.yaml</code>, <code>THEME_NAME.yaml</code>)</li>
-        <li>Recognition of basic Grav configuration files</li>
-         <li>Create new theme (Tools menu or context menu on a module)</li>
-         <li>Special localization file editor</li>
+    <li>Recognition of basic Grav configuration files</li>
+    <li>Create new theme (Tools menu or context menu on a module)</li>
+    <li>Create SDK for Grav</li>
 </ul>
 
 ## Requirements

@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.1-beta3</version>
+    <version>0.2</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net">OffbeatPioneer</vendor>
 
     <description><![CDATA[
@@ -10,10 +10,23 @@
 
     <change-notes><![CDATA[
         <p>
+            <span>0.2</span>
+        <ul>
+            <li>
+                language file editor improvements
+                <ul>
+                    <li>view and add values for <code>languages.yaml</code> file inside theme directory</li>
+                    <li>view and add values for language files inside the system directory</li>
+                </ul>
+            </li>
+            <li>bugfixes and improvements</li>
+        </ul>
+        </p>
+        <p>
             <span>0.1-beta3</span>
 
         <ul>
-            <li>localization file editor improvements</li>
+            <li>language file editor improvements</li>
             <li>
                 PhpStorm support
                 <ul>
@@ -88,15 +101,14 @@
         <!--<projectStructureDetector implementation="st.redline.smalltalk.module.RsProjectStructureDetector"/>-->
 
 
-
         <!--http://corochann.com/intellij-plugin-development-introduction-applicationconfigurable-projectconfigurable-873.html-->
         <!--projectConfigurable-->
         <applicationService
                 serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"
                 serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"/>
         <projectService
-            serviceInterface="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"
-            serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"/>
+                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"
+                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"/>
         <applicationConfigurable groupId="languages"
                                  displayName="Grav"
                                  id="preferences.Grav.AppSettings"
