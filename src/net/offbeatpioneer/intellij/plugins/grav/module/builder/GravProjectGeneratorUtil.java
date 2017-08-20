@@ -17,6 +17,7 @@ import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.helper.ProcessUtils;
+import net.offbeatpioneer.intellij.plugins.grav.module.tasks.InstallDevtoolsPlugin;
 import net.offbeatpioneer.intellij.plugins.grav.module.wizard.CopyFileVisitor;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
@@ -76,30 +77,7 @@ public class GravProjectGeneratorUtil {
             targetPath = new File(new File(tmp) + File.separator + "src").toPath();
         }
 
-
-        String[] commands = new String[]{"bin/gpm", "install", "devtools"};
-        ProcessUtils processUtils = new ProcessUtils(commands, new File(targetPath.toUri()));
-
-        Task.Backgroundable installDevtools = new Task.Backgroundable(project, "Installing Devtools Plugin") {
-            @Override
-            public void onSuccess() {
-                super.onSuccess();
-                if (processUtils.getErrorOutput() != null && !processUtils.getErrorOutput().isEmpty()) {
-                    NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, project);
-                } else {
-                    JBPopupFactory.getInstance()
-                            .createHtmlTextBalloonBuilder("Devtools plugin installed", MessageType.INFO, null)
-                            .setFadeoutTime(3500)
-                            .createBalloon()
-                            .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
-                }
-            }
-
-            @Override
-            public void run(@NotNull ProgressIndicator indicator) {
-                processUtils.execute();
-            }
-        };
+        Task.Backgroundable installDevtools = new InstallDevtoolsPlugin(project, "Installing Devtools Plugin", new File(targetPath.toUri()));
 
         Path finalTargetPath = targetPath;
         Task.Backgroundable t = new Task.Backgroundable(project, "Copying Grav SDK to Module Folder") {

@@ -46,6 +46,14 @@ public class GravProjectComponent implements ProjectComponent {
 
     }
 
+    public static boolean isEnabled(Project project) {
+        if (project == null) return false;
+        GravProjectSettings settings = GravProjectSettings.getInstance(project);
+        if (settings == null)
+            return false;
+        return settings.pluginEnabled;
+    }
+
     @NotNull
     @Override
     public String getComponentName() {

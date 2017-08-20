@@ -17,6 +17,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,7 +118,8 @@ public abstract class CustomCreateFromTemplateAction<T extends PsiElement> exten
     protected boolean isAvailable(DataContext dataContext) {
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final IdeView view = LangDataKeys.IDE_VIEW.getData(dataContext);
-        return project != null && view != null && view.getDirectories().length != 0;
+        final boolean pluginEnabled = GravProjectComponent.isEnabled(project);
+        return pluginEnabled && view != null && view.getDirectories().length != 0;
     }
 
     protected abstract String getActionName(PsiDirectory directory, String newName, String templateName);

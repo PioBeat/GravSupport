@@ -23,25 +23,10 @@ class StreamGobbler implements Runnable {
         boolean entertemplate = false;
         while (inScanner.hasNextLine()) {
             String line = inScanner.nextLine();
-
             builder.append(line).append("\n");
-            // do something with the line!
-            // check if requesting password
 
-//            if (entertemplate) {
-//                out.println('0');
-//                entertemplate = false;
-//            }
             System.out.printf("%s: %s%n", name, line);
-//            if (line.contains(" > ")) {
-//                entertemplate = true;
-//            out.print("0\n");
-
-//            out.write(Integer.parseInt("0" + "\n"));
-//            out.flush();
-//            }
         }
-
     }
 
     public String getOutput() {

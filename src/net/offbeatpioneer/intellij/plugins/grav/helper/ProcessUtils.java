@@ -1,9 +1,5 @@
 package net.offbeatpioneer.intellij.plugins.grav.helper;
 
-//import org.apache.commons.io.*;
-//import org.apache.commons.lang3.StringUtils;
-//import org.apache.commons.lang3.SystemUtils;
-
 import org.apache.commons.lang.SystemUtils;
 
 import java.io.*;
@@ -12,18 +8,18 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * ProcessUtils
+ * ProcessUtils for Grav communication
  *
- * @author Dome
- * @since 07.01.2017
+ * @author Dominik Grzelak
+ * @since 2017-01-07
  */
 public class ProcessUtils {
-    String[] commands;
+    private String[] commands;
     private File workingDirectory;
     private String errorOutput;
     private String[] output = null;
-    StreamGobbler inputStream;
-    StreamGobbler errorStream;
+    private StreamGobbler inputStream;
+    private StreamGobbler errorStream;
 
     public ProcessUtils() {
         this(new String[]{}, new File(""));
@@ -54,10 +50,7 @@ public class ProcessUtils {
         this.workingDirectory = workingDirectory;
     }
 
-    private static PrintStream out;
-
     public Object[] execute() {
-//            String[] command = new String[2 + commands.length];
         List<String> command = new ArrayList<>();
         if (SystemUtils.IS_OS_WINDOWS) {
             command.add("CMD");
@@ -68,17 +61,10 @@ public class ProcessUtils {
             command.add("-c");
         }
         command.addAll(Arrays.asList(commands));
-//            String[] command = {"CMD", "/C", "RScript", file.getAbsoluteFile().toString(), "--args", fncName, "\"" + json + "\""};
         ProcessBuilder probuilder = new ProcessBuilder(command);
-//        probuilder.redirectErrorStream(true);
-//        File thisFile = Paths.get(workingDirectory.getAbsolutePath(), "error.txt").toFile();
-//        probuilder.redirectError(thisFile);
         //You can set up your work directory
         if (workingDirectory != null)
             probuilder.directory(workingDirectory);
-
-        List<Object> output = new ArrayList<>();
-
 
         try {
             Process process = probuilder.start();
@@ -86,7 +72,7 @@ public class ProcessUtils {
             InputStream errStream = process.getErrorStream();
             InputStream inStream = process.getInputStream();
             OutputStream outStream = process.getOutputStream();
-            out = new PrintStream(new BufferedOutputStream(outStream));
+            PrintStream out = new PrintStream(new BufferedOutputStream(outStream));
             inputStream = new StreamGobbler("in", out, inStream);
             errorStream = new StreamGobbler("err", out, errStream);
             new Thread(inputStream).start();
@@ -110,13 +96,8 @@ public class ProcessUtils {
                     linesb.append(line).append("\n");
                 }
                 this.errorOutput = linesb.toString();
-//                String[] errorLines = StringUtils.split(FileCreateUtil.readFile(thisFile.getPath(), Charset.defaultCharset()), '\n');
-//                if (errorLines != null) {
-//                    this.errorOutput = Arrays.toString(errorLines);
-//                }
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

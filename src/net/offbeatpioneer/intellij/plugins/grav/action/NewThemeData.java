@@ -10,6 +10,7 @@ public class NewThemeData {
     private String email;
 
     public NewThemeData() {
+        this(null, "", "", "");
     }
 
     public NewThemeData(String name, String developer, String description, String email) {

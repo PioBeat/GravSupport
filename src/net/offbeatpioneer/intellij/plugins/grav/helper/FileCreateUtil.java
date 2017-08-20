@@ -4,6 +4,7 @@ import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.ide.fileTemplates.FileTemplateUtil;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
@@ -33,5 +34,12 @@ public class FileCreateUtil {
     {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
+    }
+
+    public static VirtualFile getParentDirectory(VirtualFile src, String dirName) {
+        if(src.getParent().isDirectory() && src.getParent().getName().equals(dirName)) {
+            return src.getParent();
+        }
+        return getParentDirectory(src.getParent(), dirName);
     }
 }
