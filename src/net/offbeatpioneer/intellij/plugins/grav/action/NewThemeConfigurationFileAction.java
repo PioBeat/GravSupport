@@ -6,6 +6,7 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.WriteActionAware;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
+import com.intellij.openapi.module.WebModuleTypeBase;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.psi.PsiDirectory;
@@ -16,6 +17,7 @@ import net.offbeatpioneer.intellij.plugins.grav.files.GravFileTypes;
 import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravFileTemplateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType;
+import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -23,10 +25,9 @@ import javax.swing.*;
 /**
  * Creates various Grav specific configuration file stubs for a theme:
  * <ul>
- *     <li>Create a blueprints configuration file inside a theme folder</li>
- *     <li>Create THEME.yaml config file</li>
+ * <li>Create a blueprints configuration file inside a theme folder</li>
+ * <li>Create THEME.yaml config file</li>
  * </ul>
- *
  *
  * @author Dominik Grzelak
  */
@@ -39,10 +40,12 @@ public class NewThemeConfigurationFileAction extends CustomCreateFromTemplateAct
 
     @Override
     protected boolean isAvailable(DataContext dataContext) {
+        final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final Module module = LangDataKeys.MODULE.getData(dataContext);
         final ModuleType moduleType = module == null ? null : ModuleType.get(module);
-        final boolean isGravModule = moduleType instanceof GravModuleType;
-
+        final boolean isGravModule = moduleType instanceof GravModuleType || moduleType instanceof WebModuleTypeBase;
+        final boolean pluginEnabled = GravProjectComponent.isEnabled(project);
+        if (!pluginEnabled) return false;
         if (dataContext.getData(PlatformDataKeys.NAVIGATABLE) instanceof PsiDirectory) {
             PsiDirectory psiDirectory = (PsiDirectory) dataContext.getData(PlatformDataKeys.NAVIGATABLE);
             String themeFolder = psiDirectory.getParent().getVirtualFile().getName();

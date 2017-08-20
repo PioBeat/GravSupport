@@ -50,7 +50,6 @@ public abstract class CustomCreateFromTemplateAction<T extends PsiElement> exten
         }
 
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
-        final Module module = dataContext.getData(DataKeys.MODULE);
 
         final PsiDirectory dir = view.getOrChooseDirectory();
         if (dir == null || project == null) return;
