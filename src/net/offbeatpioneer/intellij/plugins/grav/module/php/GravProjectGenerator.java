@@ -12,6 +12,7 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.platform.ProjectGeneratorPeer;
 import com.intellij.ui.awt.RelativePoint;
+import com.jetbrains.php.config.library.PhpIncludePathManager;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder;
@@ -23,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Dome on 11.08.2017.
@@ -76,6 +79,13 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
         } else {
             GravProjectGeneratorUtil projectGenerator = new GravProjectGeneratorUtil();
             projectGenerator.generateProject(project, baseDir, settings, module);
+            try {
+                List<String> includePath = new ArrayList<>();
+                includePath.add(baseDir.getPath());
+                PhpIncludePathManager.getInstance(project).setIncludePath(includePath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
