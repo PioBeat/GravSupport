@@ -5,7 +5,8 @@
     - https://stackoverflow.com/questions/25951117/how-do-i-register-a-new-module-type-in-an-intellij-plugin
 	- define release url in settings menu
 - Manage versions of Grav downloads in Settings menu
-
+- add with src/test directory to projects settings
+- detect project - add source root
 - language file editor (languages directory in a theme is responsibly)
     - Option to display sorted or in given order
     - edit values directly in the table
@@ -20,7 +21,6 @@
     - convert css/js href attributes to grav specific links
 
 - add more features to application settings
-    - enable/disable if src directory should be created
     - specify download link for grav (currently hardcoded in a properties file)
 
 - internationalizing the plugin, extract string resources to resource bundle
@@ -36,12 +36,15 @@ language file editor supports now ``languages.yaml`` file in theme directory
 to check what options you have for a multi-language website)
 - change language in _add-dialog_ of the language file editor
 - better viewing experience for language file editor by adding a horizontal scrollbar
+- PhpStorm: include path of Grav is added to the PHP settings
 
 ### Bugfix
 - smaller bugfixes regarding the language file editor
 - solve problems opening the language files in the system directory
 - actions now visible in PhpStorm
 - install Devtools plugin when creating new project
+- ``GravProjectSettings`` is now correctly acquired via ``ServiceManager`` when
+Grav Php project is created
 
 ## [0.1-beta3] - 2017-08-17
 
