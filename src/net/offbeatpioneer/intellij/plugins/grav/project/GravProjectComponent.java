@@ -4,6 +4,7 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.helper.IdeHelper;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
@@ -39,6 +40,13 @@ public class GravProjectComponent implements ProjectComponent {
     @Override
     public void initComponent() {
         settings = GravProjectSettings.getInstance(project);
+        if (settings != null) {
+            if (project != null && VfsUtil.findRelativeFile(project.getBaseDir(), "src") == null) {
+                settings.withSrcDirectory = false;
+            } else {
+                settings.withSrcDirectory = true;
+            }
+        }
     }
 
     @Override

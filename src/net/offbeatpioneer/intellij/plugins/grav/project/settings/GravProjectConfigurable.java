@@ -17,6 +17,7 @@ public class GravProjectConfigurable implements Configurable {
     private GravProjectSettings settings;
     private JPanel mainPanel;
     private JCheckBox enabled;
+    private JCheckBox withSrcDir;
 
     public GravProjectConfigurable(Project project) {
         settings = GravProjectSettings.getInstance(project);
@@ -46,6 +47,7 @@ public class GravProjectConfigurable implements Configurable {
     @Override
     public void reset() {
         enabled.setSelected(settings.pluginEnabled);
+        withSrcDir.setSelected(settings.withSrcDirectory);
     }
 
     @Override

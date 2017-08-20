@@ -53,13 +53,15 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
 
         if (enabled) {
             final Module module = LangDataKeys.MODULE.getData(dataContext);
-            presentation.setText(Text + " (" + module.getName() + ")");
+            String moduleName = module == null ? "" : module.getName();
+            presentation.setText(Text + " (" + moduleName + ")");
         }
     }
 
     private boolean isAvailable(DataContext dataContext) {
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final Module module = LangDataKeys.MODULE.getData(dataContext);
+        if(module == null) return false;
         final ModuleType moduleType = ModuleType.get(module);
 
         final boolean pluginEnabled = GravProjectComponent.isEnabled(project);
@@ -107,7 +109,7 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
         }
 
         if (srcFile == null) {
-            if (settings.withSrcDirectory) {
+            if (settings != null && settings.withSrcDirectory) {
                 NotificationHelper.showBaloon("No source root found in module '" + module.getName() + "'",
                         MessageType.ERROR, project);
                 return;
