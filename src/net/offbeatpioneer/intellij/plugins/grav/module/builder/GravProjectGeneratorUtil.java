@@ -15,8 +15,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
-import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
-import net.offbeatpioneer.intellij.plugins.grav.helper.ProcessUtils;
 import net.offbeatpioneer.intellij.plugins.grav.module.tasks.InstallDevtoolsPlugin;
 import net.offbeatpioneer.intellij.plugins.grav.module.wizard.CopyFileVisitor;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
