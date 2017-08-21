@@ -68,8 +68,8 @@ public class GravIntroWizardStep extends ModuleWizardStep implements Disposable 
     public void updateDataModel() {
         String file = form.getGravDirectory();
         builder.setGravInstallPath(LocalFileSystem.getInstance().findFileByIoFile(new File(file)));
+        builder.setWithSrcDirectory(form.getWithSrcDirectory());
         PropertiesComponent.getInstance().setValue(LAST_USED_GRAV_HOME, new File(file).getAbsolutePath());
-        builder.getSettings().withSrcDirectory = form.getWithSrcDirectory();
     }
 
     public IntroStepGUI getSetupForm() {

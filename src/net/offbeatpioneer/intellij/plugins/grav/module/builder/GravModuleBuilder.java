@@ -52,6 +52,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     private VirtualFile gravInstallPath;
     GravProjectSettings settings;
+    boolean withSrcDirectory;
 
     public VirtualFile getGravInstallPath() {
         return gravInstallPath;
@@ -59,6 +60,14 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     public void setGravInstallPath(VirtualFile gravInstallPath) {
         this.gravInstallPath = gravInstallPath;
+    }
+
+    public boolean isWithSrcDirectory() {
+        return withSrcDirectory;
+    }
+
+    public void setWithSrcDirectory(boolean withSrcDirectory) {
+        this.withSrcDirectory = withSrcDirectory;
     }
 
     public GravModuleBuilder() {
@@ -102,7 +111,6 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     @Nullable
     public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
         setProject(context.getProject());
-        settings = GravProjectSettings.getInstance(getProject());
         GravIntroWizardStep step = new GravIntroWizardStep(this);
         Disposer.register(parentDisposable, step);
         return step;
@@ -120,6 +128,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     public void moduleCreated(@NotNull Module module) {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         String msg = String.format("Please wait while module for project %s is created", project.getName());
+        settings = GravProjectSettings.getInstance(project);
 
         JBPopupFactory.getInstance()
                 .createHtmlTextBalloonBuilder(msg, MessageType.WARNING, null)
@@ -130,6 +139,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
         VirtualFile[] roots1 = ModuleRootManager.getInstance(module).getContentRoots();
         if (roots1.length != 0) {
             final VirtualFile src = roots1[0];
+            settings.withSrcDirectory = withSrcDirectory;
             settings.gravInstallationPath = getGravInstallPath().getPath();
 //            settings.withSrcDirectory =
             GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil();
