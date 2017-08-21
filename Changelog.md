@@ -13,7 +13,6 @@
 
 - Twig support and helpers
     - convert HTML comments in twig comments
-    - convert css/js href attributes to grav specific links
 
 - internationalizing the plugin, extract string resources to resource bundle
 
@@ -24,7 +23,7 @@
     - select Grav release version when downloading Grav in the project wizard
     - decide if you want to create a src/test directory or not where the
     Grav installation will be copied
-- Twig intenion
+- Twig intention
     - convert HTML ``src`` and ``href`` links into _theme_ resource links
 
 ## [0.2] - 2017-08-20
