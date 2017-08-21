@@ -3,8 +3,10 @@ package net.offbeatpioneer.intellij.plugins.grav.helper;
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
 import com.intellij.openapi.util.Condition;
+import com.intellij.psi.PsiFile;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
+import com.jetbrains.twig.TwigFile;
 import net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileType;
 
 import java.util.List;
@@ -32,6 +34,10 @@ public class GravFileTemplateUtil {
             }
         }
         return null;
+    }
+
+    public static boolean isTwigTemplateFile(PsiFile file) {
+        return file instanceof TwigFile;
     }
 
     public static List<FileTemplate> getApplicableTemplates(Condition<FileTemplate> filter) {

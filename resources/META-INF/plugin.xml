@@ -67,8 +67,8 @@
     <!--<depends>com.intellij.modules.xml</depends>-->
     <!--<depends>com.intellij.modules.json</depends>-->
     <depends>org.jetbrains.plugins.yaml</depends>
-    <!--<depends optional="true">com.jetbrains.twig</depends>-->
     <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
+    <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.twig</depends>
     <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
 
@@ -135,6 +135,13 @@
         <!--File type support-->
         <internalFileTemplate name="Grav Theme Blueprints"/>
         <internalFileTemplate name="Grav Theme Configuration"/>
+
+
+        <intentionAction>
+            <className>net.offbeatpioneer.intellij.plugins.grav.intentions.ConvertTwigResource</className>
+            <category>Grav</category>
+            <descriptionDirectoryName>ConvertTwigResource</descriptionDirectoryName>
+        </intentionAction>
     </extensions>
 
 

@@ -24,6 +24,8 @@
     - select Grav release version when downloading Grav in the project wizard
     - decide if you want to create a src/test directory or not where the
     Grav installation will be copied
+- Twig intenion
+    - convert HTML ``src`` and ``href`` links into _theme_ resource links
 
 ## [0.2] - 2017-08-20
 

@@ -11,5 +11,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="yaml" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="php-openapi" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="twig" level="project" />
   </component>
 </module>
