@@ -25,6 +25,14 @@
 
 - internationalizing the plugin, extract string resources to resource bundle
 
+## [UNRELEASED]
+
+### Added
+- project wizard
+    - select Grav release version when downloading Grav in the project wizard
+    - decide if you want to create a src/test directory or not where the
+    Grav installation will be copied
+
 ## [0.2] - 2017-08-20
 
 ### Added

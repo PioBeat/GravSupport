@@ -78,6 +78,7 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     public GravProjectSettings getSettings() {
         settings = GravProjectSettings.getInstance(ProjectManager.getInstance().getDefaultProject());
         settings.gravInstallationPath = form.getGravDirectory();
+        settings.withSrcDirectory = form.getWithSrcDirectory();
         settings.pluginEnabled = true;
         return settings;
     }

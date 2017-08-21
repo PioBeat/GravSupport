@@ -51,6 +51,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     private Project project;
 
     private VirtualFile gravInstallPath;
+    GravProjectSettings settings;
 
     public VirtualFile getGravInstallPath() {
         return gravInstallPath;
@@ -101,6 +102,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     @Nullable
     public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
         setProject(context.getProject());
+        settings = GravProjectSettings.getInstance(getProject());
         GravIntroWizardStep step = new GravIntroWizardStep(this);
         Disposer.register(parentDisposable, step);
         return step;
@@ -128,8 +130,8 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
         VirtualFile[] roots1 = ModuleRootManager.getInstance(module).getContentRoots();
         if (roots1.length != 0) {
             final VirtualFile src = roots1[0];
-            GravProjectSettings settings = new GravProjectSettings();
             settings.gravInstallationPath = getGravInstallPath().getPath();
+//            settings.withSrcDirectory =
             GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil();
             generatorUtil.generateProject(project, src, settings, module);
         }
@@ -145,5 +147,9 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public GravProjectSettings getSettings() {
+        return settings;
     }
 }

@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -41,19 +42,19 @@ import java.util.Properties;
  */
 public class IntroStepGUI {
     boolean downloaded = false;
-//    GravModuleBuilder builder;
     Project project;
-
+    String[] gravVersions = new String[]{"1.3.2", "1.3.1", "1.3.0", "1.2.4"};
     private JPanel mainPanel;
     private JLabel lblIntro;
     private JPanel content;
     private ActionLink myDownloadLink;
     private FieldPanel fieldPanel;
     private JLabel lblHint;
+    private JComboBox<String> gravVersionComboBox;
+    private JCheckBox withSrcDirectory;
     private BrowseFilesListener browseFilesListener;
 
     public IntroStepGUI(Project project) {
-//        this.builder = builder;
         this.project = project;
     }
 
@@ -63,7 +64,6 @@ public class IntroStepGUI {
 
     public Properties loadDownloadConfig() {
         String resourceName = "download-config.properties"; // could also be a constant
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Properties props = new Properties();
         try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceName)) {
             props.load(resourceStream);
@@ -78,6 +78,7 @@ public class IntroStepGUI {
         lblIntro.setText("Willkommen<br/> Select a valid Grav installtion or click the link to download the latest version.");
         lblHint = new JLabel();
         lblHint.setVisible(false);
+        gravVersionComboBox = new JComboBox<>(gravVersions);
         Properties downloadProps = loadDownloadConfig();
         myDownloadLink = new ActionLink("Download and Install Grav", new AnAction() {
             @Override
@@ -97,8 +98,6 @@ public class IntroStepGUI {
                         String dirName = dir.getName();
                         fieldPanel.setText(dir.getPath());
 
-
-//
                         try {
                             if (!dirName.toLowerCase().contains("grav")) {
                                 AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(mainPanel.getClass());
@@ -112,12 +111,16 @@ public class IntroStepGUI {
                             String newdirpath = dir.getPresentableUrl() + File.separator + "grav-admin" + File.separator;
                             fieldPanel.setText(newdirpath);
 
+                            String downloadUrl = MessageFormat.format(downloadProps.getProperty("downloadUrl"), getSelectedGravVersion(), getSelectedGravVersion());
+                            String filename = MessageFormat.format(downloadProps.getProperty("filename"), getSelectedGravVersion());
+                            String presentableName = MessageFormat.format(downloadProps.getProperty("presentableDownloadName"), getSelectedGravVersion());
+
                             DownloadableFileService fileService = DownloadableFileService.getInstance();
-                            DownloadableFileDescription fileDescription = fileService.createFileDescription(downloadProps.getProperty("downloadUrl"), downloadProps.getProperty("filename"));
+                            DownloadableFileDescription fileDescription = fileService.createFileDescription(downloadUrl, filename);
 
                             List<DownloadableFileDescription> descriptions = new ArrayList<>();
                             descriptions.add(fileDescription);
-                            FileDownloader downloader = fileService.createDownloader(descriptions, downloadProps.getProperty("presentableDownloadName"));
+                            FileDownloader downloader = fileService.createDownloader(descriptions, presentableName);
 
                             List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.getPath(), project, mainPanel);//downloader.toDirectory(dir.getPath()).download();
                             if (files != null && files.size() == 1) {
@@ -139,7 +142,7 @@ public class IntroStepGUI {
 //                                                accessToken.finish();
                                         }
 
-                                    }, "Extract zip file", false, project, mainPanel);
+                                    }, "Extract Zip File", false, project, mainPanel);
 
 //                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
                                     if (completed) {
@@ -176,6 +179,14 @@ public class IntroStepGUI {
         if ((fieldPanel.getText() == null || fieldPanel.getText().isEmpty()) && path != null) {
             fieldPanel.setText(path);
         }
+    }
+
+    public String getSelectedGravVersion() {
+        return (String) gravVersionComboBox.getSelectedItem();
+    }
+
+    public boolean getWithSrcDirectory() {
+        return withSrcDirectory.isSelected();
     }
 
     public FieldPanel getFieldPanel() {
