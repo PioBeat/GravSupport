@@ -1,12 +1,7 @@
 # Changelog
 
 ## Todo
-- Project Wizard: Create new grav project from scratch
-    - https://stackoverflow.com/questions/25951117/how-do-i-register-a-new-module-type-in-an-intellij-plugin
-	- define release url in settings menu
 - Manage versions of Grav downloads in Settings menu
-- add with src/test directory to projects settings
-- detect project - add source root
 - language file editor (languages directory in a theme is responsibly)
     - Option to display sorted or in given order
     - edit values directly in the table
@@ -19,9 +14,6 @@
 - Twig support and helpers
     - convert HTML comments in twig comments
     - convert css/js href attributes to grav specific links
-
-- add more features to application settings
-    - specify download link for grav (currently hardcoded in a properties file)
 
 - internationalizing the plugin, extract string resources to resource bundle
 
@@ -45,6 +37,7 @@ to check what options you have for a multi-language website)
 - change language in _add-dialog_ of the language file editor
 - better viewing experience for language file editor by adding a horizontal scrollbar
 - PhpStorm: include path of Grav is added to the PHP settings
+- projects settings: added information about src/test directory
 
 ### Bugfix
 - smaller bugfixes regarding the language file editor
