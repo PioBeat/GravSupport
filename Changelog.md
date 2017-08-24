@@ -31,11 +31,13 @@
     Before: ``<img src="assets/img/picture.png"/>``<br/>
     After: ``<img src="{{ url("theme://assets/img/picture.png") }}"/>``<br/>
 - **New** IntelliJ tool window for displaying and configuring basic
-Grav system files. Currently supported is only ``user/config/system.yaml``.
+Grav system files. Currently supported is only ``system/config/system.yaml``.
 This window offers an overview of the possible settings of those
 config files. <br/>
 The relevant component of the tool window will be disabled if a settings
-value couldn't be recognized.
+value couldn't be found in the config file. <br/> <br/>
+**Hint** the tool window shows the settings only for the first opened project.
+No multi project support for this version available
 
 ## [0.2] - 2017-08-20
 
