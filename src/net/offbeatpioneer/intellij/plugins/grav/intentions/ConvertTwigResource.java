@@ -49,7 +49,7 @@ public class ConvertTwigResource extends PsiElementBaseIntentionAction implement
                     isXmlAttribute = true;
             }
         }
-        return isTwigFile && isXmlAttribute;
+        return isXmlAttribute;
     }
 
     @Nls
