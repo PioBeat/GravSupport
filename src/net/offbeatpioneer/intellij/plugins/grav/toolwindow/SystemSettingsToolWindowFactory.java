@@ -7,7 +7,7 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 
-public class SystemSettingsFactory implements ToolWindowFactory, DumbAware {
+public class SystemSettingsToolWindowFactory implements ToolWindowFactory, DumbAware {
     private ToolWindow toolWindow;
 
     @Override

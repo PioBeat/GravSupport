@@ -137,10 +137,10 @@
         <internalFileTemplate name="Grav Theme Configuration"/>
 
         <toolWindow
-                id="GravSettingsToolWindow"
+                id="Grav"
                 anchor="right"
                 icon="/icons/logo.png"
-                factoryClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsFactory"/>
+                factoryClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsToolWindowFactory"/>
 
         <intentionAction>
             <className>net.offbeatpioneer.intellij.plugins.grav.intentions.ConvertTwigResource</className>
