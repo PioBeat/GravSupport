@@ -37,7 +37,11 @@ public class GravFileTemplateUtil {
     }
 
     public static boolean isTwigTemplateFile(PsiFile file) {
-        return file instanceof TwigFile;
+        try {
+            return file instanceof TwigFile;
+        } catch (NoClassDefFoundError e){
+            return false;
+        }
     }
 
     public static List<FileTemplate> getApplicableTemplates(Condition<FileTemplate> filter) {
