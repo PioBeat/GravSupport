@@ -1,13 +1,19 @@
 package net.offbeatpioneer.intellij.plugins.grav.helper;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VfsUtil;
 
 /**
- * Created by Dome on 16.07.2017.
+ * @author Dominik Grzelak
+ * @since 16.07.2017.
  */
 public class ProjectChecker {
 
+    public static Project getFirstOpenedProject() {
+        Project[] projects = ProjectManager.getInstance().getOpenProjects();
+        return projects.length > 0 ? projects[0] : null;
+    }
 
     public static boolean checkProject(Project project) {
         if (VfsUtil.findRelativeFile(project.getBaseDir(), "src", "user") != null
