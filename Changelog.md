@@ -18,7 +18,7 @@
 
 - Grav tool window to display and configure system config files like ``system.yaml``
 
-## [UNRELEASED]
+## [0.3] - 2017-08-24
 
 ### Added
 - Project Wizard

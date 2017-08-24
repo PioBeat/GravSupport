@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.2</version>
+    <version>0.3</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net">OffbeatPioneer</vendor>
 
     <description><![CDATA[
@@ -9,6 +9,19 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>
+            <span>0.3</span>
+        <ul>
+            <li>Twig intention: convert HTML ``src`` and ``href`` links into _theme_ resource links <br/>
+                *Example* <br/>
+                Before: <code>&lt;img src=&quot;assets/img/picture.png&quot;/&gt;</code><br/>
+                After: <code>&lt;img src=&quot;{{ url(&quot; theme://assets/img/picture.png&quot;) }}&quot;/&gt;</code>
+            </li>
+            <li>Tool window for displaying and configuring basic Grav system files. Currently supported is only
+                <code>system/config/system.yaml</code>
+            </li>
+        </ul>
+        </p>
         <p>
             <span>0.2</span>
         <ul>

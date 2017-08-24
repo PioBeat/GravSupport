@@ -14,9 +14,9 @@ Tested with:
 
 ## Install
 
-[Download the latest plugin](https://github.com/PioBeat/GravSupport/releases) and install it in the settings menu.
+[Download the latest plugin](https://github.com/PioBeat/GravSupport/releases) and install it in the settings menu:
 <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
-and then search for "Plugins" -> "Install plugins from disk"
+and then search for _Plugins -> Install plugins from disk_
 
 **Configuration**
 
@@ -34,6 +34,7 @@ enable the plugin for the current project.
     <li>Create a Grav module (Community / Ultimate) or project (PhpStorm) using IntelliJ Wizard</li>
     <li>Ability to download and install Grav from the Module Wizard</li>
     <li>Special language file editor</li>
+    <li>Tool window to configure basic config files of Grav</li>
     <li>Create specific configuration files for a theme in the theme directory
         (<code>blueprints.yaml</code>, <code>THEME_NAME.yaml</code>)</li>
     <li>Recognition of basic Grav configuration files</li>
