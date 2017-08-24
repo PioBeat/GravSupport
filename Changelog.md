@@ -16,15 +16,26 @@
 
 - internationalizing the plugin, extract string resources to resource bundle
 
+- Grav tool window to display and configure system config files like ``system.yaml``
+
 ## [UNRELEASED]
 
 ### Added
-- project wizard
+- Project Wizard
     - select Grav release version when downloading Grav in the project wizard
-    - decide if you want to create a src/test directory or not where the
-    Grav installation will be copied
-- Twig intention
-    - convert HTML ``src`` and ``href`` links into _theme_ resource links
+    - decide if you want to create a ``src/test`` directory or not within the
+    project base dir
+- **New** Twig intention
+    - convert HTML ``src`` and ``href`` links into _theme_ resource links <br/>
+    *Example* <br/>
+    Before: ``<img src="assets/img/picture.png"/>``<br/>
+    After: ``<img src="{{ url("theme://assets/img/picture.png") }}"/>``<br/>
+- **New** IntelliJ tool window for displaying and configuring basic
+Grav system files. Currently supported is only ``user/config/system.yaml``.
+This window offers an overview of the possible settings of those
+config files. <br/>
+The relevant component of the tool window will be disabled if a settings
+value couldn't be recognized.
 
 ## [0.2] - 2017-08-20
 
@@ -88,7 +99,7 @@ The language directory with its language yaml file is responsible for this
 
 - Icons and recognition of grav specific config files
 
-### Issues
+## Issues
 
 - if the language file editor shows wrong results try to close
 and reopen it.
