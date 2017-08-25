@@ -45,9 +45,9 @@ enable the plugin for the current project.
 
 ## Screenshots
 
-![](.README_images\newproject.png)
+![New Project](.README_images/newproject.png)
 
-![](.README_images\toolwindow.png)
+![Tool Window](.README_images/toolwindow.png)
 
 
 ## Requirements
