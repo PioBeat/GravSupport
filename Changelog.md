@@ -18,6 +18,12 @@
 
 - Grav tool window to display and configure system config files like ``system.yaml``
 
+## [0.3.1] - 2017-08-25
+Minor update
+
+### Bugifx
+-  no duplicate Grav entries anymore in the _New Project Wizard_
+
 ## [0.3] - 2017-08-24
 
 ### Added
