@@ -81,7 +81,7 @@
     <!--<depends>com.intellij.modules.json</depends>-->
     <depends>org.jetbrains.plugins.yaml</depends>
     <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
-    <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.twig</depends>
+    <depends optional="true">com.jetbrains.twig</depends>
     <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
 
@@ -133,7 +133,6 @@
                 id="preferences.Grav.ProjectSettings"
                 nonDefaultProject="true"
         />
-
 
         <fileEditorProvider
                 implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>

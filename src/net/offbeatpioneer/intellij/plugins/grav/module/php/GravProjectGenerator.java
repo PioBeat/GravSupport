@@ -32,13 +32,7 @@ import java.util.List;
  */
 public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings> {
 
-    GravModuleBuilder builder;
-    GravInstallerGeneratorPeer generatorPeer;
-
-    public GravProjectGenerator() {
-        builder = new GravModuleBuilder();
-        generatorPeer = new GravInstallerGeneratorPeer();
-    }
+    private GravInstallerGeneratorPeer generatorPeer;
 
     @Override
     public String getDescription() {
@@ -60,6 +54,8 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
     @NotNull
     @Override
     public ProjectGeneratorPeer<GravProjectSettings> createPeer() {
+        if (generatorPeer == null)
+            generatorPeer = new GravInstallerGeneratorPeer();
         return generatorPeer;
     }
 
@@ -67,7 +63,6 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
     // the parent directory with the project name is automatically created
     @Override
     public void generateProject(@NotNull Project project, @NotNull VirtualFile baseDir, @NotNull GravProjectSettings settings, @NotNull Module module) {
-        System.out.println("generate project");
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(settings.gravInstallationPath));
         if (vf == null || !GravSdkType.isValidGravSDK(vf)) {
