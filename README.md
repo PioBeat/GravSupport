@@ -40,7 +40,15 @@ enable the plugin for the current project.
     <li>Recognition of basic Grav configuration files</li>
     <li>Create new theme (Tools menu or context menu on a module)</li>
     <li>Create SDK for Grav</li>
+    <li>Twig intentions</li>
 </ul>
+
+## Screenshots
+
+![](.README_images\newproject.png)
+
+![](.README_images\toolwindow.png)
+
 
 ## Requirements
 
