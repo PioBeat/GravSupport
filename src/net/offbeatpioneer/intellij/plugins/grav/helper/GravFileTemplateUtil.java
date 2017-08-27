@@ -2,17 +2,26 @@ package net.offbeatpioneer.intellij.plugins.grav.helper;
 
 import com.intellij.ide.fileTemplates.FileTemplate;
 import com.intellij.ide.fileTemplates.FileTemplateManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.twig.TwigFile;
 import net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileType;
+import org.jetbrains.yaml.psi.YAMLFile;
+import org.jetbrains.yaml.psi.YAMLKeyValue;
 
+import java.util.Arrays;
 import java.util.List;
 
+import static com.intellij.openapi.vfs.VfsUtil.findRelativeFile;
+
 /**
- * @author Konstantin Bulenkov
+ * @author Dominik Grzelak
  */
 public class GravFileTemplateUtil {
     private final static String GRAV_TEMPLATE_PREFIX = "Grav ";
@@ -28,8 +37,8 @@ public class GravFileTemplateUtil {
 
     public static FileTemplate getThemeConfigurationTemplateByName(String name) {
         List<FileTemplate> buf = GravFileTemplateUtil.getAvailableThemeConfigurationTemplates();
-        for(FileTemplate each: buf) {
-            if(each.getName().equalsIgnoreCase(name)) {
+        for (FileTemplate each : buf) {
+            if (each.getName().equalsIgnoreCase(name)) {
                 return each;
             }
         }
@@ -39,9 +48,27 @@ public class GravFileTemplateUtil {
     public static boolean isTwigTemplateFile(PsiFile file) {
         try {
             return file instanceof TwigFile;
-        } catch (NoClassDefFoundError e){
+        } catch (NoClassDefFoundError e) {
             return false;
         }
+    }
+
+    /**
+     * Return the current theme which is set in the system/config/system.yaml file
+     *
+     * @param project the project
+     * @return theme name or null
+     */
+    public static String getDefaultTheme(Project project) {
+        VirtualFile vfile = VfsUtil.findRelativeFile(project.getBaseDir(), "system", "config", "system.yaml");
+        if (vfile == null) return null;
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(vfile);
+        if (psiFile == null) return null;
+
+        YAMLKeyValue yamlKeyValue = GravYAMLUtils.getKeyValue((YAMLFile) psiFile, Arrays.asList(new String[]{"pages", "theme"}));
+        if (yamlKeyValue == null) return null;
+
+        return yamlKeyValue.getValueText();
     }
 
     public static List<FileTemplate> getApplicableTemplates(Condition<FileTemplate> filter) {

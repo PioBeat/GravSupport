@@ -11,9 +11,9 @@
     <change-notes><![CDATA[
         <p>
             <span>0.3.1</span>
-            <ul>
-                <li>bugfix: no duplicate Grav entries anymore in the <i>New Project Wizard</i></li>
-            </ul>
+        <ul>
+            <li>bugfix: no duplicate Grav entries anymore in the <i>New Project Wizard</i></li>
+        </ul>
         </p>
         <p>
             <span>0.3</span>
@@ -88,6 +88,7 @@
     <depends>org.jetbrains.plugins.yaml</depends>
     <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
     <depends optional="true">com.jetbrains.twig</depends>
+    <depends optional="true">com.jetbrains.plugins.markdown</depends>
     <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
 
@@ -140,6 +141,8 @@
                 nonDefaultProject="true"
         />
 
+        <codeInsight.lineMarkerProvider language="Markdown"
+                                        implementationClass="net.offbeatpioneer.intellij.plugins.grav.editor.SwitchToTemplateLineMarkerProvider"/>
         <fileEditorProvider
                 implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>
         <fileType.fileViewProviderFactory filetype="yml"
