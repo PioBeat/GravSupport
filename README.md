@@ -12,10 +12,21 @@ Tested with:
 * IntelliJ IDEA Ultimate 2017.2.1
 * PhpStorm 2017.2.1
 
+The plugin is available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support)
+
 ## Install
 
-[Download the latest plugin](https://github.com/PioBeat/GravSupport/releases) and install it in the settings menu:
-<kbd>CTRL+ALT+S</kbd> or _File -> Settings_
+**JetBrains Plugins Repository**
+
+Open the settings menu <kbd>CTRL+ALT+S</kbd> or _File -> Settings_ and the
+go to _Plugins_. Click on the button _Browse repositories_ and search for
+**Grav Support**.
+This way you will get notified if a new update is available!
+
+**GitHub Release**
+
+[Download the latest plugin](https://github.com/PioBeat/GravSupport/releases) and
+install it via the settings menu: <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
 and then search for _Plugins -> Install plugins from disk_
 
 **Configuration**
@@ -68,8 +79,8 @@ the functionality Grav supports via those scripts.
 
 **Supported Grav versions**
 
-Currently it's only possible to automatically download _grav-admin-v1.3.1.zip_
-directly via the project wizard of IntelliJ.
+Currently it's only possible to automatically download all listed Grav
+version mentioned at the beginning of this Readme directly via the project wizard of IntelliJ.
 However, it's possible to use any other Grav installation by manually selecting them in
 the wizard.
 
@@ -95,6 +106,7 @@ References:
 Support the plugin if you like it:
 - Tell your friends who are using IntelliJ and Grav about this plugin
 - Star it at GitHub
+- Start it on the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support)
 - Report bugs or feature requests or even fix / implement them
 - Reach out to me directly at dominik@offbeat-pioneer.net
 
