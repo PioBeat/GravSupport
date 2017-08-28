@@ -35,6 +35,7 @@ enable the plugin for the current project.
     <li>Ability to download and install Grav from the Module Wizard</li>
     <li>Special language file editor</li>
     <li>Tool window to configure basic config files of Grav</li>
+    <li>Navigate to the related template file from a page content markdown file</li>
     <li>Create specific configuration files for a theme in the theme directory
         (<code>blueprints.yaml</code>, <code>THEME_NAME.yaml</code>)</li>
     <li>Recognition of basic Grav configuration files</li>

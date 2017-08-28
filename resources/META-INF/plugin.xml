@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net">OffbeatPioneer</vendor>
 
     <description><![CDATA[
@@ -9,6 +9,18 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>
+            <span>0.3.2</span>
+        <ul>
+            <li>
+                Simply switch to the template from a content page. The filename of the <code>.md</code> file is
+                evaluated
+                as well as the <code>template</code> variable in the header of the markdown file. You will find an Twig
+                icon
+                on the gutter and provides navigation to the related template files.
+            </li>
+        </ul>
+        </p>
         <p>
             <span>0.3.1</span>
         <ul>

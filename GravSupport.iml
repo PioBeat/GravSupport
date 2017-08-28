@@ -13,5 +13,6 @@
     <orderEntry type="library" scope="PROVIDED" name="php-openapi" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="twig" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="markdown" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="intellij-markdown" level="project" />
   </component>
 </module>

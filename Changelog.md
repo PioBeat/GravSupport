@@ -18,6 +18,14 @@
 
 - Grav tool window to display and configure system config files like ``system.yaml``
 
+## [0.3.2] - 2017-08-28
+
+- Simply switch to the template from a content page. The filename of
+the <code>.md</code> file is evaluated as well as the <code>template</code>
+variable in the header of the markdown file. You will find an Twig icon
+on the gutter and provides navigation to the related template files.
+
+
 ## [0.3.1] - 2017-08-25
 Minor update
 
