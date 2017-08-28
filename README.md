@@ -18,7 +18,7 @@ The plugin is available in the [JetBrains Plugins Repository](https://plugins.je
 
 **JetBrains Plugins Repository**
 
-Open the settings menu <kbd>CTRL+ALT+S</kbd> or _File -> Settings_ and the
+Open the settings menu <kbd>CTRL+ALT+S</kbd> or _File -> Settings_ and then
 go to _Plugins_. Click on the button _Browse repositories_ and search for
 **Grav Support**.
 This way you will get notified if a new update is available!
