@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.SmartList;
@@ -17,8 +18,6 @@ import org.jetbrains.yaml.psi.YAMLKeyValue;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static com.intellij.openapi.vfs.VfsUtil.findRelativeFile;
 
 /**
  * @author Dominik Grzelak
@@ -43,6 +42,22 @@ public class GravFileTemplateUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * Finds the value to a header variable in a Grav markdown file
+     *
+     * @param variable PsiElement of a valid header variable in a Grav markdown file
+     * @return PsiElement of the value of the variable
+     */
+    public static PsiElement getValueFromVariable(PsiElement variable) {
+        PsiElement sibling = variable.getNextSibling();
+        int maxIter = 50, iterCount = 0;
+        while (sibling != null && sibling.getText().matches(":|\\s*|(:\\s*)") && iterCount < maxIter) {
+            sibling = sibling.getNextSibling();
+            iterCount++;
+        }
+        return sibling;
     }
 
     public static boolean isTwigTemplateFile(PsiFile file) {
