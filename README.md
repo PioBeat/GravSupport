@@ -5,12 +5,12 @@ development speed for Grav-based projects.
 
 [Grav](https://getgrav.org/) is a flat-file CMS and it's open source.
 
-Grav version support: 1.2.4 - 1.3.1
+Grav version support: 1.2.4 - 1.3.2
 
 Tested with:
-* IntelliJ IDEA Community 2017.2.1
+* IntelliJ IDEA Community 2017.2.*
 * IntelliJ IDEA Ultimate 2017.2.1
-* PhpStorm 2017.2.1
+* PhpStorm 2017.2.*
 
 The plugin is available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support)
 
