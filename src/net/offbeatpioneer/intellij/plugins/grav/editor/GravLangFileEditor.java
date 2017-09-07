@@ -68,7 +68,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
         if (editor == null) {
             model = createTableModel();
             model.addTableModelListener(this);
-            editor = new LanguageFileEditorGUI(this, languages, model);
+            editor = new LanguageFileEditorGUI(this, model);
             editor.initTabs(project, fileMap);
             setDefaultLanguageForEditor();
         }
