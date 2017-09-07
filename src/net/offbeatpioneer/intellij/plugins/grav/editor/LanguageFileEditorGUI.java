@@ -61,7 +61,6 @@ public class LanguageFileEditorGUI {
     private JScrollPane scrollPane1;
     private JButton button1;
     private JTabbedPane tabbedPane;
-    private JLabel langInfo;
 
     public LanguageFileEditorGUI(GravLangFileEditor editor, TranslationTableModel model) {
         this.model = model;
@@ -84,13 +83,9 @@ public class LanguageFileEditorGUI {
 
     void setCurrentLang(String currentLang) {
         this.currentLang = currentLang;
-        if (langInfo != null) {
-            langInfo.setText("Default language: " + getCurrentLang());
-        }
     }
 
     private void createUIComponents() {
-        langInfo = new JLabel("Default language: " + getCurrentLang());
         tabbedPane = new JTabbedPane();
         table1 = new JBTable();
         table1.setFillsViewportHeight(true);
