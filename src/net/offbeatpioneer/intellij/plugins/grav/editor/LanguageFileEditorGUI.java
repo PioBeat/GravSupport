@@ -59,7 +59,7 @@ public class LanguageFileEditorGUI {
     private JPanel mainPanel;
     private JTable table1;
     private JScrollPane scrollPane1;
-    private JButton button1;
+    private JButton btnAddNewKey;
     private JTabbedPane tabbedPane;
 
     public LanguageFileEditorGUI(GravLangFileEditor editor, TranslationTableModel model) {
@@ -71,7 +71,7 @@ public class LanguageFileEditorGUI {
 
         table1.setModel(model);
         tabbedPane.addChangeListener(editor);
-        button1.addActionListener(editor.editorStrategy);
+        btnAddNewKey.addActionListener(editor.editorStrategy);
     }
 
     String getCurrentLang() {
@@ -93,7 +93,7 @@ public class LanguageFileEditorGUI {
         scrollPane1 = new JBScrollPane(table1);
         table1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setCellRenderer();
-        button1 = new JButton();
+        btnAddNewKey = new JButton();
     }
 
     private void setCellRenderer() {
