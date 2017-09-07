@@ -217,6 +217,12 @@ public class LanguageFileEditorGUI {
                 SwingUtilities.invokeLater(() -> {
                     colAtPoint = table1.columnAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
                     rowAtPoint = table1.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
+
+                    if (colAtPoint != 0)
+                        deleteItem.setEnabled(false);
+                    else {
+                        deleteItem.setEnabled(true);
+                    }
                 });
             }
 
