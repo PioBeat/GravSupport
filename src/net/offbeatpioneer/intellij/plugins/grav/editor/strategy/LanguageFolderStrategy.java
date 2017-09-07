@@ -70,8 +70,8 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
         dialog.show();
         int exitCode = dialog.getExitCode();
         if (exitCode != CANCEL_EXIT_CODE) {
-            String key = dialog.getDialogUI().getKeyText();
-            String value = dialog.getDialogUI().getValueText();
+            String key = dialog.getKeyText();
+            String value = dialog.getValueText();
             currentLang = dialog.getSelectedLangauge();
             if (currentLang != null && !currentLang.isEmpty()) {
                 Editor ieditor = editorMap.get(currentLang);

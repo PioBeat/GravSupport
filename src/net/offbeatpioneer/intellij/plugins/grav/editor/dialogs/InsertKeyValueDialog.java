@@ -10,9 +10,12 @@ import javax.swing.*;
 
 public class InsertKeyValueDialog extends DialogWrapper {
 
-    private InsertKeyValueDialogUI dialogUI;
     TranslationTableModel model;
     private String selectedLanguage;
+    private JPanel contentPane;
+    private JTextField keyText;
+    private JTextField valueText;
+    private JComboBox<String> languageCombobox;
 
     public InsertKeyValueDialog(@Nullable Project project, TranslationTableModel model) {
         super(project, true);
@@ -26,43 +29,57 @@ public class InsertKeyValueDialog extends DialogWrapper {
     protected void init() {
         super.init();
         for (String lang : model.getLanguages()) {
-            dialogUI.getLanguageCombobox().addItem(lang);
+            getLanguageCombobox().addItem(lang);
         }
     }
 
     @Nullable
     @Override
     public JComponent getPreferredFocusedComponent() {
-        if (dialogUI == null) return super.getPreferredFocusedComponent();
-        return dialogUI.getKeyField();
+        if (contentPane == null) return super.getPreferredFocusedComponent();
+        return getKeyField();
     }
 
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
-        dialogUI = new InsertKeyValueDialogUI();
-        dialogUI.pack();
-        return dialogUI.getContentPane();
+        return contentPane;
+    }
+
+    public String getKeyText() {
+        return keyText.getText();
+    }
+
+    public String getValueText() {
+        return valueText.getText();
+    }
+
+    public JTextField getKeyField() {
+        return keyText;
+    }
+
+    public JTextField getValueField() {
+        return valueText;
+    }
+
+    public JComboBox<String> getLanguageCombobox() {
+        return languageCombobox;
     }
 
     @Nullable
     @Override
     protected ValidationInfo doValidate() {
-        if (dialogUI.getKeyText().isEmpty()) {
-            return new ValidationInfo("Key is empty", dialogUI.getKeyField());
+        if (getKeyText().isEmpty()) {
+            return new ValidationInfo("Key is empty", getKeyField());
         }
-        if (model.getAvailableKeys().contains(dialogUI.getKeyText())) {
-            return new ValidationInfo("Key already exists", dialogUI.getKeyField());
+        if (model.getAvailableKeys().contains(getKeyText())) {
+            return new ValidationInfo("Key already exists", getKeyField());
         }
         return super.doValidate();
     }
 
-    public InsertKeyValueDialogUI getDialogUI() {
-        return dialogUI;
-    }
-
     public String getSelectedLangauge() {
-        return (String) dialogUI.getLanguageCombobox().getSelectedItem();
+        return (String) getLanguageCombobox().getSelectedItem();
     }
 
     /**
@@ -73,8 +90,7 @@ public class InsertKeyValueDialog extends DialogWrapper {
      */
     public void setSelectedLanguage(String selectedLanguage) {
         this.selectedLanguage = selectedLanguage;
-        if (dialogUI != null) {
-            dialogUI.getLanguageCombobox().setSelectedItem(selectedLanguage);
-        }
+        if (getLanguageCombobox() != null)
+            getLanguageCombobox().setSelectedItem(selectedLanguage);
     }
 }
