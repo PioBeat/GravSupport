@@ -63,12 +63,16 @@ public class LanguageFileEditorGUI {
     private JTabbedPane tabbedPane;
     private JLabel langInfo;
 
-    LanguageFileEditorGUI(GravLangFileEditor editor, String[] languages, TranslationTableModel model) {
-        this.languages = languages;
+    public LanguageFileEditorGUI(GravLangFileEditor editor, TranslationTableModel model) {
         this.model = model;
+        this.languages = model.getLanguages();
         this.editor = editor;
         this.editorMap = new ConcurrentHashMap<>();
         this.fileMap = new ConcurrentHashMap<>();
+
+        table1.setModel(model);
+        tabbedPane.addChangeListener(editor);
+        button1.addActionListener(editor.editorStrategy);
     }
 
     String getCurrentLang() {
@@ -88,15 +92,13 @@ public class LanguageFileEditorGUI {
     private void createUIComponents() {
         langInfo = new JLabel("Default language: " + getCurrentLang());
         tabbedPane = new JTabbedPane();
-        tabbedPane.addChangeListener(editor);
-        table1 = new JBTable(model);
+        table1 = new JBTable();
         table1.setFillsViewportHeight(true);
         table1.setComponentPopupMenu(createPopupMenu());
         scrollPane1 = new JBScrollPane(table1);
         table1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setCellRenderer();
         button1 = new JButton();
-        button1.addActionListener(editor.editorStrategy);
     }
 
     private void setCellRenderer() {
