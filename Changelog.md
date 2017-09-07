@@ -1,22 +1,16 @@
 # Changelog
 
-## Todo
-- Manage versions of Grav downloads in Settings menu
-- language file editor (languages directory in a theme is responsibly)
-    - Option to display sorted or in given order
-    - edit values directly in the table
-    - remove entries via button
-    - info message about duplicate key entries
-    - jump to entry in language yaml file via context menu or shortcut
-    - general improvements for displaying sequences and mappings
-    - add missing key/value pairs in other language files
+## [UNRELEASED]
 
-- Twig support and helpers
-    - convert HTML comments in twig comments
+### Added
+- Language file editor
+    - remove key in all languages (right click on the first column -> _Delete_)
+    - if you add a key when a specific language is opened via the tabbedpane
+     then the dialog is using this language as preset
 
-- internationalizing the plugin, extract string resources to resource bundle
-
-- Grav tool window to display and configure system config files like ``system.yaml``
+### Changed
+- used ``SingleRootFileViewProvider`` in ``LanguageFileViewProvider.java``
+instead of ``MultiplePsiFilesPerDocumentFileViewProvider`` (Closes issue #3)
 
 ## [0.3.2] - 2017-08-28
 
