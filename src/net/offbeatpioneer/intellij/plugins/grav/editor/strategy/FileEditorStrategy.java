@@ -5,12 +5,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.editor.GravLangFileEditor;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
+import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 import org.jetbrains.yaml.psi.YAMLMapping;
 import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.List;
@@ -19,12 +21,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class FileEditorStrategy implements ActionListener {
     protected String[] languages;
     protected Project project;
-    protected JTable table;
+    JTable table;
     protected GravLangFileEditor editor;
-    protected ConcurrentHashMap<String, Editor> editorMap;
-    protected String currentLang;
+    ConcurrentHashMap<String, Editor> editorMap;
+    String currentLang;
     YAMLUtil yamlUtil = new YAMLUtil();
-    public FileEditorStrategy(String[] languages, Project project) {
+    InsertKeyValueDialog dialog;
+    TranslationTableModel model;
+
+    FileEditorStrategy(String[] languages, Project project) {
         this.languages = languages;
         this.project = project;
     }
@@ -36,6 +41,18 @@ public abstract class FileEditorStrategy implements ActionListener {
         this.editor = editor;
         this.editorMap = editorMap;
         this.currentLang = currentLang;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        model = (TranslationTableModel) table.getModel();
+        int ixTab = editor.getSelectedTab();
+        dialog = new InsertKeyValueDialog(editor.getProject(), model);
+        if (ixTab >= 1) {
+            dialog.setSelectedLanguage(model.getLanguages()[ixTab - 1]);
+        } else {
+            dialog.setSelectedLanguage(model.getLanguages()[0]);
+        }
     }
 
     public void getCompoundKeys0(YAMLKeyValue keyValue, String compKey, List<String> keysList, ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap, String lang) {

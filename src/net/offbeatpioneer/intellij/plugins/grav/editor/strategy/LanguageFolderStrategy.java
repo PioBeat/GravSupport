@@ -66,8 +66,7 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        TranslationTableModel model = (TranslationTableModel) table.getModel();
-        InsertKeyValueDialog dialog = new InsertKeyValueDialog(editor.getProject(), model);
+        super.actionPerformed(e);
         dialog.show();
         int exitCode = dialog.getExitCode();
         if (exitCode != CANCEL_EXIT_CODE) {
@@ -78,19 +77,16 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
                 Editor ieditor = editorMap.get(currentLang);
                 Document document = ieditor.getDocument();
 
-                WriteCommandAction.runWriteCommandAction(editor.getProject(), new Runnable() {
-                    @Override
-                    public void run() {
-                        updateDocument(document, ieditor.getProject(), currentLang, key, value, model);
-                        for (String eachLang : model.getLanguages()) {
-                            if (!eachLang.equalsIgnoreCase(currentLang)) {
-                                Editor ieditor = editorMap.get(eachLang);
-                                Document document = ieditor.getDocument();
-                                updateDocument(document, ieditor.getProject(), eachLang, key, "", model);
-                            }
+                WriteCommandAction.runWriteCommandAction(editor.getProject(), () -> {
+                    updateDocument(document, ieditor.getProject(), currentLang, key, value, model);
+                    for (String eachLang : model.getLanguages()) {
+                        if (!eachLang.equalsIgnoreCase(currentLang)) {
+                            Editor ieditor1 = editorMap.get(eachLang);
+                            Document document1 = ieditor1.getDocument();
+                            updateDocument(document1, ieditor1.getProject(), eachLang, key, "", model);
                         }
-                        model.fireChange();
                     }
+                    model.fireChange();
                 });
             } else {
                 NotificationHelper.showBaloon("No language file available", MessageType.WARNING, editor.getProject());

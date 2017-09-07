@@ -12,6 +12,7 @@ public class InsertKeyValueDialog extends DialogWrapper {
 
     private InsertKeyValueDialogUI dialogUI;
     TranslationTableModel model;
+    private String selectedLanguage;
 
     public InsertKeyValueDialog(@Nullable Project project, TranslationTableModel model) {
         super(project, true);
@@ -62,5 +63,18 @@ public class InsertKeyValueDialog extends DialogWrapper {
 
     public String getSelectedLangauge() {
         return (String) dialogUI.getLanguageCombobox().getSelectedItem();
+    }
+
+    /**
+     * Set the current selected langauge of the langauge combobox.
+     * The dialog has to be created first to take this into account.
+     *
+     * @param selectedLanguage language to set as the active option in the combobox
+     */
+    public void setSelectedLanguage(String selectedLanguage) {
+        this.selectedLanguage = selectedLanguage;
+        if (dialogUI != null) {
+            dialogUI.getLanguageCombobox().setSelectedItem(selectedLanguage);
+        }
     }
 }

@@ -53,6 +53,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
     private GravLanguageEditorProvider provider;
     private TranslationTableModel model;
     FileEditorStrategy editorStrategy;
+    private int selectedTab = -1;
 
     public GravLangFileEditor(GravLanguageEditorProvider provider, Project project, ConcurrentHashMap<String, VirtualFile> fileMap) {
         this.provider = provider;
@@ -106,6 +107,20 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
      */
     @Override
     public void stateChanged(ChangeEvent e) {
+        selectedTab = -1;
+        if (e.getSource() instanceof JTabbedPane) {
+            JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+            selectedTab = tabbedPane.getSelectedIndex();
+        }
+    }
+
+    /**
+     * Returns the currently selected index of the tabbedpane of the language file editor.
+     *
+     * @return index of the tab, otherwise -1 if there is no currently selected tab
+     */
+    public int getSelectedTab() {
+        return selectedTab;
     }
 
     @Override

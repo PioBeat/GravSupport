@@ -66,14 +66,7 @@ public class LanguageFileStrategy extends FileEditorStrategy {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        TranslationTableModel model = (TranslationTableModel) table.getModel();
-        int ixTab = editor.getSelectedTab();
-        InsertKeyValueDialog dialog = new InsertKeyValueDialog(editor.getProject(), model);
-        if (ixTab != -1) {
-            dialog.setSelectedLanguage(model.getLanguages()[ixTab - 1]);
-        } else {
-            dialog.setSelectedLanguage(model.getLanguages()[0]);
-        }
+        super.actionPerformed(e);
         dialog.show();
         int exitCode = dialog.getExitCode();
         if (exitCode != CANCEL_EXIT_CODE) {
