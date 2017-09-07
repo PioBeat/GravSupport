@@ -3,13 +3,18 @@ package net.offbeatpioneer.intellij.plugins.grav.helper;
 import com.intellij.util.ObjectUtils;
 import org.jetbrains.yaml.psi.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GravYAMLUtils {
 
-    // put this in some class
     public static String[] splitKey(String key) {
         return key.split("\\.");
+    }
+
+    public static List<String> splitKeyAsList(String key) {
+        return new ArrayList<>(Arrays.asList(key.split("\\.")));
     }
 
     public static String prettyPrint(YAMLSequence yamlSequence) {

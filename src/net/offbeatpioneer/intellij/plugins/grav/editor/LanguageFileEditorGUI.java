@@ -1,6 +1,5 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor;
 
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.command.WriteCommandAction;
@@ -19,6 +18,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ThrowableRunnable;
+import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
 import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLUtil;
@@ -30,20 +30,32 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * GUI of the translation editor
+ * <p>
+ * The two types of language files {@link GravLanguageEditorProvider.LangFileEditorType#LANGUAGE_FILE} and
+ * {@link GravLanguageEditorProvider.LangFileEditorType#LANGUAGE_FOLDER} are taken into consideration here. That means
+ * the handling of removing or adding keys is slightly different.
+ *
+ * @author Dominik Grzelak
+ */
 public class LanguageFileEditorGUI {
-    Logger LOG = Logger.getInstance(this.getClass());
+    private Logger LOG = Logger.getInstance(this.getClass());
+    private static final String ACTION_NAME = "GravRemoveKey";
+
+    private GravLangFileEditor editor;
     private TranslationTableModel model;
     private String[] languages;
     private String currentLang = "de"; //TODO detect current language by selected tab
-    private GravLangFileEditor editor;
+    private int colAtPoint = -1;
+    private int rowAtPoint = -1;
     private ConcurrentHashMap<String, Editor> editorMap;
     private ConcurrentHashMap<String, VirtualFile> fileMap;
+
     private JPanel mainPanel;
     private JTable table1;
     private JScrollPane scrollPane1;
@@ -51,7 +63,7 @@ public class LanguageFileEditorGUI {
     private JTabbedPane tabbedPane;
     private JLabel langInfo;
 
-    public LanguageFileEditorGUI(GravLangFileEditor editor, String[] languages, TranslationTableModel model) {
+    LanguageFileEditorGUI(GravLangFileEditor editor, String[] languages, TranslationTableModel model) {
         this.languages = languages;
         this.model = model;
         this.editor = editor;
@@ -59,14 +71,14 @@ public class LanguageFileEditorGUI {
         this.fileMap = new ConcurrentHashMap<>();
     }
 
-    public String getCurrentLang() {
+    String getCurrentLang() {
         if (currentLang == null) {
             return "";
         }
         return currentLang;
     }
 
-    public void setCurrentLang(String currentLang) {
+    void setCurrentLang(String currentLang) {
         this.currentLang = currentLang;
         if (langInfo != null) {
             langInfo.setText("Default language: " + getCurrentLang());
@@ -93,7 +105,7 @@ public class LanguageFileEditorGUI {
         }
     }
 
-    public void initTabs(Project project, ConcurrentHashMap<String, VirtualFile> fileMap) {
+    void initTabs(Project project, ConcurrentHashMap<String, VirtualFile> fileMap) {
         tabbedPane.removeAll();
         if (project.isDisposed()) {
             this.fileMap.clear();
@@ -133,107 +145,81 @@ public class LanguageFileEditorGUI {
         editor.editorStrategy.setUIElements(table1, editor, editorMap, currentLang);
         setCellRenderer();
     }
-    int colAtPoint = -1;
-    int rowAtPoint = -1;
+
+
     private JPopupMenu createPopupMenu() {
 
         final JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Delete");
-        deleteItem.addActionListener(new ActionListener() {
+        deleteItem.addActionListener(e -> SwingUtilities.invokeLater(() -> {
+            final Project project = GravProjectComponent.getEnabledProject();
+            if (colAtPoint != 0 && project != null) return;
+            String key = model.getKeys(true).get(rowAtPoint);
+            List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
+            switch (editor.getLanguageFileEditorType()) {
+                case LANGUAGE_FILE:
+                    VirtualFile file = fileMap.elements().nextElement();
+                    PsiFile psiFile = PsiManager.getInstance(project).findFile(file); // project can't be null here, so ignore warning
+                    if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
+                    YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        try {
+                            WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
 
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Project project = GravProjectComponent.getEnabledProject();
-                        if (colAtPoint != 0 & project != null) return;
-                        String key = model.getKeys(true).get(rowAtPoint);
-                        PsiFile psiFile = null;
-                        String[] splitted = key.split("\\.");
-                        ArrayList<String> qualifiedKey = new ArrayList<String>(Arrays.asList(splitted));
-                        switch (editor.getLanguageFileEditorType()) {
-                            case LANGUAGE_FILE:
-                                VirtualFile file = fileMap.elements().nextElement();
-                                psiFile = PsiManager.getInstance(project).findFile(file);
-                                YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
-
-                                ApplicationManager.getApplication().invokeLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            WriteCommandAction.writeCommandAction(project).withName("GravRemoveKey").run(new ThrowableRunnable<Throwable>() {
-
-                                                @Override
-                                                public void run() throws Throwable {
-
-                                                    for (String eachLang : model.getLanguages()) {
-                                                        ArrayList<String> key0 = new ArrayList<String>(qualifiedKey);
-                                                        key0.add(0, eachLang);
-                                                        YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, key0);
-                                                        if (value != null) {
-                                                            value.delete();
-                                                            model.removeElement(eachLang, value, key);
-                                                        }
-                                                    }
-                                                    file.refresh(false, false);
-                                                }
-                                            });
-                                        } catch (Throwable throwable) {
-                                            LOG.error(throwable);
-                                        }
+                                for (String eachLang : model.getLanguages()) {
+                                    List<String> key0 = new ArrayList<>(qualifiedKey);
+                                    key0.add(0, eachLang);
+                                    YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, key0);
+                                    if (value != null) {
+                                        value.delete();
+                                        model.removeElement(eachLang, value, key);
                                     }
-                                }, ModalityState.current());
-
-                                break;
-                            case LANGUAGE_FOLDER:
-                                ApplicationManager.getApplication().invokeLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            WriteCommandAction.writeCommandAction(project).withName("GravRemoveKey").run(new ThrowableRunnable<Throwable>() {
-                                                @Override
-                                                public void run() throws Throwable {
-                                                    for (String eachLang : model.getLanguages()) {
-                                                        VirtualFile file = fileMap.get(eachLang);
-                                                        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-                                                        YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
-
-                                                        YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, qualifiedKey);
-                                                        if (value != null) {
-                                                            value.delete();
-                                                            model.removeElement(eachLang, value, key);
-                                                        }
-                                                        file.refresh(false, false);
-                                                    }
-                                                }
-                                            });
-                                        } catch (Throwable throwable) {
-                                            LOG.error(throwable);
-                                        }
-                                    }
-                                });
-                                break;
+                                }
+                                file.refresh(false, false);
+                            });
+                        } catch (Throwable throwable) {
+                            LOG.error(throwable);
                         }
+                    }, ModalityState.current());
 
-                        colAtPoint = -1;
-                        rowAtPoint = -1;
-                    }
-                });
+                    break;
+                case LANGUAGE_FOLDER:
+                    ApplicationManager.getApplication().invokeLater(() -> {
+                        try {
+                            WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
+                                for (String eachLang : model.getLanguages()) {
+                                    VirtualFile file1 = fileMap.get(eachLang);
+                                    PsiFile psiFile1 = PsiManager.getInstance(project).findFile(file1); // project can't be null here, so ignore warning
+                                    if (psiFile1 == null || ((YAMLFile) psiFile1).getDocuments() == null) return;
+                                    YAMLDocument doc1 = ((YAMLFile) psiFile1).getDocuments().get(0);
+
+                                    YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc1, qualifiedKey);
+                                    if (value != null) {
+                                        value.delete();
+                                        model.removeElement(eachLang, value, key);
+                                    }
+                                    file1.refresh(false, false);
+                                }
+                            });
+                        } catch (Throwable throwable) {
+                            LOG.error(throwable);
+                        }
+                    });
+                    break;
             }
-        });
+
+            colAtPoint = -1;
+            rowAtPoint = -1;
+        }));
         popupMenu.add(deleteItem);
         popupMenu.addPopupMenuListener(new PopupMenuListener() {
 
             @Override
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        colAtPoint = table1.columnAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
-                        rowAtPoint = table1.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
-                    }
+                SwingUtilities.invokeLater(() -> {
+                    colAtPoint = table1.columnAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
+                    rowAtPoint = table1.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
                 });
             }
 
@@ -256,6 +242,7 @@ public class LanguageFileEditorGUI {
         return editor;
     }
 
+    @SuppressWarnings("unused")
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
     }
@@ -264,6 +251,7 @@ public class LanguageFileEditorGUI {
         return mainPanel;
     }
 
+    @SuppressWarnings("unused")
     public JTable getTable1() {
         return table1;
     }
