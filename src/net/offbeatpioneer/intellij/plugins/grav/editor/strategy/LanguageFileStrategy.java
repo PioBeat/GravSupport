@@ -7,13 +7,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.IncorrectOperationException;
-import com.intellij.util.LineSeparator;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
 import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
-import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.*;
@@ -34,21 +31,23 @@ public class LanguageFileStrategy extends FileEditorStrategy {
     @Override
     public TranslationTableModel createTableModel(ConcurrentHashMap<String, VirtualFile> fileMap) {
         Collection<String> availableKeys = new LinkedHashSet<String>();//preserve order, no dups
+        ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap = new ConcurrentHashMap<>();
         VirtualFile virtualFile = fileMap.elements().nextElement();
         YAMLFileImpl yamlFile = (YAMLFileImpl) PsiManager.getInstance(project).findFile(virtualFile);
-        ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap = new ConcurrentHashMap<>();
-        Collection<YAMLKeyValue> topLevelKeys = YAMLUtil.getTopLevelKeys(yamlFile);
-        for (String eachLanguage : languages) {
-            dataMap.put(eachLanguage, new HashSet<>());
-            Collection<YAMLKeyValue> topLevelValuesLang = findChildValues(topLevelKeys, eachLanguage);
-            for (YAMLKeyValue keyValue : topLevelValuesLang) {
-                if (keyValue.getValue() instanceof YAMLCompoundValue) {
-                    List<String> keysBuffer = new ArrayList<>();
-                    getCompoundKeys0(keyValue, keyValue.getKeyText(), keysBuffer, dataMap, eachLanguage);
-                    availableKeys.addAll(keysBuffer);
-                } else {
-                    availableKeys.add(keyValue.getKeyText());
-                    dataMap.get(eachLanguage).add(keyValue);
+        if (yamlFile != null) {
+            Collection<YAMLKeyValue> topLevelKeys = YAMLUtil.getTopLevelKeys(yamlFile);
+            for (String eachLanguage : languages) {
+                dataMap.put(eachLanguage, new HashSet<>());
+                Collection<YAMLKeyValue> topLevelValuesLang = findChildValues(topLevelKeys, eachLanguage);
+                for (YAMLKeyValue keyValue : topLevelValuesLang) {
+                    if (keyValue.getValue() instanceof YAMLCompoundValue) {
+                        List<String> keysBuffer = new ArrayList<>();
+                        getCompoundKeys0(keyValue, keyValue.getKeyText(), keysBuffer, dataMap, eachLanguage);
+                        availableKeys.addAll(keysBuffer);
+                    } else {
+                        availableKeys.add(keyValue.getKeyText());
+                        dataMap.get(eachLanguage).add(keyValue);
+                    }
                 }
             }
         }
@@ -68,7 +67,13 @@ public class LanguageFileStrategy extends FileEditorStrategy {
     @Override
     public void actionPerformed(ActionEvent e) {
         TranslationTableModel model = (TranslationTableModel) table.getModel();
+        int ixTab = editor.getSelectedTab();
         InsertKeyValueDialog dialog = new InsertKeyValueDialog(editor.getProject(), model);
+        if (ixTab != -1) {
+            dialog.setSelectedLanguage(model.getLanguages()[ixTab - 1]);
+        } else {
+            dialog.setSelectedLanguage(model.getLanguages()[0]);
+        }
         dialog.show();
         int exitCode = dialog.getExitCode();
         if (exitCode != CANCEL_EXIT_CODE) {
