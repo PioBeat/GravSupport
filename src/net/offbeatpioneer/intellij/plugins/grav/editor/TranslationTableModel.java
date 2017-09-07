@@ -65,13 +65,20 @@ public class TranslationTableModel extends AbstractTableModel {
      * Updates the model
      * Possibility to add the name of the key by yourself. The models needs always the full qualified key name
      * of the <code>value</code> for the {@code availableKeys} list
-     * @param lang language
-     * @param value value
+     *
+     * @param lang             language
+     * @param value            value
      * @param fullQualifiedKey full qualified key name of {@code value}
      */
     public void addElement(String lang, YAMLKeyValue value, String fullQualifiedKey) {
         addElement0(lang, value);
         availableKeys.add(fullQualifiedKey);
+    }
+
+    public void removeElement(String lang, YAMLKeyValue value, String fullQualifiedKey) {
+        data.get(lang).remove(value.getKeyText()); //, value);
+        dataMap.get(lang).remove(value);
+        availableKeys.remove(fullQualifiedKey);
     }
 
     public void fireChange() {
@@ -91,7 +98,6 @@ public class TranslationTableModel extends AbstractTableModel {
     public void addElement(String lang, String key, String value) {
         addElement0(lang, key, value);
         availableKeys.add(key);
-        //TODO für alle anderen sprachen dann leer setzen
         for (String each : languages) {
             if (!each.equalsIgnoreCase(lang)) {
                 data.get(each).put(key, "");
@@ -100,6 +106,12 @@ public class TranslationTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+
+    public String getKeyName(int row) {
+        List<String> keys = new ArrayList<>(availableKeys);
+        if (row < 0 || row >= keys.size()) return null;
+        return keys.get(row);
+    }
 
     public String getColumnName(int col) {
         return columnNames.get(col);
@@ -120,8 +132,7 @@ public class TranslationTableModel extends AbstractTableModel {
         if (languages == null || languages.length == 0) {
             return null;
         }
-        List<String> keys = new ArrayList<>(availableKeys);
-        Collections.sort(keys);
+        List<String> keys = getKeys(true);
         switch (columnIndex) {
             case 0:
                 return keys.get(rowIndex);
@@ -163,6 +174,12 @@ public class TranslationTableModel extends AbstractTableModel {
 
                 return valueText;
         }
+    }
+
+    public List<String> getKeys(boolean sorted) {
+        List<String> keys = new ArrayList<>(availableKeys);
+        if (sorted) Collections.sort(keys);
+        return keys;
     }
 
     YAMLKeyValue findByKey(String key, Collection<YAMLKeyValue> valueCollection) {

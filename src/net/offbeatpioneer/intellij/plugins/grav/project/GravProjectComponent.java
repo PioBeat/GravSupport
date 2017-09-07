@@ -3,6 +3,7 @@ package net.offbeatpioneer.intellij.plugins.grav.project;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -10,6 +11,7 @@ import net.offbeatpioneer.intellij.plugins.grav.helper.IdeHelper;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -60,6 +62,21 @@ public class GravProjectComponent implements ProjectComponent {
         if (settings == null)
             return false;
         return settings.pluginEnabled;
+    }
+
+    /**
+     * Returns the current project fr which the plugin is enabled from all opened projects of the IDE
+     *
+     * @return current opened project or null, if none exists or plugin is not enabled
+     */
+    @Nullable
+    public static Project getEnabledProject() {
+        for (Project each : ProjectManager.getInstance().getOpenProjects()) {
+            if (GravProjectComponent.isEnabled(each)) {
+                return each;
+            }
+        }
+        return null;
     }
 
     @NotNull
