@@ -14,52 +14,31 @@ import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiManager;
 import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
-import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.LanguageFileStrategy;
-import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.LanguageFolderStrategy;
+import net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.yaml.YAMLUtil;
-import org.jetbrains.yaml.psi.YAMLCompoundValue;
-import org.jetbrains.yaml.psi.YAMLKeyValue;
-import org.jetbrains.yaml.psi.YAMLMapping;
-import org.jetbrains.yaml.psi.impl.YAMLBlockMappingImpl;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.beans.PropertyChangeListener;
-import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider.LangFileEditorType.LANGUAGE_FOLDER;
-import static net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider.LangFileEditorType.NONE;
-
-//TODO
-//You should be performing modifications through a Document, not through a
-//VirtualFile.
-//        See http://confluence.jetbrains.net/display/IDEADEV/IntelliJIDEAArchitectural+Overview
-//        for more information.
-public class GravLangFileEditor implements Disposable, FileEditor, TableModelListener, ChangeListener, VirtualFileListener {
-    public final static String NAME = "Language Text";
+public class GravLangFileEditor implements Disposable, FileEditor, TableModelListener, VirtualFileListener {
+    final static String NAME = "Language Text";
     private LanguageFileEditorGUI editor;
-    private String[] languages;
-    //lang <-> lang-file
-    private ConcurrentHashMap<String, VirtualFile> fileMap = new ConcurrentHashMap<>();
+
     private Project project;
     private GravLanguageEditorProvider provider;
     private TranslationTableModel model;
     FileEditorStrategy editorStrategy;
-    private int selectedTab = -1;
 
-    public GravLangFileEditor(GravLanguageEditorProvider provider, Project project, ConcurrentHashMap<String, VirtualFile> fileMap) {
+    GravLangFileEditor(GravLanguageEditorProvider provider, FileEditorStrategy editorStrategy, Project project) {
         this.provider = provider;
         this.project = project;
-        this.fileMap = fileMap;
-        this.languages = Collections.list(fileMap.keys()).toArray(new String[fileMap.size()]);
+        this.editorStrategy = editorStrategy.withFileEditor(this);
         VirtualFileManager.getInstance().addVirtualFileListener(this);
     }
 
@@ -70,64 +49,28 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
             model = createTableModel();
             model.addTableModelListener(this);
             editor = new LanguageFileEditorGUI(this, model);
-            editor.initTabs(project, fileMap);
-            setDefaultLanguageForEditor();
+            editor.initTabs();
         }
         return editor.getMainPanel();
     }
 
-    public void setDefaultLanguageForEditor() {
-        if (fileMap.size() != 0) {
-            String lang = fileMap.keys().hasMoreElements() ? fileMap.keys().nextElement() : "";
-            editor.setCurrentLang(lang);
-        }
+    private TranslationTableModel createTableModel() {
+        return editorStrategy.createTableModel();
     }
 
-    public TranslationTableModel createTableModel() {
-
-        switch (provider.langFileEditorType) {
-            case LANGUAGE_FOLDER:
-                editorStrategy = new LanguageFolderStrategy(languages, project);
-                break;
-            case LANGUAGE_FILE:
-                editorStrategy = new LanguageFileStrategy(languages, project);
-                break;
-        }
-        return editorStrategy.createTableModel(fileMap);
+    public LanguageFileEditorGUI getGUI() {
+        return editor;
     }
 
-    public GravLanguageEditorProvider.LangFileEditorType getLanguageFileEditorType() {
+    GravYamlFiles.LangFileEditorType getLanguageFileEditorType() {
         return provider.langFileEditorType;
-    }
-
-    /**
-     * Tab change listener
-     *
-     * @param e
-     */
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        selectedTab = -1;
-        if (e.getSource() instanceof JTabbedPane) {
-            JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
-            selectedTab = tabbedPane.getSelectedIndex();
-        }
-    }
-
-    /**
-     * Returns the currently selected index of the tabbedpane of the language file editor.
-     *
-     * @return index of the tab, otherwise -1 if there is no currently selected tab
-     */
-    public int getSelectedTab() {
-        return selectedTab;
     }
 
     @Override
     public void contentsChanged(@NotNull VirtualFileEvent event) {
         if (event.getFile().getParent().isDirectory() && event.getFile().getParent().getNameWithoutExtension().compareTo("languages") == 0) {
-            if (GravLanguageEditorProvider.isLanguageFile(event.getFile()) != NONE) {
-                for (VirtualFile each : fileMap.values()) {
+            if (GravYamlFiles.getLanguageFileType(event.getFile()) != GravYamlFiles.LangFileEditorType.NONE) {
+                for (VirtualFile each : getFileMap().values()) {
                     if (each.getName().compareTo(event.getFile().getName()) == 0) {
                         //TODO make changes to model according to file changes
                     }
@@ -136,14 +79,17 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
         }
     }
 
+    ConcurrentHashMap<String, VirtualFile> getFileMap() {
+        return editorStrategy.getFileMap();
+    }
+
     @Override
     public void fileDeleted(@NotNull VirtualFileEvent event) {
-        for (VirtualFile each : fileMap.values()) {
+        for (VirtualFile each : getFileMap().values()) {
             if (each.getName().compareTo(event.getFile().getName()) == 0) {
-                fileMap.remove(each.getNameWithoutExtension());
+                getFileMap().remove(each.getNameWithoutExtension());
                 model.removeLanguage(each.getNameWithoutExtension());
-                editor.initTabs(project, fileMap);
-                setDefaultLanguageForEditor();
+                editor.initTabs();
             }
         }
     }
@@ -152,19 +98,18 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
     public void fileCreated(@NotNull VirtualFileEvent event) {
         //process only for files inside the language directory
         if (event.getFile().getParent().isDirectory() && event.getFile().getParent().getNameWithoutExtension().compareTo("languages") == 0) {
-            if (GravLanguageEditorProvider.isLanguageFile(event.getFile()) == LANGUAGE_FOLDER) {
+            if (GravYamlFiles.getLanguageFileType(event.getFile()) == GravYamlFiles.LangFileEditorType.LANGUAGE_FOLDER) {
                 boolean present = false;
-                for (VirtualFile each : fileMap.values()) {
+                for (VirtualFile each : getFileMap().values()) {
                     if (each.getName().compareTo(event.getFile().getName()) == 0) {
                         present = true;
                         break;
                     }
                 }
                 if (!present) {
-                    fileMap.put(event.getFile().getNameWithoutExtension(), event.getFile());
+                    getFileMap().put(event.getFile().getNameWithoutExtension(), event.getFile());
                     model.addLanguage(event.getFile().getNameWithoutExtension());
-                    editor.initTabs(project, fileMap);
-                    setDefaultLanguageForEditor();
+                    editor.initTabs();
                 }
             } else {
                 NotificationHelper.showBaloon("Not a valid language resource name", MessageType.WARNING, project);
@@ -185,7 +130,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
             //TODO update all files
 //            TranslationTableModel model = (TranslationTableModel) editor.getTable1().getModel();
             String lang = editor.getCurrentLang();
-            VirtualFile file = fileMap.get(lang);
+            VirtualFile file = getFileMap().get(lang);
             if (file.exists()) {
                 YAMLFileImpl yamlFile = (YAMLFileImpl) PsiManager.getInstance(project).findFile(file);
                 if (yamlFile != null) {
@@ -222,9 +167,10 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
         return false;
     }
 
+    //ToDO
     @Override
     public boolean isValid() {
-        return languages != null && languages.length != 0;
+        return true;//languages != null && languages.length != 0;
     }
 
     @Override

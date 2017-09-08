@@ -9,11 +9,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.util.LineSeparator;
+import net.offbeatpioneer.intellij.plugins.grav.editor.LanguageFileEditorGUI;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
-import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
-import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLCompoundValue;
 import org.jetbrains.yaml.psi.YAMLFile;
@@ -28,12 +27,42 @@ import static com.intellij.openapi.ui.DialogWrapper.CANCEL_EXIT_CODE;
 
 public class LanguageFolderStrategy extends FileEditorStrategy {
 
-    public LanguageFolderStrategy(String[] languages, Project project) {
-        super(languages, project);
+    public LanguageFolderStrategy(Project project) {
+        super(project);
     }
 
     @Override
-    public TranslationTableModel createTableModel(ConcurrentHashMap<String, VirtualFile> fileMap) {
+    public void initTab(LanguageFileEditorGUI gui) {
+        for (VirtualFile file : fileMap.values()) {
+            PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+            if (psiFile != null) {
+                Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+                if (document != null) {
+                    Editor editorTextField = gui.createEditor(document, project, psiFile.getFileType());
+                    editorMap.put(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField);
+                    gui.addTab(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField.getComponent());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void createFileMap(@NotNull VirtualFile file) {
+        fileMap.clear();
+        VirtualFile parent = file.getParent();
+        VirtualFile[] childs = parent.getChildren();
+        languages = new String[childs.length];
+        int cnt = 0;
+        for (VirtualFile each : childs) {
+            languages[cnt] = each.getNameWithoutExtension();
+            fileMap.put(languages[cnt], each);
+            cnt++;
+        }
+    }
+
+    @Override
+    public TranslationTableModel createTableModel() {
+        detactLanguages();
         ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap = new ConcurrentHashMap<>();
         Collection<String> availableKeys = new LinkedHashSet<>();//preserve order, no dups
         Collection<VirtualFile> removeFiles = new ArrayList<>();
@@ -61,7 +90,7 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
                 }
             }
         }
-        return new TranslationTableModel(languages, availableKeys, dataMap);
+        return new TranslationTableModel(availableKeys, dataMap);
     }
 
     @Override
@@ -77,25 +106,26 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
                 Editor ieditor = editorMap.get(currentLang);
                 Document document = ieditor.getDocument();
 
-                WriteCommandAction.runWriteCommandAction(editor.getProject(), () -> {
-                    updateDocument(document, ieditor.getProject(), currentLang, key, value, model);
+                WriteCommandAction.runWriteCommandAction(fileEditor.getProject(), () -> {
+                    updateDocumentHook(document, ieditor.getProject(), currentLang, key, value, model);
                     for (String eachLang : model.getLanguages()) {
                         if (!eachLang.equalsIgnoreCase(currentLang)) {
                             Editor ieditor1 = editorMap.get(eachLang);
                             Document document1 = ieditor1.getDocument();
-                            updateDocument(document1, ieditor1.getProject(), eachLang, key, "", model);
+                            updateDocumentHook(document1, ieditor1.getProject(), eachLang, key, "", model);
                         }
                     }
                     model.fireChange();
                 });
             } else {
-                NotificationHelper.showBaloon("No language file available", MessageType.WARNING, editor.getProject());
+                NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
             }
         }
     }
 
 
-    private void updateDocument(Document document, Project project, String lang, String key, String value, TranslationTableModel model) {
+    @Override
+    protected void updateDocumentHook(Document document, Project project, String lang, String key, String value, TranslationTableModel model) {
         if (!document.isWritable()) {
             return;
         }

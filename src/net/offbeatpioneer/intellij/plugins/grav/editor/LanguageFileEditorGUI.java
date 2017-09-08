@@ -11,7 +11,6 @@ import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -19,6 +18,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import com.intellij.util.ThrowableRunnable;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
+import net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles;
 import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLUtil;
@@ -27,51 +27,55 @@ import org.jetbrains.yaml.psi.YAMLFile;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * GUI of the translation editor
  * <p>
- * The two types of language files {@link GravLanguageEditorProvider.LangFileEditorType#LANGUAGE_FILE} and
- * {@link GravLanguageEditorProvider.LangFileEditorType#LANGUAGE_FOLDER} are taken into consideration here. That means
+ * The two types of language files {@link GravYamlFiles.LangFileEditorType#LANGUAGE_FILE} and
+ * {@link GravYamlFiles.LangFileEditorType#LANGUAGE_FOLDER} are taken into consideration here. That means
  * the handling of removing or adding keys is slightly different.
  *
  * @author Dominik Grzelak
  */
-public class LanguageFileEditorGUI {
+public class LanguageFileEditorGUI implements ChangeListener {
     private Logger LOG = Logger.getInstance(this.getClass());
     private static final String ACTION_NAME = "GravRemoveKey";
 
-    private GravLangFileEditor editor;
+    private GravLangFileEditor fileEditor;
     private TranslationTableModel model;
-    private String[] languages;
-    private String currentLang = "de"; //TODO detect current language by selected tab
-    private ConcurrentHashMap<String, Editor> editorMap;
-    private ConcurrentHashMap<String, VirtualFile> fileMap;
+    private String currentLang = "de";
+    private int selectedTab = -1;
 
     private BasicPopupListener basicPopupListener;
     private JPanel mainPanel;
     private JTable table1;
     private JScrollPane scrollPane1;
     private JButton btnAddNewKey;
-    private JTabbedPane tabbedPane;
+    public JTabbedPane tabbedPane;
     private JPanel topPanel;
     private JPanel centerPanel;
 
-    LanguageFileEditorGUI(GravLangFileEditor editor, TranslationTableModel model) {
+    LanguageFileEditorGUI(GravLangFileEditor fileEditor, TranslationTableModel model) {
         this.model = model;
-        this.languages = model.getLanguages();
-        this.editor = editor;
-        this.editorMap = new ConcurrentHashMap<>();
-        this.fileMap = new ConcurrentHashMap<>();
+        this.fileEditor = fileEditor;
 
-        table1.setModel(model);
-        tabbedPane.addChangeListener(editor);
-        btnAddNewKey.addActionListener(editor.editorStrategy);
-        btnAddNewKey.setIcon(AllIcons.General.Add);
+        this.table1.setModel(model);
+        this.tabbedPane.addChangeListener(this);
+        this.btnAddNewKey.addActionListener(fileEditor.editorStrategy);
+        this.btnAddNewKey.setIcon(AllIcons.General.Add);
+        this.setDefaultLanguageForEditor();
+    }
+
+    private void setDefaultLanguageForEditor() {
+        if (fileEditor.getFileMap().size() != 0) {
+            String lang = fileEditor.getFileMap().keys().hasMoreElements() ? fileEditor.getFileMap().keys().nextElement() : "";
+            setCurrentLang(lang);
+        }
     }
 
     String getCurrentLang() {
@@ -102,47 +106,25 @@ public class LanguageFileEditorGUI {
         }
     }
 
-    void initTabs(Project project, ConcurrentHashMap<String, VirtualFile> fileMap) {
+    void initTabs() {
+        Project project = fileEditor.getProject();
         tabbedPane.removeAll();
         if (project.isDisposed()) {
-            this.fileMap.clear();
+            fileEditor.editorStrategy.getFileMap().clear();
             return;
         }
-        this.fileMap = fileMap;
-        tabbedPane.addTab("Overview", scrollPane1);
-        switch (editor.getLanguageFileEditorType()) {
-            case LANGUAGE_FOLDER:
-                for (VirtualFile file : fileMap.values()) {
-                    PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-                    if (psiFile != null) {
-                        Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
-                        if (document != null) {
-                            Editor editorTextField = createEditor(document, project, psiFile.getFileType());
-                            editorMap.put(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField);
-                            tabbedPane.addTab(psiFile.getVirtualFile().getNameWithoutExtension(), editorTextField.getComponent());
-                        }
-                    }
-                }
-                break;
-            case LANGUAGE_FILE:
-                VirtualFile file = fileMap.elements().nextElement();
-                PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-                if (psiFile != null) {
-                    Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
-                    if (document != null) {
-                        for (String eachLang : languages) {
-                            Editor editorTextField = createEditor(document, project, psiFile.getFileType());
-                            editorMap.put(eachLang, editorTextField);
-                            tabbedPane.addTab(eachLang, editorTextField.getComponent());
-                        }
-                    }
-                }
-                break;
-        }
-        editor.editorStrategy.setUIElements(table1, editor, editorMap, currentLang);
+
+        addTab("Overview", scrollPane1);
+        fileEditor.editorStrategy.initTab(this);
+
+        setDefaultLanguageForEditor();
+
         setCellRenderer();
     }
 
+    public void addTab(String name, JComponent component) {
+        tabbedPane.addTab(name, component);
+    }
 
     private JPopupMenu createPopupMenu() {
 
@@ -154,9 +136,9 @@ public class LanguageFileEditorGUI {
             if (project == null) return;
             String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
             List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
-            switch (editor.getLanguageFileEditorType()) {
+            switch (fileEditor.getLanguageFileEditorType()) {
                 case LANGUAGE_FILE:
-                    VirtualFile file = fileMap.elements().nextElement();
+                    VirtualFile file = fileEditor.getFileMap().elements().nextElement();
                     PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
                     if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
                     YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
@@ -187,7 +169,7 @@ public class LanguageFileEditorGUI {
                         try {
                             WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
                                 for (String eachLang : model.getLanguages()) {
-                                    VirtualFile file1 = fileMap.get(eachLang);
+                                    VirtualFile file1 = fileEditor.getFileMap().get(eachLang);
                                     PsiFile psiFile1 = PsiManager.getInstance(project).findFile(file1);
                                     if (psiFile1 == null || ((YAMLFile) psiFile1).getDocuments() == null) return;
                                     YAMLDocument doc1 = ((YAMLFile) psiFile1).getDocuments().get(0);
@@ -220,18 +202,18 @@ public class LanguageFileEditorGUI {
             if (project == null) return;
             String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
             List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
-            String lang = model.getLanguages()[basicPopupListener.colAtPoint - 1];
+            String lang = model.getLanguages().get(basicPopupListener.colAtPoint - 1);
             VirtualFile file;
-            switch (editor.getLanguageFileEditorType()) {
+            switch (fileEditor.getLanguageFileEditorType()) {
                 case LANGUAGE_FILE:
-                    file = fileMap.elements().nextElement();
+                    file = fileEditor.getFileMap().elements().nextElement();
                     qualifiedKey.add(0, lang);
                     break;
                 case LANGUAGE_FOLDER:
-                    file = fileMap.get(lang);
+                    file = fileEditor.getFileMap().get(lang);
                     break;
                 default:
-                    file = fileMap.get(lang);
+                    file = fileEditor.getFileMap().get(lang);
                     break;
             }
             PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
@@ -244,12 +226,12 @@ public class LanguageFileEditorGUI {
             if (value == null || value.getOriginalElement() == null) return;
             PsiElement psiElement = value.getOriginalElement();
             EventQueue.invokeLater(() -> {
-                editorMap.get(lang).getContentComponent().grabFocus();
-                editorMap.get(lang).getContentComponent().requestFocusInWindow();
+                fileEditor.editorStrategy.editorMap.get(lang).getContentComponent().grabFocus();
+                fileEditor.editorStrategy.editorMap.get(lang).getContentComponent().requestFocusInWindow();
             });
 
-            ScrollingModel scrollingModel = editorMap.get(lang).getScrollingModel();
-            CaretModel caretModel = editorMap.get(lang).getCaretModel();
+            ScrollingModel scrollingModel = fileEditor.editorStrategy.editorMap.get(lang).getScrollingModel();
+            CaretModel caretModel = fileEditor.editorStrategy.editorMap.get(lang).getCaretModel();
             caretModel.moveToOffset(psiElement.getTextOffset() + psiElement.getTextLength(), false);
             scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE);
             caretModel.getCurrentCaret().setSelection(caretModel.getOffset(), caretModel.getOffset());
@@ -261,7 +243,7 @@ public class LanguageFileEditorGUI {
         return popupMenu;
     }
 
-    private Editor createEditor(Document document, Project project, @Nullable FileType fileType) {
+    public Editor createEditor(Document document, Project project, @Nullable FileType fileType) {
         EditorImpl editor = (EditorImpl) EditorFactory.getInstance().createEditor(document, project);
         if (fileType != null) {
             editor.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project, fileType));
@@ -281,6 +263,30 @@ public class LanguageFileEditorGUI {
     @SuppressWarnings("unused")
     public JTable getTable1() {
         return table1;
+    }
+
+
+    /**
+     * Tab change listener
+     *
+     * @param e
+     */
+    @Override
+    public void stateChanged(ChangeEvent e) {
+        selectedTab = -1;
+        if (e.getSource() instanceof JTabbedPane) {
+            JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+            selectedTab = tabbedPane.getSelectedIndex();
+        }
+    }
+
+    /**
+     * Returns the currently selected index of the tabbedpane of the language file editor.
+     *
+     * @return index of the tab, otherwise -1 if there is no currently selected tab
+     */
+    public int getSelectedTab() {
+        return selectedTab;
     }
 }
 

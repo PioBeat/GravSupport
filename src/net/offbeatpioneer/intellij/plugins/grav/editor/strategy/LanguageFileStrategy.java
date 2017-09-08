@@ -7,11 +7,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.IncorrectOperationException;
+import net.offbeatpioneer.intellij.plugins.grav.editor.LanguageFileEditorGUI;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
-import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.*;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
@@ -24,13 +26,42 @@ import static com.intellij.openapi.ui.DialogWrapper.CANCEL_EXIT_CODE;
 
 public class LanguageFileStrategy extends FileEditorStrategy {
 
-    public LanguageFileStrategy(String[] languages, Project project) {
-        super(languages, project);
+    LanguageFileStrategy(Project project) {
+        super(project);
     }
 
     @Override
-    public TranslationTableModel createTableModel(ConcurrentHashMap<String, VirtualFile> fileMap) {
-        Collection<String> availableKeys = new LinkedHashSet<String>();//preserve order, no dups
+    public void initTab(LanguageFileEditorGUI gui) {
+        VirtualFile file = fileMap.elements().nextElement();
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+        if (psiFile != null) {
+            Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
+            if (document != null) {
+                for (String eachLang : languages) {
+                    Editor editorTextField = gui.createEditor(document, project, psiFile.getFileType());
+                    editorMap.put(eachLang, editorTextField);
+                    gui.addTab(eachLang, editorTextField.getComponent());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void createFileMap(@NotNull VirtualFile file) {
+        fileMap.clear();
+        YAMLFile yamlFile = (YAMLFile) PsiManager.getInstance(project).findFile(file);
+        if (yamlFile != null) {
+            Collection<YAMLKeyValue> topLevelKeys = YAMLUtil.getTopLevelKeys(yamlFile);
+            for (YAMLKeyValue each : topLevelKeys) {
+                fileMap.put(each.getKeyText(), file);
+            }
+        }
+    }
+
+    @Override
+    public TranslationTableModel createTableModel() {
+        detactLanguages();
+        Collection<String> availableKeys = new LinkedHashSet<>();//preserve order, no dups
         ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap = new ConcurrentHashMap<>();
         VirtualFile virtualFile = fileMap.elements().nextElement();
         YAMLFileImpl yamlFile = (YAMLFileImpl) PsiManager.getInstance(project).findFile(virtualFile);
@@ -51,7 +82,7 @@ public class LanguageFileStrategy extends FileEditorStrategy {
                 }
             }
         }
-        return new TranslationTableModel(languages, availableKeys, dataMap).setPrefixKey(true);
+        return new TranslationTableModel(availableKeys, dataMap).setPrefixKey(true);
     }
 
     public Collection<YAMLKeyValue> findChildValues(Collection<YAMLKeyValue> topLevelKeys, String lang) {
@@ -76,19 +107,15 @@ public class LanguageFileStrategy extends FileEditorStrategy {
             if (currentLang != null && !currentLang.isEmpty()) {
                 Editor ieditor = editorMap.get(currentLang);
                 Document document = ieditor.getDocument();
-                WriteCommandAction.runWriteCommandAction(editor.getProject(), new Runnable() {
-                    @Override
-                    public void run() {
-                        updateDocument(document, ieditor.getProject(), currentLang, key, value, model);
-                    }
-                });
+                WriteCommandAction.runWriteCommandAction(fileEditor.getProject(), () -> updateDocumentHook(document, ieditor.getProject(), currentLang, key, value, model));
             } else {
-                NotificationHelper.showBaloon("No language file available", MessageType.WARNING, editor.getProject());
+                NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
             }
         }
     }
 
-    private void updateDocument(Document document, Project project, String lang, String key, String value, TranslationTableModel model) {
+    @Override
+    protected void updateDocumentHook(Document document, Project project, String lang, String key, String value, TranslationTableModel model) {
         if (!document.isWritable()) {
             return;
         }
@@ -98,8 +125,8 @@ public class LanguageFileStrategy extends FileEditorStrategy {
                 for (String eachLang : languages) {
                     String value0;
                     String key0;
-                    if (eachLang.equalsIgnoreCase(currentLang)) {
-                        key0 = currentLang + "." + key;
+                    if (eachLang.equalsIgnoreCase(lang)) {
+                        key0 = lang + "." + key;
                         value0 = value;
                     } else {
                         key0 = eachLang + "." + key;

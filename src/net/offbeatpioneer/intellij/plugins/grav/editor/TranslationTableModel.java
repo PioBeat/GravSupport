@@ -10,32 +10,28 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TranslationTableModel extends AbstractTableModel {
-    public static final int EMPTY = 0;
-    public static final int OK = 1;
+    static final int EMPTY = 0;
+    private static final int OK = 1;
 
-    private ConcurrentHashMap<String, ConcurrentHashMap<String, String>> data;
+    private ConcurrentHashMap<String, ConcurrentHashMap<String, String>> data = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap;
-    private String[] languages;
+    private List<String> languages;
     private Collection<String> availableKeys;
     private ArrayList<String> columnNames = new ArrayList<>();
     int rowCount = 0;
     //should a language yaml key be prefixed when the value is fetched?
-    Boolean prefixKey = false;
+    private Boolean prefixKey = false;
 
-    private TranslationTableModel(ConcurrentHashMap<String, ConcurrentHashMap<String, String>> data) {
-        this.data = data;
-    }
-
-    public TranslationTableModel(String[] languages, Collection<String> availableKeys, ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap) {
-        this(new ConcurrentHashMap<>());
-        this.languages = languages;
+    public TranslationTableModel(Collection<String> availableKeys, ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap) {
         this.availableKeys = availableKeys;
         this.dataMap = dataMap;
-        columnNames.add("Key");
-        columnNames.addAll(Arrays.asList(languages));
+
+        this.languages = Collections.list(dataMap.keys());
+        this.columnNames.add("Key");
+        this.columnNames.addAll(languages);
 
         for (Map.Entry<String, Collection<YAMLKeyValue>> each : this.dataMap.entrySet()) {
-            data.put(each.getKey(), new ConcurrentHashMap<>());
+            this.data.put(each.getKey(), new ConcurrentHashMap<>());
             for (YAMLKeyValue eachYaml : each.getValue()) {
                 addElement0(each.getKey(), eachYaml.getKeyText(), eachYaml.getValueText());
             }
@@ -129,7 +125,7 @@ public class TranslationTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (languages == null || languages.length == 0) {
+        if (languages == null || languages.size() == 0) {
             return null;
         }
         List<String> keys = getKeys(true);
@@ -137,18 +133,18 @@ public class TranslationTableModel extends AbstractTableModel {
             case 0:
                 return keys.get(rowIndex);
             default:
-                Collection<YAMLKeyValue> collection = dataMap.get(languages[columnIndex - 1]);
+                Collection<YAMLKeyValue> collection = dataMap.get(languages.get(columnIndex - 1));
                 YAMLKeyValue correctKeyValue = findByKey(keys.get(rowIndex), collection);
                 if (collection == null || collection.size() == 0) {
                     return "";
                 }
                 YAMLFile yamlFile;
                 if (correctKeyValue == null) { //may be null because keys can be also written with dots and the above function couldn't find it
-                    yamlFile = (YAMLFile) new ArrayList<YAMLKeyValue>(collection).get(0).getContainingFile();
+                    yamlFile = (YAMLFile) new ArrayList<>(collection).get(0).getContainingFile();
                 } else {
                     yamlFile = (YAMLFile) correctKeyValue.getContainingFile();
                 }
-                String keyValueText = prefixKey ? languages[columnIndex - 1] + "." + keys.get(rowIndex) : keys.get(rowIndex);
+                String keyValueText = prefixKey ? languages.get(columnIndex - 1) + "." + keys.get(rowIndex) : keys.get(rowIndex);
                 String[] keySplitted = GravYAMLUtils.splitKey(keyValueText);
                 YAMLKeyValue keyValue = null;
                 try {
@@ -215,28 +211,24 @@ public class TranslationTableModel extends AbstractTableModel {
      * @param lang
      */
     public void addLanguage(String lang) {
-        List<String> langs = new ArrayList<>(Arrays.asList(languages));
-        langs.add(lang);
-        languages = langs.toArray(new String[langs.size()]);
+        languages.add(lang);
         columnNames.add(lang);
         data.put(lang, new ConcurrentHashMap<>());
         fireTableStructureChanged();
     }
 
     public void removeLanguage(String lang) {
-        List<String> langs = new ArrayList<>(Arrays.asList(languages));
-        langs.remove(lang);
-        languages = langs.toArray(new String[langs.size()]);
+        languages.remove(lang);
         columnNames.remove(lang);
         data.remove(lang);
         fireTableStructureChanged();
     }
 
-    public void setLanguages(String[] languages) {
-        this.languages = languages;
-    }
+//    public void setLanguages(List< languages) {
+//        this.languages = languages;
+//    }
 
-    public String[] getLanguages() {
+    public List<String> getLanguages() {
         return languages;
     }
 
