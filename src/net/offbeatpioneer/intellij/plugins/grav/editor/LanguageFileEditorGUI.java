@@ -8,12 +8,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
 import com.intellij.openapi.editor.impl.EditorImpl;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -31,8 +28,6 @@ import org.jetbrains.yaml.psi.YAMLKeyValue;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +61,7 @@ public class LanguageFileEditorGUI {
     private JPanel topPanel;
     private JPanel centerPanel;
 
-    public LanguageFileEditorGUI(GravLangFileEditor editor, TranslationTableModel model) {
+    LanguageFileEditorGUI(GravLangFileEditor editor, TranslationTableModel model) {
         this.model = model;
         this.languages = model.getLanguages();
         this.editor = editor;
@@ -220,48 +215,46 @@ public class LanguageFileEditorGUI {
         JMenuItem jumpToKey = new JMenuItem("Jump To Key");
         jumpToKey.setIcon(AllIcons.General.Locate);
         popupMenu.add(jumpToKey);
-        jumpToKey.addActionListener(e -> {
-            SwingUtilities.invokeLater(() -> {
-                final Project project = GravProjectComponent.getEnabledProject();
-                if (project == null) return;
-                String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
-                List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
-                String lang = model.getLanguages()[basicPopupListener.colAtPoint - 1];
-                VirtualFile file;
-                switch (editor.getLanguageFileEditorType()) {
-                    case LANGUAGE_FILE:
-                        file = fileMap.elements().nextElement();
-                        qualifiedKey.add(0, lang);
-                        break;
-                    case LANGUAGE_FOLDER:
-                        file = fileMap.get(lang);
-                        break;
-                    default:
-                        file = fileMap.get(lang);
-                        break;
-                }
-                PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-                if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
-                YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
+        jumpToKey.addActionListener(e -> SwingUtilities.invokeLater(() -> {
+            final Project project = GravProjectComponent.getEnabledProject();
+            if (project == null) return;
+            String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
+            List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
+            String lang = model.getLanguages()[basicPopupListener.colAtPoint - 1];
+            VirtualFile file;
+            switch (editor.getLanguageFileEditorType()) {
+                case LANGUAGE_FILE:
+                    file = fileMap.elements().nextElement();
+                    qualifiedKey.add(0, lang);
+                    break;
+                case LANGUAGE_FOLDER:
+                    file = fileMap.get(lang);
+                    break;
+                default:
+                    file = fileMap.get(lang);
+                    break;
+            }
+            PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+            if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
+            YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
 
-                tabbedPane.setSelectedIndex(basicPopupListener.colAtPoint);
+            tabbedPane.setSelectedIndex(basicPopupListener.colAtPoint);
 
-                YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, qualifiedKey);
-                if (value == null || value.getOriginalElement() == null) return;
-                PsiElement psiElement = value.getOriginalElement();
-                EventQueue.invokeLater(() -> {
-                    editorMap.get(lang).getContentComponent().grabFocus();
-                    editorMap.get(lang).getContentComponent().requestFocusInWindow();
-                });
-
-                ScrollingModel scrollingModel = editorMap.get(lang).getScrollingModel();
-                CaretModel caretModel = editorMap.get(lang).getCaretModel();
-                caretModel.moveToOffset(psiElement.getTextOffset() + psiElement.getTextLength(), false);
-                scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE);
-                caretModel.getCurrentCaret().setSelection(caretModel.getOffset(), caretModel.getOffset());
-
+            YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, qualifiedKey);
+            if (value == null || value.getOriginalElement() == null) return;
+            PsiElement psiElement = value.getOriginalElement();
+            EventQueue.invokeLater(() -> {
+                editorMap.get(lang).getContentComponent().grabFocus();
+                editorMap.get(lang).getContentComponent().requestFocusInWindow();
             });
-        });
+
+            ScrollingModel scrollingModel = editorMap.get(lang).getScrollingModel();
+            CaretModel caretModel = editorMap.get(lang).getCaretModel();
+            caretModel.moveToOffset(psiElement.getTextOffset() + psiElement.getTextLength(), false);
+            scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE);
+            caretModel.getCurrentCaret().setSelection(caretModel.getOffset(), caretModel.getOffset());
+
+        }));
 
         basicPopupListener = new BasicPopupListener(table1, popupMenu, deleteItem, jumpToKey);
         popupMenu.addPopupMenuListener(basicPopupListener);
