@@ -1,18 +1,21 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
 import com.intellij.openapi.editor.impl.EditorImpl;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.pom.Navigatable;
 import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.components.JBScrollPane;
@@ -27,9 +30,9 @@ import org.jetbrains.yaml.psi.YAMLFile;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 
 import javax.swing.*;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,16 +54,17 @@ public class LanguageFileEditorGUI {
     private TranslationTableModel model;
     private String[] languages;
     private String currentLang = "de"; //TODO detect current language by selected tab
-    private int colAtPoint = -1;
-    private int rowAtPoint = -1;
     private ConcurrentHashMap<String, Editor> editorMap;
     private ConcurrentHashMap<String, VirtualFile> fileMap;
 
+    private BasicPopupListener basicPopupListener;
     private JPanel mainPanel;
     private JTable table1;
     private JScrollPane scrollPane1;
     private JButton btnAddNewKey;
     private JTabbedPane tabbedPane;
+    private JPanel topPanel;
+    private JPanel centerPanel;
 
     public LanguageFileEditorGUI(GravLangFileEditor editor, TranslationTableModel model) {
         this.model = model;
@@ -72,6 +76,7 @@ public class LanguageFileEditorGUI {
         table1.setModel(model);
         tabbedPane.addChangeListener(editor);
         btnAddNewKey.addActionListener(editor.editorStrategy);
+        btnAddNewKey.setIcon(AllIcons.General.Add);
     }
 
     String getCurrentLang() {
@@ -147,16 +152,17 @@ public class LanguageFileEditorGUI {
     private JPopupMenu createPopupMenu() {
 
         final JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem deleteItem = new JMenuItem("Delete");
+        JMenuItem deleteItem = new JMenuItem("Delete Key");
+        deleteItem.setIcon(AllIcons.General.Remove);
         deleteItem.addActionListener(e -> SwingUtilities.invokeLater(() -> {
             final Project project = GravProjectComponent.getEnabledProject();
-            if (colAtPoint != 0 && project != null) return;
-            String key = model.getKeys(true).get(rowAtPoint);
+            if (project == null) return;
+            String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
             List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
             switch (editor.getLanguageFileEditorType()) {
                 case LANGUAGE_FILE:
                     VirtualFile file = fileMap.elements().nextElement();
-                    PsiFile psiFile = PsiManager.getInstance(project).findFile(file); // project can't be null here, so ignore warning
+                    PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
                     if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
                     YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
 
@@ -187,7 +193,7 @@ public class LanguageFileEditorGUI {
                             WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
                                 for (String eachLang : model.getLanguages()) {
                                     VirtualFile file1 = fileMap.get(eachLang);
-                                    PsiFile psiFile1 = PsiManager.getInstance(project).findFile(file1); // project can't be null here, so ignore warning
+                                    PsiFile psiFile1 = PsiManager.getInstance(project).findFile(file1);
                                     if (psiFile1 == null || ((YAMLFile) psiFile1).getDocuments() == null) return;
                                     YAMLDocument doc1 = ((YAMLFile) psiFile1).getDocuments().get(0);
 
@@ -206,34 +212,59 @@ public class LanguageFileEditorGUI {
                     break;
             }
 
-            colAtPoint = -1;
-            rowAtPoint = -1;
+            basicPopupListener.colAtPoint = -1;
+            basicPopupListener.rowAtPoint = -1;
         }));
         popupMenu.add(deleteItem);
-        popupMenu.addPopupMenuListener(new PopupMenuListener() {
 
-            @Override
-            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-                SwingUtilities.invokeLater(() -> {
-                    colAtPoint = table1.columnAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
-                    rowAtPoint = table1.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
+        JMenuItem jumpToKey = new JMenuItem("Jump To Key");
+        jumpToKey.setIcon(AllIcons.General.Locate);
+        popupMenu.add(jumpToKey);
+        jumpToKey.addActionListener(e -> {
+            SwingUtilities.invokeLater(() -> {
+                final Project project = GravProjectComponent.getEnabledProject();
+                if (project == null) return;
+                String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
+                List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
+                String lang = model.getLanguages()[basicPopupListener.colAtPoint - 1];
+                VirtualFile file;
+                switch (editor.getLanguageFileEditorType()) {
+                    case LANGUAGE_FILE:
+                        file = fileMap.elements().nextElement();
+                        qualifiedKey.add(0, lang);
+                        break;
+                    case LANGUAGE_FOLDER:
+                        file = fileMap.get(lang);
+                        break;
+                    default:
+                        file = fileMap.get(lang);
+                        break;
+                }
+                PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+                if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
+                YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
 
-                    if (colAtPoint != 0)
-                        deleteItem.setEnabled(false);
-                    else {
-                        deleteItem.setEnabled(true);
-                    }
+                tabbedPane.setSelectedIndex(basicPopupListener.colAtPoint);
+
+                YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, qualifiedKey);
+                if (value == null || value.getOriginalElement() == null) return;
+                PsiElement psiElement = value.getOriginalElement();
+                EventQueue.invokeLater(() -> {
+                    editorMap.get(lang).getContentComponent().grabFocus();
+                    editorMap.get(lang).getContentComponent().requestFocusInWindow();
                 });
-            }
 
-            @Override
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            }
+                ScrollingModel scrollingModel = editorMap.get(lang).getScrollingModel();
+                CaretModel caretModel = editorMap.get(lang).getCaretModel();
+                caretModel.moveToOffset(psiElement.getTextOffset() + psiElement.getTextLength(), false);
+                scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE);
+                caretModel.getCurrentCaret().setSelection(caretModel.getOffset(), caretModel.getOffset());
 
-            @Override
-            public void popupMenuCanceled(PopupMenuEvent e) {
-            }
+            });
         });
+
+        basicPopupListener = new BasicPopupListener(table1, popupMenu, deleteItem, jumpToKey);
+        popupMenu.addPopupMenuListener(basicPopupListener);
         return popupMenu;
     }
 
