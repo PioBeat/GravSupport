@@ -1,14 +1,25 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.3.2</version>
-    <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net">OffbeatPioneer</vendor>
+    <version>0.3.3</version>
+    <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Offbeat-Pioneer</vendor>
 
     <description><![CDATA[
-      Grav Support for IntelliJ Community Edition and Ultimate<br>
+      Grav Support for IntelliJ Community Edition, Ultimate and PhpStorm<br>
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>
+            <span>0.3.3</span>
+        <ul>
+            <li>New features for the language file editor</li>
+            <ul>
+                <li>Remove Key: delete a key for all languages</li>
+                <li>Jump To Key: locate the key in the yaml file</li>
+                <li>add new key dialog will use the current opened language as preset</li>
+            </ul>
+        </ul>
+        </p>
         <p>
             <span>0.3.2</span>
         <ul>
