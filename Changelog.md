@@ -4,9 +4,11 @@
 
 ### Added
 - Language file editor
-    - remove key in all languages (right click on the first column -> _Delete_)
+    - Remove Key Feature: delete a key for all languages (right click on the first column -> _Delete_)
+    - Jump To Key Feature: right click on a key -> _Jump To Key_ jumps to
+    the specific offset in the yaml file
     - if you add a key when a specific language is opened via the tabbedpane
-     then the dialog is using this language as preset
+     then the dialog will use this language as preset
 
 ### Changed
 - used ``SingleRootFileViewProvider`` in ``LanguageFileViewProvider.java``
