@@ -1,6 +1,6 @@
 # Changelog
 
-## [UNRELEASED]
+## [0.3.3] - 2017-09-08
 
 ### Added
 - Language file editor
