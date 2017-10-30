@@ -1,5 +1,6 @@
 package net.offbeatpioneer.intellij.plugins.grav.module.php;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -19,6 +20,7 @@ import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder
 import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravProjectGeneratorUtil;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConfigurable;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
+import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,12 +29,19 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravIntroWizardStep.LAST_USED_GRAV_HOME;
+
 /**
  * Created by Dome on 11.08.2017.
  */
 public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings> {
 
     private GravInstallerGeneratorPeer generatorPeer;
+    private GravPersistentStateComponent storage;
+
+    GravProjectGenerator() {
+        this.storage = GravPersistentStateComponent.getInstance();
+    }
 
     @Override
     public String getDescription() {
@@ -72,6 +81,8 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
                     .createBalloon()
                     .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
         } else {
+            storage.setDefaultGravDownloadPath(settings.gravInstallationPath);
+            PropertiesComponent.getInstance().setValue(LAST_USED_GRAV_HOME, new File(settings.gravInstallationPath).getAbsolutePath());
             GravProjectGeneratorUtil projectGenerator = new GravProjectGeneratorUtil();
             projectGenerator.generateProject(project, baseDir, settings, module);
             try {
