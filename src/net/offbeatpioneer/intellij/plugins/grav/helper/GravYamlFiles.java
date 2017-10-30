@@ -1,6 +1,7 @@
 package net.offbeatpioneer.intellij.plugins.grav.helper;
 
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import static net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles.LangFileEditorType.LANGUAGE_FILE;
 import static net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles.LangFileEditorType.LANGUAGE_FOLDER;
@@ -24,9 +25,9 @@ public class GravYamlFiles {
         this.file = file;
     }
 
-    public static LangFileEditorType getLanguageFileType(final VirtualFile file) {
+    public static LangFileEditorType getLanguageFileType(@NotNull final VirtualFile file) {
         VirtualFile parent = file.getParent();
-        if (GravYamlFiles.withYamlExtension(file) && parent.exists() && parent.getName().equalsIgnoreCase("languages")) {
+        if (GravYamlFiles.withYamlExtension(file) && parent != null && parent.exists() && parent.getName().equalsIgnoreCase("languages")) {
             return LANGUAGE_FOLDER;
         } else if (GravYamlFiles.withYamlExtension(file) && file.getNameWithoutExtension().equalsIgnoreCase("languages")) {
             return LANGUAGE_FILE;
