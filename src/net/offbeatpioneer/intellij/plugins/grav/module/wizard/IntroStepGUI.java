@@ -20,7 +20,6 @@ import com.intellij.util.download.DownloadableFileDescription;
 import com.intellij.util.download.DownloadableFileService;
 import com.intellij.util.download.FileDownloader;
 import com.intellij.util.io.ZipUtil;
-import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder;
 
 import javax.swing.*;
 import java.io.File;
@@ -42,8 +41,8 @@ import java.util.Properties;
  */
 public class IntroStepGUI {
     boolean downloaded = false;
-    Project project;
-    String[] gravVersions = new String[]{"1.3.8", "1.3.7", "1.3.6", "1.3.5", "1.3.4", "1.3.3", "1.3.2", "1.3.1", "1.3.0", "1.2.4"};
+    private Project project;
+    private String[] gravVersions = new String[]{"1.3.8", "1.3.7", "1.3.6", "1.3.5", "1.3.4", "1.3.3", "1.3.2", "1.3.1", "1.3.0", "1.2.4"};
     private JPanel mainPanel;
     private JLabel lblIntro;
     private JPanel content;
@@ -142,7 +141,7 @@ public class IntroStepGUI {
 //                                                accessToken.finish();
                                         }
 
-                                    }, "Extract Zip File", false, project, mainPanel);
+                                    }, "Extracting Zip File", false, project, mainPanel);
 
 //                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
                                     if (completed) {
