@@ -57,12 +57,11 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
         Content content;
         if (!errorOccurred) {
-            content = contentFactory.createContent(mainPanel, "", false);
-            toolWindow.getContentManager().addContent(content);
+            content = contentFactory.createContent(this.mainPanel, "Grav", false);
         } else {
-            content = contentFactory.createContent(new JLabel("An error occurred reading the system/config/system.yaml file"), "", false);
+            content = contentFactory.createContent(new JLabel("An error occurred reading the system/config/system.yaml file"), "Grav", false);
         }
-        toolWindow.getContentManager().addContent(content);
+        this.toolWindow.getContentManager().addContent(content);
     }
 
     @Override
@@ -99,7 +98,7 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
         }
     }
 
-    private void applyGravSettings(String[] qualifiedKey, Class dataType, JComponent component, Project project, boolean addListener) {
+    private void applyGravSettings(String[] qualifiedKey, Class dataType, JComponent component, final Project project, boolean addListener) {
         boolean error = false;
         try {
             YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(systemDocument.getElement(), Arrays.asList(qualifiedKey));
@@ -119,11 +118,17 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
                         }
                         Boolean b = Boolean.valueOf(valueText);
                         ((JCheckBox) component).setSelected(b);
-                        if (addListener)
+                        if (addListener) {
+                            final ActionListener[] listeners = ((JCheckBox) component).getActionListeners();
+                            for (int i = 0, n = listeners.length; i < n; i++) {
+                                ActionListener al = listeners[i];
+                                ((JCheckBox) component).removeActionListener(al);
+                            }
                             ((JCheckBox) component).addActionListener(new ActionListener() {
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                     try {
+                                        if (project.isDisposed()) return;
                                         WriteCommandAction.writeCommandAction(project).run(new ThrowableRunnable<Throwable>() {
                                             @Override
                                             public void run() throws Throwable {
@@ -143,6 +148,7 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
                                     }
                                 }
                             });
+                        }
                     }
                 }
             }
@@ -168,13 +174,12 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
             if (systemYamlFile != null && systemYamlFile.getElement() != null && systemYamlFile.getElement().getDocuments().size() > 0) {
                 PsiManager.getInstance(project).addPsiTreeChangeListener(this);
                 systemDocument = SmartPointerManagerImpl.getInstance(project).createSmartPsiElementPointer(systemYamlFile.getElement().getDocuments().get(0), systemYamlFile.getElement());
-                System.out.println(systemYamlFile);
             }
         }
         return pluginEnabled && systemYamlFile != null && systemDocument != null;
     }
 
-    private SmartPsiElementPointer<YAMLFile> getSystemFile(Project project) {
+    private SmartPsiElementPointer<YAMLFile> getSystemFile(@NotNull Project project) {
         String prefix = "";
         try {
             prefix = GravProjectSettings.getInstance(project).withSrcDirectory ? "src/" + "" : "";
