@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.3.1] - 2017-10-30
+Bugfix release
+
+### Added
+- Grav versions 1.3.3 - 1.3.8 can now be downloaded in the new project wizard
+
+### Changed
+- ToolWindow icon size is now 13x13 as recommended in ``openapi.wm.impl.ToolWindowImpl``
+- Language Editor will only be opened if the plugin is enabled in the
+_Settings_ for the current project.
+
+### Bugfix
+- Last valid used Grav installation path is now saved in PhpStorm (like
+in the Community Edition) when creating a new project.
+- Grav-ToolWindow: fixed a writing issue when changing to another project. Reason:
+the old component listeners were still attached when the old project was
+disposed.
+
+
 ## [0.3.3] - 2017-09-08
 
 ### Added
@@ -14,6 +33,7 @@
 - used ``SingleRootFileViewProvider`` in ``LanguageFileViewProvider.java``
 instead of ``MultiplePsiFilesPerDocumentFileViewProvider`` (Closes issue #3)
 
+
 ## [0.3.2] - 2017-08-28
 
 - Simply switch to the template from a content page. The filename of
@@ -27,6 +47,7 @@ Minor update
 
 ### Bugifx
 -  no duplicate Grav entries anymore in the _New Project Wizard_
+
 
 ## [0.3] - 2017-08-24
 
@@ -48,6 +69,7 @@ The relevant component of the tool window will be disabled if a settings
 value couldn't be found in the config file. <br/> <br/>
 **Hint** the tool window shows the settings only for the first opened project.
 No multi project support for this version available
+
 
 ## [0.2] - 2017-08-20
 
@@ -71,6 +93,7 @@ to check what options you have for a multi-language website)
 - ``GravProjectSettings`` is now correctly acquired via ``ServiceManager`` when
 Grav Php project is created
 
+
 ## [0.1-beta3] - 2017-08-17
 
 ### Added
@@ -82,6 +105,7 @@ Grav Php project is created
 
 ### Bugfix
 - colors are now set correctly when values are missing in the language file editor
+
 
 ## [0.1-beta] - 2017-08-12
 

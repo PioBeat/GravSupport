@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.3.3</version>
+    <version>0.3.3.1</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Offbeat-Pioneer</vendor>
 
     <description><![CDATA[
@@ -9,6 +9,26 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>
+            <span>0.3.3.1</span>
+        <ul>
+            <li>Bugfix release</li>
+            <ul>
+                <li><strong>New</strong> Grav versions 1.3.3 - 1.3.8 can now be downloaded in the new project wizard</li>
+                <li>Fixed warning: ToolWindow icon size is now 13x13 as recommended in <code>openapi.wm.impl.ToolWindowImpl</code>.
+                </li>
+                <li>Language Editor will only be opened if the plugin is enabled in the <i>Settings</i> for the current
+                    project.
+                </li>
+                <li>Last valid used Grav installation path is now saved in PhpStorm (like in the Community Edition) when
+                    creating a new project.
+                </li>
+                <li>Bugfix for the Grav tool window: fixed a writing issue when changing to another project. Reason: the
+                    old component listeners were still attached when the old project was disposed.
+                </li>
+            </ul>
+        </ul>
+        </p>
         <p>
             <span>0.3.3</span>
         <ul>
