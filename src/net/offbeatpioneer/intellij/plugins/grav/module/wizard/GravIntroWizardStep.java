@@ -72,10 +72,6 @@ public class GravIntroWizardStep extends ModuleWizardStep implements Disposable 
         PropertiesComponent.getInstance().setValue(LAST_USED_GRAV_HOME, new File(file).getAbsolutePath());
     }
 
-    public IntroStepGUI getSetupForm() {
-        return form;
-    }
-
     @Override
     public void dispose() {
 
