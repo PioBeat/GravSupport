@@ -9,6 +9,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles;
+import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -21,33 +22,25 @@ import static net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles.Lang
 //TODO listen for file deletion and updates
 public class GravLanguageEditorProvider implements FileEditorProvider, DumbAware {
 
-    private String ID = "GravLanguageEditorProvider";
+    private final String ID = "GravLanguageEditorProvider";
     GravLangFileEditor gravLangFileEditor = null;
     GravYamlFiles.LangFileEditorType langFileEditorType = NONE;
-
-    private ConcurrentHashMap<String, FileEditor> fileEditors = new ConcurrentHashMap<>();
 
     public GravLanguageEditorProvider() {
     }
 
     @Override
     public boolean accept(@NotNull Project project, @NotNull VirtualFile file) {
+        if (!GravProjectComponent.isEnabled(project)) {
+            return false;
+        }
         langFileEditorType = GravYamlFiles.getLanguageFileType(file);
         return gravLangFileEditor == null && langFileEditorType != NONE;
     }
 
-//    private String createFileEditorId(VirtualFile file) {
-//        String key = file.getPath();
-//        if (langFileEditorType == LangFileEditorType.LANGUAGE_FOLDER) {
-//            key = file.getParent().getPath();
-//        }
-//        return key;
-//    }
-
     @NotNull
     @Override
     public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
-
         if (gravLangFileEditor == null) {
             FileEditorStrategy editorStrategy = FileEditorStrategy.create(this, project);
             editorStrategy.createFileMap(file);
