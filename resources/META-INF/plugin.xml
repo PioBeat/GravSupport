@@ -183,7 +183,7 @@
         <toolWindow
                 id="Grav"
                 anchor="right"
-                icon="/icons/logo.png"
+                icon="/icons/icon_toolwindow.png"
                 factoryClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsToolWindowFactory"/>
 
         <intentionAction>
