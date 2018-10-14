@@ -5,7 +5,7 @@ within for IntelliJ Community / Ultimate Edition and PhpStorm
 
 [Grav](https://getgrav.org/) is a flat-file CMS and it's open source.
 
-Grav version support: 1.2.4 - 1.3.8
+Grav version support: 1.2.4 - 1.6.*
 
 Tested with:
 * PhpStorm 2018.2.*
