@@ -61,6 +61,8 @@ enable the plugin for the current project.
 
 ![Tool Window](.README_images/toolwindow.png)
 
+![Language Editor](.README_images/languageeditor.png)
+
 
 ## Requirements
 
