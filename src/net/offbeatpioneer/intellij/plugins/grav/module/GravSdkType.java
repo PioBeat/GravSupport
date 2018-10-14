@@ -110,7 +110,7 @@ public class GravSdkType extends SdkType {
             try {
                 VirtualFile child = system.findChild("defines.php");
                 String content = getFileContent(child.getPath(), Charset.defaultCharset());
-                String pattern = "define\\(\\s*'GRAV_VERSION'\\s*,\\s*'(\\d\\.\\d\\.\\d)'\\s*\\)";
+                String pattern = "define\\(\\s*'GRAV_VERSION'\\s*,\\s*'(.+)'\\s*\\)";
                 Pattern p = Pattern.compile(pattern, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
                 Matcher m = p.matcher(content);
                 if (m.find()) {

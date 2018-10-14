@@ -3,6 +3,7 @@ package net.offbeatpioneer.intellij.plugins.grav.module.wizard;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
+import com.intellij.lang.javascript.boilerplate.GithubDownloadUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.AccessToken;
@@ -14,12 +15,17 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.platform.templates.github.DownloadUtil;
+import com.intellij.platform.templates.github.GeneratorException;
+import com.intellij.platform.templates.github.Outcome;
 import com.intellij.ui.FieldPanel;
 import com.intellij.ui.components.labels.ActionLink;
 import com.intellij.util.download.DownloadableFileDescription;
 import com.intellij.util.download.DownloadableFileService;
 import com.intellij.util.download.FileDownloader;
 import com.intellij.util.io.ZipUtil;
+import com.intellij.util.net.IOExceptionDialog;
+import net.offbeatpioneer.intellij.plugins.grav.helper.GithubApi;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 
 import javax.swing.*;
@@ -43,7 +49,9 @@ import java.util.Properties;
 public class IntroStepGUI {
     boolean downloaded = false;
     private Project project;
-    private String[] gravVersions = new String[]{"1.3.8", "1.3.7", "1.3.6", "1.3.5", "1.3.4", "1.3.3", "1.3.2", "1.3.1", "1.3.0", "1.2.4"};
+    private String[] DEFAULT_GRAV_VERSIONS = new String[]{"1.3.8", "1.3.7", "1.3.6", "1.3.5", "1.3.4", "1.3.3", "1.3.2", "1.3.1", "1.3.0", "1.2.4"};
+    private boolean gotLatestVersions = false; //flag indicates if latest version tags could be retrieved from github
+    private String[] gravVersions = null;
     private JPanel mainPanel;
     private JLabel lblIntro;
     private JPanel content;
@@ -54,6 +62,7 @@ public class IntroStepGUI {
     private JCheckBox withSrcDirectory;
     private JLabel lblVersionPrompt;
     private JLabel lblVersionDetermined;
+    private ActionLink refreshLink;
     private BrowseFilesListener browseFilesListener;
 
     public IntroStepGUI(Project project) {
@@ -80,8 +89,15 @@ public class IntroStepGUI {
         lblIntro.setText("Willkommen<br/> Select a valid Grav installtion or click the link to download the latest version.");
         lblHint = new JLabel();
         lblHint.setVisible(false);
-        gravVersionComboBox = new JComboBox<>(gravVersions);
+
+        gravVersionComboBox = new JComboBox<>(DEFAULT_GRAV_VERSIONS);
+        if (!gotLatestVersions) {
+            //download versions
+            refreshVersionAction();
+        }
         Properties downloadProps = loadDownloadConfig();
+
+        initRefreshLink();
         myDownloadLink = new ActionLink("Download and Install Grav", new AnAction() {
             @Override
             public void actionPerformed(AnActionEvent e) {
@@ -171,6 +187,40 @@ public class IntroStepGUI {
         browseFilesListener = new BrowseFilesListener(textField, "Select Grav Download Directory", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
 
         fieldPanel = ModuleWizardStep.createFieldPanel(textField, "Select Grav Installation", browseFilesListener);
+    }
+
+    private void refreshVersionAction() {
+        //download versions
+        Outcome<String[]> outcome = DownloadUtil.provideDataWithProgressSynchronously(
+                project,
+                "Grav Versions",
+                "Retrieving latest Grav versions ...",
+                () -> {
+//                    ProgressIndicator progress = ProgressManager.getInstance().getProgressIndicator();
+                    List<String> gravVersionReleases = GithubApi.getGravVersionReleases();
+                    gotLatestVersions = true;
+                    return gravVersionReleases.toArray(new String[0]);
+                }, () -> IOExceptionDialog.showErrorDialog("Download Error", "Can not download '" + GithubApi.GravRepoUrl + "'")
+        );
+
+        gravVersions = outcome.get();
+        Exception e = outcome.getException();
+        if (e != null || gravVersions == null) {
+            gravVersions = DEFAULT_GRAV_VERSIONS;
+        }
+        gravVersionComboBox.setModel(new DefaultComboBoxModel<>(gravVersions));
+    }
+
+    public void initRefreshLink() {
+        refreshLink = new ActionLink("Refresh Grav Versions", new AnAction() {
+
+            @Override
+            public void actionPerformed(AnActionEvent e) {
+                refreshVersionAction();
+            }
+        });
+
+        refreshLink.setVisible(true);
     }
 
     public void showDeterminedVersion(boolean show) {
