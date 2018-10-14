@@ -1,16 +1,16 @@
 # Grav Support Plugin
 
-This plugin for IntelliJ Community / Ultimate Edition and PhpStorm helps to increase the
-development speed for Grav-based projects.
+This plugin helps to increase the development speed for Grav-based projects
+within for IntelliJ Community / Ultimate Edition and PhpStorm
 
 [Grav](https://getgrav.org/) is a flat-file CMS and it's open source.
 
 Grav version support: 1.2.4 - 1.3.8
 
 Tested with:
-* PhpStorm 2017.2.*
+* PhpStorm 2018.2.*
 * IntelliJ IDEA Community 2017.2.*
-* IntelliJ IDEA Ultimate 2017.2.1
+* IntelliJ IDEA Ultimate 2018.2.4
 
 The plugin is available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support)
 
@@ -106,16 +106,17 @@ References:
 Support the plugin if you like it:
 - Tell your friends who are using IntelliJ and Grav about this plugin
 - Star it at GitHub
-- Start it on the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support)
+- Star it on the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support)
 - Report bugs or feature requests or even fix / implement them
 - Reach out to me directly at dominik@offbeat-pioneer.net
 
 ### Implement features or fix bugs
+
 Fork this repository to your own GitHub account and then clone it to
 your local device. Open a pull request with improvements.
 
 Please read the [IntelliJ Platform SDK Documentation](http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/setting_up_environment.html)
-on how to set up  the development environment.
+on how to set up the development environment.
 
 ### Reporting issue
 
