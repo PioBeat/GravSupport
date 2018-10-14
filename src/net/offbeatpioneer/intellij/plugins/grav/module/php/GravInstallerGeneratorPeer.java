@@ -26,7 +26,8 @@ import java.io.File;
 import static net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravIntroWizardStep.LAST_USED_GRAV_HOME;
 
 /**
- * Created by Dome on 11.08.2017.
+ * @author Dominik Grzelak
+ * @since 11.08.2017
  */
 public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProjectSettings> {
     private IntroStepGUI form;
@@ -60,7 +61,7 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
 
                 @Override
                 public void changedUpdate(DocumentEvent e) {
-
+                    validate0();
                 }
             });
         }
@@ -102,19 +103,21 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     private int validate0() {
         if (form.getGravDirectory().isEmpty()) {
             form.showHint(true);
-            return -1;//new ValidationInfo("Path pointing to Grav installation is empty");
+            return -1;
         } else {
             String file = form.getGravDirectory();
             VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(file));
             if (vf == null) {
                 form.showHint(true);
-                return -2; //new ValidationInfo("Path to Grav installation does not exist");
+                return -2;
             } else {
                 if (!GravSdkType.isValidGravSDK(vf)) {
                     form.showHint(true);
-                    return -3; //new ValidationInfo("Grav installation isn't valid");
+                    return -3;
                 }
             }
+            String gravSdkVersion = GravSdkType.findGravSdkVersion(file);
+            form.setDeterminedGravVersion(gravSdkVersion);
         }
         form.showHint(false);
         return 0;

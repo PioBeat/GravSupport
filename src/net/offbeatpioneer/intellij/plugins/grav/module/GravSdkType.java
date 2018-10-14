@@ -3,6 +3,7 @@ package net.offbeatpioneer.intellij.plugins.grav.module;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.*;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
@@ -12,6 +13,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Created by Dome on 16.07.2017.
@@ -91,6 +100,32 @@ public class GravSdkType extends SdkType {
         return root.findChild("user") != null &&
                 VfsUtil.findRelativeFile(root, "system") != null &&
                 root.findFileByRelativePath("bin") != null;
+    }
+
+    public static String findGravSdkVersion(String directory) {
+        VirtualFile root = LocalFileSystem.getInstance().findFileByIoFile(new File(directory));
+        String version = "Version could not be determined.";
+        if (VfsUtil.findRelativeFile(root, "system") != null) {
+            VirtualFile system = VfsUtil.findRelativeFile(root, "system");
+            try {
+                VirtualFile child = system.findChild("defines.php");
+                String content = getFileContent(child.getPath(), Charset.defaultCharset());
+                String pattern = "define\\(\\s*'GRAV_VERSION'\\s*,\\s*'(\\d\\.\\d\\.\\d)'\\s*\\)";
+                Pattern p = Pattern.compile(pattern, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+                Matcher m = p.matcher(content);
+                if (m.find()) {
+                    version = m.group(1);
+                }
+            } catch (NullPointerException | IOException | IllegalStateException | PatternSyntaxException | IndexOutOfBoundsException ignored) {
+            }
+        }
+        return version;
+    }
+
+    private static String getFileContent(String path, Charset encoding)
+            throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 
     @NotNull

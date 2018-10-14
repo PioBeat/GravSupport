@@ -20,6 +20,7 @@ import com.intellij.util.download.DownloadableFileDescription;
 import com.intellij.util.download.DownloadableFileService;
 import com.intellij.util.download.FileDownloader;
 import com.intellij.util.io.ZipUtil;
+import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 
 import javax.swing.*;
 import java.io.File;
@@ -51,6 +52,8 @@ public class IntroStepGUI {
     private JLabel lblHint;
     private JComboBox<String> gravVersionComboBox;
     private JCheckBox withSrcDirectory;
+    private JLabel lblVersionPrompt;
+    private JLabel lblVersionDetermined;
     private BrowseFilesListener browseFilesListener;
 
     public IntroStepGUI(Project project) {
@@ -96,7 +99,7 @@ public class IntroStepGUI {
                         VirtualFile dir = virtualFiles.get(0);
                         String dirName = dir.getName();
                         fieldPanel.setText(dir.getPath());
-
+                        boolean completed = false;
                         try {
                             if (!dirName.toLowerCase().contains("grav")) {
                                 AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(mainPanel.getClass());
@@ -127,7 +130,7 @@ public class IntroStepGUI {
                                     VirtualFile finalDir = dir;
 
 
-                                    boolean completed = ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
+                                    completed = ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
                                         ProgressIndicator parentIndicator = ProgressManager.getInstance().getProgressIndicator();
                                         parentIndicator = new EmptyProgressIndicator();
                                         parentIndicator.setModalityProgress(parentIndicator);
@@ -144,14 +147,16 @@ public class IntroStepGUI {
                                     }, "Extracting Zip File", false, project, mainPanel);
 
 //                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
-                                    if (completed) {
-
-                                    }
                                     PropertiesComponent.getInstance().setValue(GravIntroWizardStep.LAST_USED_GRAV_HOME, newdirpath);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {
                                     dir.refresh(false, true);
+                                    if (completed) {
+                                        String gravSdkVersion = GravSdkType.findGravSdkVersion(newdirpath);
+                                        setDeterminedGravVersion(gravSdkVersion);
+                                        showDeterminedVersion(true);
+                                    }
                                 }
                             }
 
@@ -174,9 +179,21 @@ public class IntroStepGUI {
         fieldPanel = ModuleWizardStep.createFieldPanel(textField, "Select Grav Installation", browseFilesListener);
     }
 
+    public void showDeterminedVersion(boolean show) {
+        lblVersionPrompt.setVisible(show);
+        lblVersionDetermined.setVisible(show);
+    }
+
+    public void setDeterminedGravVersion(String version) {
+        lblVersionDetermined.setText(version);
+    }
+
     public void setDefaultInstallationPath(String path) {
         if ((fieldPanel.getText() == null || fieldPanel.getText().isEmpty()) && path != null) {
             fieldPanel.setText(path);
+            String gravSdkVersion = GravSdkType.findGravSdkVersion(path);
+            setDeterminedGravVersion(gravSdkVersion);
+            showDeterminedVersion(true);
         }
     }
 
@@ -198,5 +215,6 @@ public class IntroStepGUI {
 
     public void showHint(boolean flag) {
         lblHint.setVisible(flag);
+        showDeterminedVersion(!flag);
     }
 }
