@@ -118,7 +118,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="172" until-build="172.*"/>
+    <idea-version since-build="172" until-build="182.*"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -131,7 +131,7 @@
     <depends>org.jetbrains.plugins.yaml</depends>
     <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
     <depends optional="true">com.jetbrains.twig</depends>
-    <depends optional="true">com.jetbrains.plugins.markdown</depends>
+    <depends optional="true">org.intellij.plugins.markdown</depends>
     <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
 

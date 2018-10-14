@@ -100,69 +100,63 @@ public class IntroStepGUI {
                         String dirName = dir.getName();
                         fieldPanel.setText(dir.getPath());
                         boolean completed = false;
-                        try {
-                            if (!dirName.toLowerCase().contains("grav")) {
-                                AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(mainPanel.getClass());
-                                try {
-                                    dir = dir.createChildDirectory(this, "grav-sdk");
-                                } catch (IOException e) {//
-                                } finally {
-                                    accessToken.close();
-                                }
+                        if (!dirName.toLowerCase().contains("grav")) {
+                            AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(mainPanel.getClass());
+                            try {
+                                dir = dir.createChildDirectory(this, "grav-sdk");
+                            } catch (IOException e) {//
+                            } finally {
+                                accessToken.close();
                             }
-                            String newdirpath = dir.getPresentableUrl() + File.separator + "grav-admin" + File.separator;
-                            fieldPanel.setText(newdirpath);
+                        }
+                        String newdirpath = dir.getPresentableUrl() + File.separator + "grav-admin" + File.separator;
+                        fieldPanel.setText(newdirpath);
 
-                            String downloadUrl = MessageFormat.format(downloadProps.getProperty("downloadUrl"), getSelectedGravVersion(), getSelectedGravVersion());
-                            String filename = MessageFormat.format(downloadProps.getProperty("filename"), getSelectedGravVersion());
-                            String presentableName = MessageFormat.format(downloadProps.getProperty("presentableDownloadName"), getSelectedGravVersion());
+                        String downloadUrl = MessageFormat.format(downloadProps.getProperty("downloadUrl"), getSelectedGravVersion(), getSelectedGravVersion());
+                        String filename = MessageFormat.format(downloadProps.getProperty("filename"), getSelectedGravVersion());
+                        String presentableName = MessageFormat.format(downloadProps.getProperty("presentableDownloadName"), getSelectedGravVersion());
 
-                            DownloadableFileService fileService = DownloadableFileService.getInstance();
-                            DownloadableFileDescription fileDescription = fileService.createFileDescription(downloadUrl, filename);
+                        DownloadableFileService fileService = DownloadableFileService.getInstance();
+                        DownloadableFileDescription fileDescription = fileService.createFileDescription(downloadUrl, filename);
 
-                            List<DownloadableFileDescription> descriptions = new ArrayList<>();
-                            descriptions.add(fileDescription);
-                            FileDownloader downloader = fileService.createDownloader(descriptions, presentableName);
+                        List<DownloadableFileDescription> descriptions = new ArrayList<>();
+                        descriptions.add(fileDescription);
+                        FileDownloader downloader = fileService.createDownloader(descriptions, presentableName);
 
-                            List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.getPath(), project, mainPanel);//downloader.toDirectory(dir.getPath()).download();
-                            if (files != null && files.size() == 1) {
-                                try {
-                                    VirtualFile finalDir = dir;
+                        List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.getPath(), project, mainPanel);//downloader.toDirectory(dir.getPath()).download();
+                        if (files != null && files.size() == 1) {
+                            try {
+                                VirtualFile finalDir = dir;
 
 
-                                    completed = ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
-                                        ProgressIndicator parentIndicator = ProgressManager.getInstance().getProgressIndicator();
-                                        parentIndicator = new EmptyProgressIndicator();
-                                        parentIndicator.setModalityProgress(parentIndicator);
-                                        parentIndicator.setText("Please wait ...");
+                                completed = ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
+                                    ProgressIndicator parentIndicator = ProgressManager.getInstance().getProgressIndicator();
+                                    parentIndicator = new EmptyProgressIndicator();
+                                    parentIndicator.setModalityProgress(parentIndicator);
+                                    parentIndicator.setText("Please wait ...");
 
-                                        try {
-                                            ZipUtil.extract(VfsUtil.virtualToIoFile(files.get(0)), VfsUtil.virtualToIoFile(finalDir), null);
-                                        } catch (IOException e1) {
-                                            e1.printStackTrace();
-                                        } finally {
+                                    try {
+                                        ZipUtil.extract(VfsUtil.virtualToIoFile(files.get(0)), VfsUtil.virtualToIoFile(finalDir), null);
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    } finally {
 //                                                accessToken.finish();
-                                        }
+                                    }
 
-                                    }, "Extracting Zip File", false, project, mainPanel);
+                                }, "Extracting Zip File", false, project, mainPanel);
 
 //                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
-                                    PropertiesComponent.getInstance().setValue(GravIntroWizardStep.LAST_USED_GRAV_HOME, newdirpath);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    dir.refresh(false, true);
-                                    if (completed) {
-                                        String gravSdkVersion = GravSdkType.findGravSdkVersion(newdirpath);
-                                        setDeterminedGravVersion(gravSdkVersion);
-                                        showDeterminedVersion(true);
-                                    }
+                                PropertiesComponent.getInstance().setValue(GravIntroWizardStep.LAST_USED_GRAV_HOME, newdirpath);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            } finally {
+                                dir.refresh(false, true);
+                                if (completed) {
+                                    String gravSdkVersion = GravSdkType.findGravSdkVersion(newdirpath);
+                                    setDeterminedGravVersion(gravSdkVersion);
+                                    showDeterminedVersion(true);
                                 }
                             }
-
-
-                        } finally {
-//                            accessToken.finish();
                         }
                     }
 
