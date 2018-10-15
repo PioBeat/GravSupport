@@ -1,5 +1,7 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor.strategy;
 
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -10,6 +12,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.IncorrectOperationException;
+import com.intellij.util.ThrowableRunnable;
 import net.offbeatpioneer.intellij.plugins.grav.editor.LanguageFileEditorGUI;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
@@ -18,6 +21,7 @@ import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.*;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,19 +102,51 @@ public class LanguageFileStrategy extends FileEditorStrategy {
     @Override
     public void actionPerformed(ActionEvent e) {
         super.actionPerformed(e);
-        dialog.show();
-        int exitCode = dialog.getExitCode();
-        if (exitCode != CANCEL_EXIT_CODE) {
-            String key = dialog.getKeyText();
-            String value = dialog.getValueText();
-            currentLang = dialog.getSelectedLangauge();
-            if (currentLang != null && !currentLang.isEmpty()) {
-                Editor ieditor = editorMap.get(currentLang);
-                Document document = ieditor.getDocument();
-                WriteCommandAction.runWriteCommandAction(fileEditor.getProject(), () -> updateDocumentHook(document, ieditor.getProject(), currentLang, key, value, model));
-            } else {
-                NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
+        if (e.getSource() instanceof JComponent) {
+            if (((JComponent) e.getSource()).getName().equals(LanguageFileEditorGUI.UI_BTN_INSERT_KEY)) {
+                if (dialog == null) return;
+                dialog.show();
+                int exitCode = dialog.getExitCode();
+                if (exitCode != CANCEL_EXIT_CODE) {
+                    String key = dialog.getKeyText();
+                    String value = dialog.getValueText();
+                    currentLang = dialog.getSelectedLangauge();
+                    if (currentLang != null && !currentLang.isEmpty()) {
+                        Editor ieditor = editorMap.get(currentLang);
+                        Document document = ieditor.getDocument();
+                        TranslationTableModel model = (TranslationTableModel) fileEditor.getGUI().getTable1().getModel();
+                        WriteCommandAction.runWriteCommandAction(fileEditor.getProject(), () -> updateDocumentHook(document, ieditor.getProject(), currentLang, key, value, model));
+                    } else {
+                        NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
+                    }
+                }
             }
+        }
+    }
+
+    @Override
+    public void removeKeyComplete(List<String> qualifiedKey, String key, TranslationTableModel model) {
+        VirtualFile file = fileEditor.getFileMap().elements().nextElement();
+        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+        if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
+        YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
+
+        try {
+            WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
+
+                for (String eachLang : model.getLanguages()) {
+                    List<String> key0 = new ArrayList<>(qualifiedKey);
+                    key0.add(0, eachLang);
+                    YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, key0);
+                    if (value != null) {
+                        value.delete();
+                        model.removeElement(eachLang, value, key);
+                    }
+                }
+                file.refresh(false, false);
+            });
+        } catch (Throwable throwable) {
+            LOG.error(throwable);
         }
     }
 

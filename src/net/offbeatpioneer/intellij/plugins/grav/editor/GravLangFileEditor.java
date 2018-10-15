@@ -79,7 +79,7 @@ public class GravLangFileEditor implements Disposable, FileEditor, TableModelLis
         }
     }
 
-    ConcurrentHashMap<String, VirtualFile> getFileMap() {
+    public ConcurrentHashMap<String, VirtualFile> getFileMap() {
         return editorStrategy.getFileMap();
     }
 

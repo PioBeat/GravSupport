@@ -12,6 +12,7 @@ public class BasicPopupListener implements PopupMenuListener {
     private JMenuItem deleteItem;
     private JMenuItem jumpToItem;
     int rowAtPoint = -1;
+    int lastRowAtPoint = -1;
 
     public BasicPopupListener(JTable table1, JPopupMenu popupMenu, JMenuItem deleteItem, JMenuItem jumpToItem) {
         this.table1 = table1;
@@ -25,7 +26,7 @@ public class BasicPopupListener implements PopupMenuListener {
         SwingUtilities.invokeLater(() -> {
             colAtPoint = table1.columnAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
             rowAtPoint = table1.rowAtPoint(SwingUtilities.convertPoint(popupMenu, new Point(0, 0), table1));
-
+            lastRowAtPoint = rowAtPoint;
             if (colAtPoint != 0)
                 deleteItem.setEnabled(false);
             else {
@@ -38,6 +39,15 @@ public class BasicPopupListener implements PopupMenuListener {
                 jumpToItem.setEnabled(true);
             }
         });
+    }
+
+    public void resetIndices() {
+        rowAtPoint = -1;
+        colAtPoint = -1;
+    }
+
+    public void resetLastIndices() {
+        lastRowAtPoint = -1;
     }
 
     @Override

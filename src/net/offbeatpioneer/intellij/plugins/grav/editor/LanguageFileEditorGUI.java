@@ -3,7 +3,6 @@ package net.offbeatpioneer.intellij.plugins.grav.editor;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory;
@@ -16,7 +15,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import com.intellij.util.ThrowableRunnable;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles;
 import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
@@ -30,7 +28,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,7 +41,12 @@ import java.util.List;
  */
 public class LanguageFileEditorGUI implements ChangeListener {
     private Logger LOG = Logger.getInstance(this.getClass());
-    private static final String ACTION_NAME = "GravRemoveKey";
+
+    public static final String UI_POPUP_JUMP_KEY = "UI_POPUP_JUMP_KEY";
+    public static final String UI_POPUP_DELETE_KEY = "UI_POPUP_DELETE_KEY";
+    public static final String UI_BTN_INSERT_KEY = "UI_BTN_INSERT_KEY";
+    public static final String UI_BTN_REMOVE_KEY = "UI_BTN_REMOVE_KEY";
+
 
     private GravLangFileEditor fileEditor;
     private TranslationTableModel model;
@@ -59,6 +61,7 @@ public class LanguageFileEditorGUI implements ChangeListener {
     public JTabbedPane tabbedPane;
     private JPanel topPanel;
     private JPanel centerPanel;
+    private JButton btnDeleteKey;
 
     LanguageFileEditorGUI(GravLangFileEditor fileEditor, TranslationTableModel model) {
         this.model = model;
@@ -66,8 +69,15 @@ public class LanguageFileEditorGUI implements ChangeListener {
 
         this.table1.setModel(model);
         this.tabbedPane.addChangeListener(this);
+
+        this.btnDeleteKey.addActionListener(fileEditor.editorStrategy);
+        this.btnDeleteKey.setName(UI_BTN_REMOVE_KEY);
+        this.btnDeleteKey.setIcon(AllIcons.General.Remove);
+
         this.btnAddNewKey.addActionListener(fileEditor.editorStrategy);
+        this.btnAddNewKey.setName(UI_BTN_INSERT_KEY);
         this.btnAddNewKey.setIcon(AllIcons.General.Add);
+
         this.setDefaultLanguageForEditor();
     }
 
@@ -98,6 +108,7 @@ public class LanguageFileEditorGUI implements ChangeListener {
         table1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         setCellRenderer();
         btnAddNewKey = new JButton();
+        btnDeleteKey = new JButton();
     }
 
     private void setCellRenderer() {
@@ -130,71 +141,23 @@ public class LanguageFileEditorGUI implements ChangeListener {
 
         final JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Delete Key");
+        deleteItem.setName(UI_POPUP_DELETE_KEY);
         deleteItem.setIcon(AllIcons.General.Remove);
-        deleteItem.addActionListener(e -> SwingUtilities.invokeLater(() -> {
+        deleteItem.addActionListener(e -> { // SwingUtilities.invokeLater(() ->
             final Project project = GravProjectComponent.getEnabledProject();
             if (project == null) return;
             String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
             List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
-            switch (fileEditor.getLanguageFileEditorType()) {
-                case LANGUAGE_FILE:
-                    VirtualFile file = fileEditor.getFileMap().elements().nextElement();
-                    PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-                    if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
-                    YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
+            ApplicationManager.getApplication().invokeLater(() -> {
+                fileEditor.editorStrategy.removeKeyComplete(qualifiedKey, key, model);
+            }, ModalityState.current());
 
-                    ApplicationManager.getApplication().invokeLater(() -> {
-                        try {
-                            WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
-
-                                for (String eachLang : model.getLanguages()) {
-                                    List<String> key0 = new ArrayList<>(qualifiedKey);
-                                    key0.add(0, eachLang);
-                                    YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc, key0);
-                                    if (value != null) {
-                                        value.delete();
-                                        model.removeElement(eachLang, value, key);
-                                    }
-                                }
-                                file.refresh(false, false);
-                            });
-                        } catch (Throwable throwable) {
-                            LOG.error(throwable);
-                        }
-                    }, ModalityState.current());
-
-                    break;
-                case LANGUAGE_FOLDER:
-                    ApplicationManager.getApplication().invokeLater(() -> {
-                        try {
-                            WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
-                                for (String eachLang : model.getLanguages()) {
-                                    VirtualFile file1 = fileEditor.getFileMap().get(eachLang);
-                                    PsiFile psiFile1 = PsiManager.getInstance(project).findFile(file1);
-                                    if (psiFile1 == null || ((YAMLFile) psiFile1).getDocuments() == null) return;
-                                    YAMLDocument doc1 = ((YAMLFile) psiFile1).getDocuments().get(0);
-
-                                    YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc1, qualifiedKey);
-                                    if (value != null) {
-                                        value.delete();
-                                        model.removeElement(eachLang, value, key);
-                                    }
-                                    file1.refresh(false, false);
-                                }
-                            });
-                        } catch (Throwable throwable) {
-                            LOG.error(throwable);
-                        }
-                    });
-                    break;
-            }
-
-            basicPopupListener.colAtPoint = -1;
-            basicPopupListener.rowAtPoint = -1;
-        }));
+//            basicPopupListener.resetIndices();
+        });
         popupMenu.add(deleteItem);
 
         JMenuItem jumpToKey = new JMenuItem("Jump To Key");
+        jumpToKey.setName(UI_POPUP_JUMP_KEY);
         jumpToKey.setIcon(AllIcons.General.Locate);
         popupMenu.add(jumpToKey);
         jumpToKey.addActionListener(e -> SwingUtilities.invokeLater(() -> {
@@ -243,12 +206,20 @@ public class LanguageFileEditorGUI implements ChangeListener {
         return popupMenu;
     }
 
+    public int getLastSelectedRow() {
+        return basicPopupListener.lastRowAtPoint;
+    }
+
     public Editor createEditor(Document document, Project project, @Nullable FileType fileType) {
         EditorImpl editor = (EditorImpl) EditorFactory.getInstance().createEditor(document, project);
         if (fileType != null) {
             editor.setHighlighter(EditorHighlighterFactory.getInstance().createEditorHighlighter(project, fileType));
         }
         return editor;
+    }
+
+    public BasicPopupListener getBasicPopupListener() {
+        return basicPopupListener;
     }
 
     @SuppressWarnings("unused")

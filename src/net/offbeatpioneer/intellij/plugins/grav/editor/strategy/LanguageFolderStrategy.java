@@ -9,16 +9,19 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.intellij.util.ThrowableRunnable;
 import net.offbeatpioneer.intellij.plugins.grav.editor.LanguageFileEditorGUI;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLCompoundValue;
+import org.jetbrains.yaml.psi.YAMLDocument;
 import org.jetbrains.yaml.psi.YAMLFile;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 import org.jetbrains.yaml.psi.impl.YAMLFileImpl;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,30 +99,58 @@ public class LanguageFolderStrategy extends FileEditorStrategy {
     @Override
     public void actionPerformed(ActionEvent e) {
         super.actionPerformed(e);
-        dialog.show();
-        int exitCode = dialog.getExitCode();
-        if (exitCode != CANCEL_EXIT_CODE) {
-            String key = dialog.getKeyText();
-            String value = dialog.getValueText();
-            currentLang = dialog.getSelectedLangauge();
-            if (currentLang != null && !currentLang.isEmpty()) {
-                Editor ieditor = editorMap.get(currentLang);
-                Document document = ieditor.getDocument();
-
-                WriteCommandAction.runWriteCommandAction(fileEditor.getProject(), () -> {
-                    updateDocumentHook(document, ieditor.getProject(), currentLang, key, value, model);
-                    for (String eachLang : model.getLanguages()) {
-                        if (!eachLang.equalsIgnoreCase(currentLang)) {
-                            Editor ieditor1 = editorMap.get(eachLang);
-                            Document document1 = ieditor1.getDocument();
-                            updateDocumentHook(document1, ieditor1.getProject(), eachLang, key, "", model);
-                        }
+        if (e.getSource() instanceof JComponent) {
+            if (((JComponent) e.getSource()).getName().equals(LanguageFileEditorGUI.UI_BTN_INSERT_KEY)) {
+                if (dialog == null) return;
+                dialog.show();
+                int exitCode = dialog.getExitCode();
+                if (exitCode != CANCEL_EXIT_CODE) {
+                    String key = dialog.getKeyText();
+                    String value = dialog.getValueText();
+                    currentLang = dialog.getSelectedLangauge();
+                    if (currentLang != null && !currentLang.isEmpty()) {
+                        Editor ieditor = editorMap.get(currentLang);
+                        Document document = ieditor.getDocument();
+                        TranslationTableModel model = (TranslationTableModel) fileEditor.getGUI().getTable1().getModel();
+                        WriteCommandAction.runWriteCommandAction(fileEditor.getProject(), () -> {
+                            updateDocumentHook(document, ieditor.getProject(), currentLang, key, value, model);
+                            for (String eachLang : model.getLanguages()) {
+                                if (!eachLang.equalsIgnoreCase(currentLang)) {
+                                    Editor ieditor1 = editorMap.get(eachLang);
+                                    Document document1 = ieditor1.getDocument();
+                                    updateDocumentHook(document1, ieditor1.getProject(), eachLang, key, "", model);
+                                }
+                            }
+                            model.fireChange();
+                        });
+                    } else {
+                        NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
                     }
-                    model.fireChange();
-                });
-            } else {
-                NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
+                }
             }
+        }
+    }
+
+    @Override
+    public void removeKeyComplete(List<String> qualifiedKey, String key, TranslationTableModel model) {
+        try {
+            WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
+                for (String eachLang : model.getLanguages()) {
+                    VirtualFile file1 = fileEditor.getFileMap().get(eachLang);
+                    PsiFile psiFile1 = PsiManager.getInstance(project).findFile(file1);
+                    if (psiFile1 == null || ((YAMLFile) psiFile1).getDocuments() == null) return;
+                    YAMLDocument doc1 = ((YAMLFile) psiFile1).getDocuments().get(0);
+
+                    YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(doc1, qualifiedKey);
+                    if (value != null) {
+                        value.delete();
+                        model.removeElement(eachLang, value, key);
+                    }
+                    file1.refresh(false, false);
+                }
+            });
+        } catch (Throwable throwable) {
+            LOG.error(throwable);
         }
     }
 

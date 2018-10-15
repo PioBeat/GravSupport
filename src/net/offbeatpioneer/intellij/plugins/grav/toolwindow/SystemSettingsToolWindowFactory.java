@@ -99,6 +99,8 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     }
 
     private void applyGravSettings(String[] qualifiedKey, Class dataType, JComponent component, final Project project, boolean addListener) {
+        if (systemDocument == null || systemDocument.getElement() == null || systemYamlFile == null || systemYamlFile.getElement() == null)
+            return;
         boolean error = false;
         try {
             YAMLKeyValue value = YAMLUtil.getQualifiedKeyInDocument(systemDocument.getElement(), Arrays.asList(qualifiedKey));
