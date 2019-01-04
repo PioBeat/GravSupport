@@ -17,6 +17,7 @@
                     <li>Plugin works now for the latest IDEA platforms: 182-183.*</li>
                 </ul>
                 <li>Grav Tool Window is getting deactivated when plugin is disabled for the current project and vice versa</li>
+                <li>Disabled the "create src and test directory" option in the project wizard: will be removed in the future</li>
             </ul>
         </p>
         <p>

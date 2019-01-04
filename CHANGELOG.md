@@ -3,6 +3,7 @@
 ## [0.4.1] - 2019-01-04
 - Compatibility Fix: Plugin works now for the latest IDEA platforms: 182-183.*
 - Grav Tool Window is getting deactivated when plugin is disabled for the current project and vice versa
+- Disabled the "create src and test directory" option in the project wizard: will be removed in the future
 
 ## [0.4.0] - 2018-10-14
 
