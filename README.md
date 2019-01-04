@@ -83,10 +83,11 @@ the functionality Grav supports via those scripts.
 
 **Supported Grav versions**
 
-Currently it's only possible to automatically download all listed Grav
-version mentioned at the beginning of this Readme directly via the project wizard of IntelliJ.
-However, it's possible to use any other Grav installation by manually selecting them in
-the wizard.
+The supported Grav versions are fetched from the GitHub repository of [getgrav](https://github.com/getgrav/grav) automatically.
+They can be selected directly in the project wizard of IntelliJ.
+
+Furthermore, it is possible to use any other Grav installation by manually downloading them and
+specifying the path in the wizard.
 
 **"Grav plugin 'devtools' is not installed"**
 
