@@ -10,6 +10,16 @@
 
     <change-notes><![CDATA[
         <p>
+            <span>0.4.1</span>
+        <ul>
+            <li>New Features</li>
+            <ul>
+                <li>Plugin works now for the latest IDEA platforms: 182-183.*</li>
+            </ul>
+        </ul>
+        </p>
+        <p>
+        <p>
             <span>0.4.0</span>
         <ul>
             <li>New Features</li>
