@@ -3,6 +3,7 @@
 
 libs/php*
 *.jar
+GravSupport.zip
 
 # User-specific stuff:
 .idea/**/workspace.xml
