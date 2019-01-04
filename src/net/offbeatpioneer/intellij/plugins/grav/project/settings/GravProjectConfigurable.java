@@ -5,6 +5,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
+import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +62,22 @@ public class GravProjectConfigurable implements Configurable {
     @Override
     public void apply() throws ConfigurationException {
         settings.pluginEnabled = enabled.isSelected();
-        ToolWindowManager.getInstance(project).getToolWindow("Grav").setAvailable(settings.pluginEnabled, () -> {
-        });
+        GravProjectConfigurable.enableGravToolWindow(project, settings.pluginEnabled);
+    }
+
+    public static void enableGravToolWindow(@NonNull Project project, boolean enable) {
+        String[] toolWindowIds = ToolWindowManager.getInstance(project).getToolWindowIds();
+//        boolean gravToolWindowExists = false;
+        for (String toolWindowId : toolWindowIds) {
+            if (toolWindowId.equals("Grav")) {
+                ToolWindowManager.getInstance(project).getToolWindow("Grav").setAvailable(enable, () -> {
+                });
+//                gravToolWindowExists = true;
+                break;
+            }
+        }
+//        if(!gravToolWindowExists) {
+//            ToolWindowManager.getInstance(project).registerToolWindow("Grav", true, ToolWindowAnchor.RIGHT).setAvailable(true, () -> {});
+//        }
     }
 }

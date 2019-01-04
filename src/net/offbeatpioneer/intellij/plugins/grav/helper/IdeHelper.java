@@ -35,5 +35,6 @@ public class IdeHelper {
 
     private static void enablePluginAndConfigure(@NotNull Project project) {
         GravProjectSettings.getInstance(project).pluginEnabled = true;
+        GravProjectConfigurable.enableGravToolWindow(project, true);
     }
 }

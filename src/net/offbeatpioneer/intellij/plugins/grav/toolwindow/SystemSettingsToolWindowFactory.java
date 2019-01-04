@@ -37,7 +37,7 @@ import java.util.List;
  * @author Dominik Grzelak
  * @since 2017-08-24
  */
-public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener, Condition<Project> {
+public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener {
     private final static String SYSTEM_SYSTEM_CONFIG_FILE = "system/config/system.yaml";
     private final static String USER_SYSTEM_CONFIG_FILE = "user/config/system.yaml";
 
@@ -267,10 +267,5 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     @Override
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
 
-    }
-
-    @Override
-    public boolean value(Project project) {
-        return GravProjectComponent.isEnabled(project);
     }
 }
