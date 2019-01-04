@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.1] - 2019-01-04
+- Compatibility Fix: Plugin works now for the latest IDEA platforms: 182-183.*
+- Grav Tool Window is getting deactivated when plugin is disabled for the current project and vice versa
+
+## [0.4.0] - 2018-10-14
+
+- Latest Grav versions are now retrieved from Github directly
+- Minor user interface improvement in the Create Project wizard
+- Plugin works now for the latest IDEA platforms
+
+
 ## [0.3.3.1] - 2017-10-30
 Bugfix release
 
