@@ -3,6 +3,7 @@ package net.offbeatpioneer.intellij.plugins.grav.toolwindow;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.util.Condition;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
@@ -36,7 +37,7 @@ import java.util.List;
  * @author Dominik Grzelak
  * @since 2017-08-24
  */
-public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener {
+public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener, Condition<Project> {
     private final static String SYSTEM_SYSTEM_CONFIG_FILE = "system/config/system.yaml";
     private final static String USER_SYSTEM_CONFIG_FILE = "user/config/system.yaml";
 
@@ -50,6 +51,10 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     private boolean errorOccurred = false;
     private YAMLElementGenerator generator;
     private List<Triple<String[], Class, JComponent>> componentList = new ArrayList<>();
+
+    public SystemSettingsToolWindowFactory() {
+
+    }
 
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
@@ -118,7 +123,7 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
                         if (!valueText.equalsIgnoreCase("true") && !valueText.equalsIgnoreCase("false")) {
                             error = true;
                         }
-                        Boolean b = Boolean.valueOf(valueText);
+                        boolean b = Boolean.parseBoolean(valueText);
                         ((JCheckBox) component).setSelected(b);
                         if (addListener) {
                             final ActionListener[] listeners = ((JCheckBox) component).getActionListeners();
@@ -262,5 +267,10 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     @Override
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
 
+    }
+
+    @Override
+    public boolean value(Project project) {
+        return GravProjectComponent.isEnabled(project);
     }
 }

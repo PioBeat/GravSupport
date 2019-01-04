@@ -4,6 +4,7 @@ import com.intellij.ide.actions.ShowSettingsUtilImpl;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,8 +19,10 @@ public class GravProjectConfigurable implements Configurable {
     private JPanel mainPanel;
     private JCheckBox enabled;
     private JCheckBox withSrcDir;
+    private final Project project;
 
     public GravProjectConfigurable(Project project) {
+        this.project = project;
         settings = GravProjectSettings.getInstance(project);
     }
 
@@ -58,5 +61,7 @@ public class GravProjectConfigurable implements Configurable {
     @Override
     public void apply() throws ConfigurationException {
         settings.pluginEnabled = enabled.isSelected();
+        ToolWindowManager.getInstance(project).getToolWindow("Grav").setAvailable(settings.pluginEnabled, () -> {
+        });
     }
 }
