@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class LanguageTreeStructureProvider implements TreeStructureProvider, DumbAware{
+public class LanguageTreeStructureProvider implements TreeStructureProvider, DumbAware {
     @NotNull
     @Override
     public Collection<AbstractTreeNode> modify(@NotNull AbstractTreeNode parent, @NotNull Collection<AbstractTreeNode> children, ViewSettings settings) {

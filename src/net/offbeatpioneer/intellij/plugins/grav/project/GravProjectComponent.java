@@ -11,6 +11,9 @@ import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.SystemIndependent;
+
+import java.nio.file.Paths;
 
 /**
  * Project component gets instantiated for every GRAV project created
@@ -40,10 +43,13 @@ public class GravProjectComponent implements ProjectComponent {
     public void initComponent() {
         settings = GravProjectSettings.getInstance(project);
         if (settings != null) {
-            if (project != null && VfsUtil.findRelativeFile(project.getBaseDir(), "src") == null) {
-                settings.withSrcDirectory = false;
-            } else {
-                settings.withSrcDirectory = true;
+            @SystemIndependent String basePath = project.getBasePath();
+            settings.withSrcDirectory = false;
+            if (basePath != null) {
+                VirtualFile file = VfsUtil.findFile(Paths.get(project.getBasePath(), "src"), true);
+                if (file != null) {
+                    settings.withSrcDirectory = true;
+                }
             }
         }
     }
@@ -89,11 +95,10 @@ public class GravProjectComponent implements ProjectComponent {
             //is a src directory present?
             if (settings.withSrcDirectory && vf.findChild("src") != null) {
                 vf = vf.findChild("src");
-                if (!GravSdkType.isValidGravSDK(vf)) vf = project.getBaseDir();
+                if (vf != null && !GravSdkType.isValidGravSDK(vf)) vf = project.getBaseDir();
             }
 //            vf = settings.withSrcDirectory && vf.findChild("src") == null ? vf : vf.findChild("src");
-            if (vf == null) return;
-            if (GravSdkType.isValidGravSDK(vf)) { //grav module found
+            if (vf != null && GravSdkType.isValidGravSDK(vf)) { //grav module found
                 IdeHelper.notifyEnableMessage(project);
             }
         }
