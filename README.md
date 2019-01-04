@@ -8,11 +8,11 @@ within for IntelliJ Community / Ultimate Edition and PhpStorm
 Grav version support: 1.2.4 - 1.6.*
 
 Tested with:
-* PhpStorm 2018.2.*
+* PhpStorm 2018.3.*
 * IntelliJ IDEA Community 2017.2.*
 * IntelliJ IDEA Ultimate 2018.2.4
 
-The plugin is available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support)
+The plugin is also available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support).
 
 ## Install
 
@@ -29,13 +29,15 @@ This way you will get notified if a new update is available!
 install it via the settings menu: <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
 and then search for _Plugins -> Install plugins from disk_
 
-**Configuration**
+## Configuration
 
 If you create a new Grav project / module you will have all features enabled by default.
+Therefore, a "New Project" wizard for Grav-based projects is provided by the plugin within Phpstorm.
 
-If you're using PhpStorm and opening a previous project you may have to enable the plugin for the current project. The plugin
-tries to detect a Grav project automatically and notifies the user accordingly. Otherwise
-open the Settings menu (<kbd>CTRL+ALT+S</kbd>) and go to _Languages & Frameworks_ -> _Grav_ and
+If you're using PhpStorm and opening a previously created project you may have
+to enable the plugin for the current project. The plugin tries to detect a Grav project
+automatically and notifies the user accordingly. Otherwise open the Settings
+menu (<kbd>CTRL+ALT+S</kbd>) and go to _Languages & Frameworks_ -> _Grav_ and
 enable the plugin for the current project.
 
 ## Features
