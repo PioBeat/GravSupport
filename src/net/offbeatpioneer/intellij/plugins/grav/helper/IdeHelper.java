@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
+ * @author Dominik Grzelak
  */
 public class IdeHelper {
     public static void notifyEnableMessage(@NotNull final Project project) {
