@@ -233,6 +233,8 @@
             <category>Grav</category>
             <descriptionDirectoryName>ConvertTwigResource</descriptionDirectoryName>
         </intentionAction>
+
+        <errorHandler implementation="net.offbeatpioneer.intellij.plugins.grav.reporting.GravExceptionTracker"/>
     </extensions>
 
 
