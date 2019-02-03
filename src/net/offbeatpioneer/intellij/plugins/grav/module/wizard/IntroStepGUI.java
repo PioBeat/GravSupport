@@ -1,5 +1,6 @@
 package net.offbeatpioneer.intellij.plugins.grav.module.wizard;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
@@ -13,22 +14,30 @@ import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.templates.github.DownloadUtil;
 import com.intellij.platform.templates.github.GeneratorException;
 import com.intellij.platform.templates.github.Outcome;
 import com.intellij.ui.FieldPanel;
+import com.intellij.ui.OptionGroup;
+import com.intellij.ui.PanelWithAnchor;
 import com.intellij.ui.components.labels.ActionLink;
+import com.intellij.ui.components.panels.FlowLayoutWrapper;
 import com.intellij.util.download.DownloadableFileDescription;
 import com.intellij.util.download.DownloadableFileService;
 import com.intellij.util.download.FileDownloader;
 import com.intellij.util.io.ZipUtil;
 import com.intellij.util.net.IOExceptionDialog;
+import com.intellij.util.ui.JBUI;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GithubApi;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,15 +47,16 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * First Wizard for creating a new grav module
+ * Wizard interface for creating a new Grav module.
  * <p>
- * Specify installtion folder or download grav.
- * Currently the latest grav version is specified in a properties files. Make changes in it to change the
- * download url etc.
+ * The wizard offers the options to specify a local Grav installation or to download a Grav release from GitHub.
+ * The latest Grav versions are retrieved directly from GitHub.
  *
  * @author Dominik Grzelak
  */
-public class IntroStepGUI {
+public class IntroStepGUI implements ActionListener {
+    // points to the file that defines the URL format of the Grav release in GitHub
+    private static final String DOWNLOAD_CONFIG_PROPERTIES = "download-config.properties";
     boolean downloaded = false;
     private Project project;
     private String[] DEFAULT_GRAV_VERSIONS = new String[]{"1.3.8", "1.3.7", "1.3.6", "1.3.5", "1.3.4", "1.3.3", "1.3.2", "1.3.1", "1.3.0", "1.2.4"};
@@ -59,10 +69,15 @@ public class IntroStepGUI {
     private FieldPanel fieldPanel;
     private JLabel lblHint;
     private JComboBox<String> gravVersionComboBox;
-    private JCheckBox withSrcDirectory;
     private JLabel lblVersionPrompt;
     private JLabel lblVersionDetermined;
     private ActionLink refreshLink;
+    private JRadioButton rbDownloadGrav;
+    private JRadioButton rbSelectGrav;
+    private JPanel panelSelectGrav;
+    private JPanel panelDownloadGrav;
+    private JButton btnRefreshGravVersions;
+    private OptionGroup panel1;
     private BrowseFilesListener browseFilesListener;
 
     public IntroStepGUI(Project project) {
@@ -74,9 +89,8 @@ public class IntroStepGUI {
     }
 
     public Properties loadDownloadConfig() {
-        String resourceName = "download-config.properties"; // could also be a constant
         Properties props = new Properties();
-        try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourceName)) {
+        try (InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(DOWNLOAD_CONFIG_PROPERTIES)) {
             props.load(resourceStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -84,20 +98,59 @@ public class IntroStepGUI {
         return props;
     }
 
+    public void initLayout() {
+        rbSelectGrav.setSelected(true);
+        rbSelectGrav.setSelected(false);
+        enablePanel(panelSelectGrav, true);
+        enablePanel(panelDownloadGrav, false);
+    }
+
     public void createUIComponents() {
         lblIntro = new JLabel();
         lblIntro.setText("Willkommen<br/> Select a valid Grav installtion or click the link to download the latest version.");
+        lblIntro.setVisible(true);
         lblHint = new JLabel();
         lblHint.setVisible(false);
 
-        gravVersionComboBox = new JComboBox<>(DEFAULT_GRAV_VERSIONS);
+
+        panelSelectGrav = new JPanel();
+        panelDownloadGrav = new JPanel();
+
+        rbSelectGrav = new JRadioButton("Select Grav Installation");
+        rbSelectGrav.setActionCommand("selectGrav");
+        rbSelectGrav.addActionListener(this);
+        rbDownloadGrav = new JRadioButton("Download Grav");
+        rbDownloadGrav.setActionCommand("downloadGrav");
+        rbDownloadGrav.addActionListener(this);
+        ButtonGroup group = new ButtonGroup();
+        group.add(rbSelectGrav);
+        group.add(rbDownloadGrav);
+
+        // Select Grav
+
+
+        // Download Grav
+
+        btnRefreshGravVersions = new SquareButton();
+        btnRefreshGravVersions.setBorderPainted(false);
+        btnRefreshGravVersions.setBorder(null);
+        btnRefreshGravVersions.setFocusable(false);
+        btnRefreshGravVersions.setMargin(JBUI.emptyInsets());
+        btnRefreshGravVersions.setContentAreaFilled(false);
+        btnRefreshGravVersions.setIcon(AllIcons.Actions.Refresh);
+        btnRefreshGravVersions.setFocusPainted(false);
+        btnRefreshGravVersions.addActionListener(this);
+        btnRefreshGravVersions.setActionCommand("refreshGrav");
+
+        gravVersionComboBox = new ComboBox<>(DEFAULT_GRAV_VERSIONS);
         if (!gotLatestVersions) {
             //download versions
             refreshVersionAction();
         }
         Properties downloadProps = loadDownloadConfig();
 
-        initRefreshLink();
+
+//        initRefreshLink();
         myDownloadLink = new ActionLink("Download and Install Grav", new AnAction() {
             @Override
             public void actionPerformed(AnActionEvent e) {
@@ -126,7 +179,7 @@ public class IntroStepGUI {
                             }
                         }
                         String newdirpath = dir.getPresentableUrl() + File.separator + "grav-admin" + File.separator;
-                        fieldPanel.setText(newdirpath);
+//                        fieldPanel.setText(newdirpath);
 
                         String downloadUrl = MessageFormat.format(downloadProps.getProperty("downloadUrl"), getSelectedGravVersion(), getSelectedGravVersion());
                         String filename = MessageFormat.format(downloadProps.getProperty("filename"), getSelectedGravVersion());
@@ -171,6 +224,7 @@ public class IntroStepGUI {
                                     String gravSdkVersion = GravSdkType.findGravSdkVersion(newdirpath);
                                     setDeterminedGravVersion(gravSdkVersion);
                                     showDeterminedVersion(true);
+                                    fieldPanel.setText(newdirpath);//validation will be performed automatically (see GravInstallerGeneratorPeer)
                                 }
                             }
                         }
@@ -183,13 +237,15 @@ public class IntroStepGUI {
                 });
             }
         });
+        // must be place after downloadLink, otherwise downloadLink doesn't work ...
         JTextField textField = new JTextField();
         browseFilesListener = new BrowseFilesListener(textField, "Select Grav Download Directory", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
+        fieldPanel = ModuleWizardStep.createFieldPanel(textField, "", browseFilesListener);
 
-        fieldPanel = ModuleWizardStep.createFieldPanel(textField, "Select Grav Installation", browseFilesListener);
     }
 
     private void refreshVersionAction() {
+//        btnRefreshGravVersions.setEnabled(false);
         //download versions
         Outcome<String[]> outcome = DownloadUtil.provideDataWithProgressSynchronously(
                 project,
@@ -209,6 +265,7 @@ public class IntroStepGUI {
             gravVersions = DEFAULT_GRAV_VERSIONS;
         }
         gravVersionComboBox.setModel(new DefaultComboBoxModel<>(gravVersions));
+//        btnRefreshGravVersions.setEnabled(true);
     }
 
     public void initRefreshLink() {
@@ -220,7 +277,7 @@ public class IntroStepGUI {
             }
         });
 
-        refreshLink.setVisible(true);
+        refreshLink.setVisible(false);
     }
 
     public void showDeterminedVersion(boolean show) {
@@ -245,10 +302,6 @@ public class IntroStepGUI {
         return (String) gravVersionComboBox.getSelectedItem();
     }
 
-    public boolean getWithSrcDirectory() {
-        return withSrcDirectory.isSelected();
-    }
-
     public FieldPanel getFieldPanel() {
         return fieldPanel;
     }
@@ -261,4 +314,32 @@ public class IntroStepGUI {
         lblHint.setVisible(flag);
         showDeterminedVersion(!flag);
     }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() instanceof JRadioButton) {
+            if (e.getActionCommand().equals("selectGrav")) {
+                enablePanel(panelDownloadGrav, false);
+                enablePanel(panelSelectGrav, true);
+            } else if (e.getActionCommand().equals("downloadGrav")) {
+                enablePanel(panelDownloadGrav, true);
+                enablePanel(panelSelectGrav, false);
+            }
+        }
+
+        if (e.getSource() instanceof JButton) {
+            if (e.getActionCommand().equals("refreshGrav")) {
+                refreshVersionAction();
+            }
+        }
+    }
+
+    private void enablePanel(JPanel panel, boolean enable) {
+        Component[] comps = panel.getComponents();
+        for (Component comp : comps) {
+            comp.setEnabled(enable);
+        }
+    }
+
+
 }

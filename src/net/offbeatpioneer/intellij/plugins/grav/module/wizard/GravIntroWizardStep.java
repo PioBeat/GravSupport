@@ -35,6 +35,7 @@ public class GravIntroWizardStep extends ModuleWizardStep implements Disposable 
             }
             form.setDefaultInstallationPath(path);
         }
+        form.initLayout();
         return form.getMainPanel();
     }
 
@@ -68,8 +69,13 @@ public class GravIntroWizardStep extends ModuleWizardStep implements Disposable 
     public void updateDataModel() {
         String file = form.getGravDirectory();
         builder.setGravInstallPath(LocalFileSystem.getInstance().findFileByIoFile(new File(file)));
-        builder.setWithSrcDirectory(form.getWithSrcDirectory());
+        builder.setWithSrcDirectory(false);
         PropertiesComponent.getInstance().setValue(LAST_USED_GRAV_HOME, new File(file).getAbsolutePath());
+    }
+
+    @Override
+    public void updateStep() {
+        super.updateStep();
     }
 
     @Override
