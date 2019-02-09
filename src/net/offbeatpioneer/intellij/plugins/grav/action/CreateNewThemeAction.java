@@ -136,7 +136,8 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
                 if (processUtils.getErrorOutput() != null) {
                     NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, project);
                 } else if (!output.contains("SUCCESS")) {
-                    NotificationHelper.showBaloon(output, MessageType.WARNING, project);
+                    output = "Theme couldn't be created: " + output;
+                    NotificationHelper.showBaloon(output, MessageType.WARNING, project, 5000);
                 } else {
                     NotificationHelper.showBaloon("Theme '" + themeData.getName() + "' was created", MessageType.INFO, project);
                 }

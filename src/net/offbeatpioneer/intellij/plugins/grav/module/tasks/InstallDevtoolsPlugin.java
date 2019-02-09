@@ -32,8 +32,13 @@ public class InstallDevtoolsPlugin extends Task.Backgroundable {
     public void onSuccess() {
         super.onSuccess();
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(getProject());
-        if (processUtils.getErrorOutput() != null && !processUtils.getErrorOutput().isEmpty()) {
+
+        String output = processUtils.getOutputAsString();
+        if (processUtils.getErrorOutput() != null) {
             NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, getProject());
+        } else if (!output.contains("SUCCESS")) {
+            output = "DevTools plugin couldn't be installed: " + output;
+            NotificationHelper.showBaloon(output, MessageType.WARNING, getProject(), 5000);
         } else {
             JBPopupFactory.getInstance()
                     .createHtmlTextBalloonBuilder("Devtools plugin installed", MessageType.INFO, null)
@@ -41,6 +46,16 @@ public class InstallDevtoolsPlugin extends Task.Backgroundable {
                     .createBalloon()
                     .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
         }
+
+//        if (processUtils.getErrorOutput() != null && !processUtils.getErrorOutput().isEmpty()) {
+//            NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, getProject());
+//        } else {
+//            JBPopupFactory.getInstance()
+//                    .createHtmlTextBalloonBuilder("Devtools plugin installed", MessageType.INFO, null)
+//                    .setFadeoutTime(3500)
+//                    .createBalloon()
+//                    .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
+//        }
     }
 
     @Override
