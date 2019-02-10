@@ -1,4 +1,4 @@
-package net.offbeatpioneer.intellij.plugins.grav.module.wizard;
+package net.offbeatpioneer.intellij.plugins.grav.module.ui;
 
 import javax.swing.*;
 import java.awt.*;
