@@ -2,6 +2,9 @@ package net.offbeatpioneer.intellij.plugins.grav.module.php;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
@@ -13,12 +16,12 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.platform.ProjectGeneratorPeer;
 import com.intellij.ui.awt.RelativePoint;
+import com.intellij.util.PlatformUtils;
 import com.jetbrains.php.config.library.PhpIncludePathManager;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
-import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder;
 import net.offbeatpioneer.intellij.plugins.grav.module.builder.GravProjectGeneratorUtil;
-import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConfigurable;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
 import org.jetbrains.annotations.Nls;
@@ -29,7 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravIntroWizardStep.LAST_USED_GRAV_HOME;
+import static net.offbeatpioneer.intellij.plugins.grav.module.wizard.CreateGravProjectWizardStep.LAST_USED_GRAV_HOME;
 
 /**
  * Created by Dome on 11.08.2017.
@@ -45,7 +48,7 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
 
     @Override
     public String getDescription() {
-        return "Create a Grav project";
+        return "Create a new Grav project. A local PHP interpreter is required.";
     }
 
     @Override
@@ -75,6 +78,7 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(settings.gravInstallationPath));
         if (vf == null || !GravSdkType.isValidGravSDK(vf)) {
+            NotificationHelper.showErrorNotification(project, "Project couldn't be created because Grav Installation isn't valid");
             JBPopupFactory.getInstance()
                     .createHtmlTextBalloonBuilder("Project couldn't be created because Grav Installation isn't valid", MessageType.ERROR, null)
                     .setFadeoutTime(3500)
@@ -93,5 +97,9 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean isPrimaryGenerator() {
+        return PlatformUtils.isPhpStorm();
     }
 }

@@ -17,9 +17,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
+/**
+ * @author Dominik Grzelak
+ */
 public class InstallDevtoolsPlugin extends Task.Backgroundable {
-    private String[] commands = new String[]{"php", "bin/gpm", "install", "devtools"};
-    private File targetPath;
+    private final String[] commands = new String[]{"php", "bin/gpm", "install", "-f", "-y", "devtools"}; //TODO could be dependent on the Grav version in the future
+    private final File targetPath;
     private ProcessUtils processUtils;
 
     public InstallDevtoolsPlugin(@Nullable Project project, @Nls @NotNull String title, File targetPath) {
@@ -35,27 +38,20 @@ public class InstallDevtoolsPlugin extends Task.Backgroundable {
 
         String output = processUtils.getOutputAsString();
         if (processUtils.getErrorOutput() != null) {
-            NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, getProject());
-        } else if (!output.contains("SUCCESS")) {
-            output = "DevTools plugin couldn't be installed: " + output;
-            NotificationHelper.showBaloon(output, MessageType.WARNING, getProject(), 5000);
-        } else {
-            JBPopupFactory.getInstance()
-                    .createHtmlTextBalloonBuilder("Devtools plugin installed", MessageType.INFO, null)
-                    .setFadeoutTime(3500)
-                    .createBalloon()
-                    .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
-        }
-
-//        if (processUtils.getErrorOutput() != null && !processUtils.getErrorOutput().isEmpty()) {
 //            NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, getProject());
-//        } else {
+            NotificationHelper.showErrorNotification(getProject(), processUtils.getErrorOutput());
+        } else if (!output.toLowerCase().contains("success")) {
+            output = "DevTools plugin couldn't be installed: " + output;
+            NotificationHelper.showErrorNotification(getProject(), output);
+//            NotificationHelper.showBaloon(output, MessageType.WARNING, getProject(), 5000);
+        } else {
+            NotificationHelper.showInfoNotification(getProject(), "Devtools plugin installed");
 //            JBPopupFactory.getInstance()
 //                    .createHtmlTextBalloonBuilder("Devtools plugin installed", MessageType.INFO, null)
 //                    .setFadeoutTime(3500)
 //                    .createBalloon()
 //                    .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
-//        }
+        }
     }
 
     @Override
