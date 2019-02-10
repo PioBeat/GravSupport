@@ -150,7 +150,7 @@ public abstract class FileEditorStrategy implements ActionListener {
                 if (rowAtPoint == -1) {
                     IdeFrame ideFrame = WindowManager.getInstance().getIdeFrame(project);
                     NotificationHelper.showBaloon("Please select a key first", MessageType.WARNING, fileEditor.getProject(),
-                            RelativePoint.getCenterOf(ideFrame.getComponent()), Balloon.Position.below);
+                            RelativePoint.getCenterOf(ideFrame.getComponent()), Balloon.Position.below, 3500);
                     return;
                 }
                 String key = model.getKeys(true).get(rowAtPoint);
