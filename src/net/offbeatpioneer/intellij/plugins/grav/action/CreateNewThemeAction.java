@@ -56,12 +56,13 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
             String moduleName = module == null ? "" : module.getName();
             presentation.setText(Text + " (" + moduleName + ")");
         }
+//        throw new RuntimeException("msndmsd");
     }
 
     private boolean isAvailable(DataContext dataContext) {
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final Module module = LangDataKeys.MODULE.getData(dataContext);
-        if(module == null) return false;
+        if (module == null) return false;
         final ModuleType moduleType = ModuleType.get(module);
 
         final boolean pluginEnabled = GravProjectComponent.isEnabled(project);
@@ -91,8 +92,10 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
         }
     }
 
+    //TODO extract error message correctly, eg, wrong PHP version
     private void createTheme(@NotNull Project project, Module module) {
-        String[] commands = {"echo", "0", "|", "php", "bin/plugin", "devtools", "new-theme",
+//        String[] commands = {"echo", "0", "|", "php", "bin/plugin", "devtools", "new-theme",
+        String[] commands = {"echo", "pure-blank", "|", "php", "bin/plugin", "devtools", "new-theme",
                 "--name", themeData.getName(),
                 "--description", themeData.getDescription(),
                 "--developer", themeData.getDeveloper(),
@@ -132,6 +135,9 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
                 String output = processUtils.getOutputAsString();
                 if (processUtils.getErrorOutput() != null) {
                     NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, project);
+                } else if (!output.contains("SUCCESS")) {
+                    output = "Theme couldn't be created: " + output;
+                    NotificationHelper.showBaloon(output, MessageType.WARNING, project, 5000);
                 } else {
                     NotificationHelper.showBaloon("Theme '" + themeData.getName() + "' was created", MessageType.INFO, project);
                 }

@@ -225,8 +225,8 @@
                 id="Grav"
                 anchor="right"
                 icon="/icons/icon_toolwindow.png"
+                conditionClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsToolWindowFactory"
                 factoryClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsToolWindowFactory"/>
-                <!--conditionClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsToolWindowFactory"-->
 
         <intentionAction>
             <className>net.offbeatpioneer.intellij.plugins.grav.intentions.ConvertTwigResource</className>

@@ -18,6 +18,7 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
+import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.module.tasks.InstallDevtoolsPlugin;
 import net.offbeatpioneer.intellij.plugins.grav.module.wizard.CopyFileVisitor;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
@@ -43,7 +44,7 @@ public class GravProjectGeneratorUtil {
             @Override
             public void run() {
                 try {
-
+                    //TODO
                     ModifiableRootModel model = ModuleRootManager.getInstance(module).getModifiableModel();
                     if (settings.withSrcDirectory) {
                         VirtualFile src1 = src.createChildDirectory(this, "src");
@@ -94,11 +95,12 @@ public class GravProjectGeneratorUtil {
             @Override
             public void onSuccess() {
                 super.onSuccess();
-                JBPopupFactory.getInstance()
-                        .createHtmlTextBalloonBuilder("Module created", MessageType.INFO, null)
-                        .setFadeoutTime(3500)
-                        .createBalloon()
-                        .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
+                NotificationHelper.showInfoNotification(getProject(), "Grav project created");
+//                JBPopupFactory.getInstance()
+//                        .createHtmlTextBalloonBuilder("Grav project created", MessageType.INFO, null)
+//                        .setFadeoutTime(3500)
+//                        .createBalloon()
+//                        .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
                 ProgressManager.getInstance().run(installDevtools);
             }
 

@@ -17,7 +17,6 @@ import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.helper.ProjectChecker;
 import net.offbeatpioneer.intellij.plugins.grav.helper.Triple;
 import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
-import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLElementGenerator;
 import org.jetbrains.yaml.YAMLUtil;
@@ -34,10 +33,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Grav tool window support.
+ *
  * @author Dominik Grzelak
  * @since 2017-08-24
  */
-public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener {
+public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener, Condition {
     private final static String SYSTEM_SYSTEM_CONFIG_FILE = "system/config/system.yaml";
     private final static String USER_SYSTEM_CONFIG_FILE = "user/config/system.yaml";
 
@@ -67,17 +68,17 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
             content = contentFactory.createContent(new JLabel("An error occurred reading the system/config/system.yaml file"), "Grav", false);
         }
         this.toolWindow.getContentManager().addContent(content);
+
+
+//        Project project = ProjectChecker.getFirstOpenedProject();
+        String title = "Configuration";
+        title += " for '" + project.getName() + "'";
+        PsiManager.getInstance(project).addPsiTreeChangeListener(this);
+        toolWindow.setTitle(title);
     }
 
     @Override
     public void init(ToolWindow window) {
-        Project project = ProjectChecker.getFirstOpenedProject();
-        String title = "Configuration";
-        if (project != null) {
-            title += " for '" + project.getName() + "'";
-            PsiManager.getInstance(project).addPsiTreeChangeListener(this);
-        }
-        window.setTitle(title);
         componentList.add(new Triple<>(new String[]{"languages", "translations"}, Boolean.class, cbTranslationEnabled));
         componentList.add(new Triple<>(new String[]{"languages", "http_accept_language"}, Boolean.class, cbActiveLanguageBrowser));
         componentList.add(new Triple<>(new String[]{"languages", "include_default_lang"}, Boolean.class, cbIncludeDefaultLang));
@@ -188,16 +189,17 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
 
     private SmartPsiElementPointer<YAMLFile> getSystemFile(@NotNull Project project) {
         String prefix = "";
-        try {
-            prefix = GravProjectSettings.getInstance(project).withSrcDirectory ? "src/" + "" : "";
-        } catch (NullPointerException ignored) {
-        }
+//        try {
+//            prefix = Objects.requireNonNull(GravProjectSettings.getInstance(project)).withSrcDirectory ? "src/" + "" : "";
+//        } catch (NullPointerException ignored) {
+//        }
 
         String path = prefix + SYSTEM_SYSTEM_CONFIG_FILE;
+        // TODO deprecated
         VirtualFile systemFile = project.getBaseDir().findFileByRelativePath(path);
         if (systemFile != null) {
             PsiFile psiFile = PsiManager.getInstance(project).findFile(systemFile);
-            if (psiFile != null && psiFile instanceof YAMLFile) {
+            if (psiFile instanceof YAMLFile) { // also checks for != null
                 systemYamlFile = SmartPointerManagerImpl.getInstance(project).createSmartPsiElementPointer((YAMLFile) psiFile);
                 return systemYamlFile;
             }
@@ -267,5 +269,10 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     @Override
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
 
+    }
+
+    @Override
+    public boolean value(Object o) {
+        return true;
     }
 }
