@@ -4,7 +4,6 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
-import com.intellij.lang.javascript.boilerplate.GithubDownloadUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.AccessToken;
@@ -18,13 +17,10 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.templates.github.DownloadUtil;
-import com.intellij.platform.templates.github.GeneratorException;
 import com.intellij.platform.templates.github.Outcome;
 import com.intellij.ui.FieldPanel;
 import com.intellij.ui.OptionGroup;
-import com.intellij.ui.PanelWithAnchor;
 import com.intellij.ui.components.labels.ActionLink;
-import com.intellij.ui.components.panels.FlowLayoutWrapper;
 import com.intellij.util.download.DownloadableFileDescription;
 import com.intellij.util.download.DownloadableFileService;
 import com.intellij.util.download.FileDownloader;
@@ -33,6 +29,7 @@ import com.intellij.util.net.IOExceptionDialog;
 import com.intellij.util.ui.JBUI;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GithubApi;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
+import net.offbeatpioneer.intellij.plugins.grav.module.ui.SquareButton;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,17 +51,18 @@ import java.util.Properties;
  *
  * @author Dominik Grzelak
  */
-public class IntroStepGUI implements ActionListener {
+public class CreateGravProjectWizardGUI implements ActionListener {
     // points to the file that defines the URL format of the Grav release in GitHub
     private static final String DOWNLOAD_CONFIG_PROPERTIES = "download-config.properties";
     boolean downloaded = false;
-    private Project project;
+    private final Project project;
     private String[] DEFAULT_GRAV_VERSIONS = new String[]{"1.3.8", "1.3.7", "1.3.6", "1.3.5", "1.3.4", "1.3.3", "1.3.2", "1.3.1", "1.3.0", "1.2.4"};
     private boolean gotLatestVersions = false; //flag indicates if latest version tags could be retrieved from github
     private String[] gravVersions = null;
     private JPanel mainPanel;
+    private JPanel ptop;
+    private JPanel pbottom;
     private JLabel lblIntro;
-    private JPanel content;
     private ActionLink myDownloadLink;
     private FieldPanel fieldPanel;
     private JLabel lblHint;
@@ -77,10 +75,17 @@ public class IntroStepGUI implements ActionListener {
     private JPanel panelSelectGrav;
     private JPanel panelDownloadGrav;
     private JButton btnRefreshGravVersions;
+    private JLabel lblGravDownloadPath;
     private OptionGroup panel1;
     private BrowseFilesListener browseFilesListener;
 
-    public IntroStepGUI(Project project) {
+    public enum WizardOption {
+        SELECT, DOWNLOAD
+    }
+
+    private WizardOption wizardOption;
+
+    public CreateGravProjectWizardGUI(Project project) {
         this.project = project;
     }
 
@@ -103,6 +108,7 @@ public class IntroStepGUI implements ActionListener {
         rbSelectGrav.setSelected(false);
         enablePanel(panelSelectGrav, true);
         enablePanel(panelDownloadGrav, false);
+        wizardOption = WizardOption.SELECT;
     }
 
     public void createUIComponents() {
@@ -215,7 +221,7 @@ public class IntroStepGUI implements ActionListener {
                                 }, "Extracting Zip File", false, project, mainPanel);
 
 //                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
-                                PropertiesComponent.getInstance().setValue(GravIntroWizardStep.LAST_USED_GRAV_HOME, newdirpath);
+                                PropertiesComponent.getInstance().setValue(CreateGravProjectWizardStep.LAST_USED_GRAV_HOME, newdirpath);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             } finally {
@@ -225,6 +231,7 @@ public class IntroStepGUI implements ActionListener {
                                     setDeterminedGravVersion(gravSdkVersion);
                                     showDeterminedVersion(true);
                                     fieldPanel.setText(newdirpath);//validation will be performed automatically (see GravInstallerGeneratorPeer)
+                                    lblGravDownloadPath.setText(newdirpath);
                                 }
                             }
                         }
@@ -306,8 +313,18 @@ public class IntroStepGUI implements ActionListener {
         return fieldPanel;
     }
 
+    /**
+     * Dependent on the option (Select or Download)
+     *
+     * @return the path to the grav directory, or empty string
+     */
     public String getGravDirectory() {
-        return fieldPanel.getText();
+        if (wizardOption == WizardOption.SELECT) {
+            return fieldPanel.getText();
+        } else if (wizardOption == WizardOption.DOWNLOAD) {
+            return lblGravDownloadPath.getText();
+        }
+        return "";
     }
 
     public void showHint(boolean flag) {
@@ -319,9 +336,11 @@ public class IntroStepGUI implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JRadioButton) {
             if (e.getActionCommand().equals("selectGrav")) {
+                wizardOption = WizardOption.SELECT;
                 enablePanel(panelDownloadGrav, false);
                 enablePanel(panelSelectGrav, true);
             } else if (e.getActionCommand().equals("downloadGrav")) {
+                wizardOption = WizardOption.DOWNLOAD;
                 enablePanel(panelDownloadGrav, true);
                 enablePanel(panelSelectGrav, false);
             }
@@ -341,5 +360,7 @@ public class IntroStepGUI implements ActionListener {
         }
     }
 
-
+    public WizardOption getWizardOption() {
+        return wizardOption;
+    }
 }
