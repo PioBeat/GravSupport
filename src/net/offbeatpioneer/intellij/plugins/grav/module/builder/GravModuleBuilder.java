@@ -23,7 +23,7 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType;
-import net.offbeatpioneer.intellij.plugins.grav.module.wizard.GravIntroWizardStep;
+import net.offbeatpioneer.intellij.plugins.grav.module.wizard.CreateGravProjectWizardStep;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,11 +31,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
-    private Project project;
 
     private VirtualFile gravInstallPath;
-    GravProjectSettings settings;
-    boolean withSrcDirectory;
+    private GravProjectSettings settings;
 
     public VirtualFile getGravInstallPath() {
         return gravInstallPath;
@@ -43,14 +41,6 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     public void setGravInstallPath(VirtualFile gravInstallPath) {
         this.gravInstallPath = gravInstallPath;
-    }
-
-    public boolean isWithSrcDirectory() {
-        return withSrcDirectory;
-    }
-
-    public void setWithSrcDirectory(boolean withSrcDirectory) {
-        this.withSrcDirectory = withSrcDirectory;
     }
 
     public GravModuleBuilder() {
@@ -69,7 +59,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     @Override
     public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
-        setProject(rootModel.getProject());
+//        setProject(rootModel.getProject());
         ContentEntry contentEntry = doAddContentEntry(rootModel);
     }
 
@@ -93,8 +83,8 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     @Override
     @Nullable
     public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-        setProject(context.getProject());
-        GravIntroWizardStep step = new GravIntroWizardStep(this);
+//        setProject(context.getProject());
+        CreateGravProjectWizardStep step = new CreateGravProjectWizardStep(this, context.getProject());
         Disposer.register(parentDisposable, step);
         return step;
     }
@@ -102,13 +92,14 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     @Override
     public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
         return new ModuleWizardStep[]{
-//                new GravIntroWizardStep(this),
+//                new CreateGravProjectWizardStep(this),
 //                new GravModuleWizardStep(this)
         };
     }
 
     @Override
     public void moduleCreated(@NotNull Module module) {
+        Project project = module.getProject();
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         String msg = String.format("Please wait while module for project %s is created", project.getName());
         settings = GravProjectSettings.getInstance(project);
@@ -122,7 +113,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
         VirtualFile[] roots1 = ModuleRootManager.getInstance(module).getContentRoots();
         if (roots1.length != 0) {
             final VirtualFile src = roots1[0];
-            settings.withSrcDirectory = withSrcDirectory;
+            settings.withSrcDirectory = false;
             settings.gravInstallationPath = getGravInstallPath().getPath();
 //            settings.withSrcDirectory =
             GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil();
@@ -132,14 +123,6 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     private static String getUrlByPath(final String path) {
         return VfsUtil.getUrlForLibraryRoot(new File(path));
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
     }
 
     public GravProjectSettings getSettings() {
