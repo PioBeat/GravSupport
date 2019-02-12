@@ -28,6 +28,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
+import static com.intellij.ide.projectView.actions.MarkRootActionBase.findContentEntry;
+
 /**
  * @author Dominik Grzelak
  */
@@ -140,6 +142,7 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
                     NotificationHelper.showBaloon(output, MessageType.WARNING, project, 5000);
                 } else {
                     NotificationHelper.showBaloon("Theme '" + themeData.getName() + "' was created", MessageType.INFO, project);
+                    finalSrcFile.refresh(false, true);
                 }
             }
 
