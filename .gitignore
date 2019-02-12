@@ -2,7 +2,7 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 libs/php*
-*.jar
+./*.jar
 GravSupport.zip
 
 # User-specific stuff:
