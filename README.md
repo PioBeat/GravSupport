@@ -5,8 +5,6 @@ within for IntelliJ Community / Ultimate Edition and PhpStorm
 
 [Grav](https://getgrav.org/) is a flat-file CMS and it's open source.
 
-Grav version support: 1.2.4 - 1.6.*
-
 Tested with:
 * PhpStorm 2018.3.*
 * IntelliJ IDEA Community 2017.2.*
@@ -28,6 +26,11 @@ This way you will get notified if a new update is available!
 [Download the latest plugin](https://github.com/PioBeat/GravSupport/releases) and
 install it via the settings menu: <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
 and then search for _Plugins -> Install plugins from disk_
+
+## Version
+
+This plugin supports the following Grav versions: 1.4.*, 1.5.*, 1.6.*, ...
+
 
 ## Configuration
 
@@ -79,7 +82,7 @@ Php should be found in the ``PATH``.
 The plugin uses the scripts in the ``bin`` directory of Grav to offer
 the functionality Grav supports via those scripts.
 
-## Help
+## Help and Common Bugs
 
 **Supported Grav versions**
 
@@ -105,7 +108,6 @@ References:
 * [https://github.com/getgrav/grav-plugin-devtools](https://github.com/getgrav/grav-plugin-devtools)
 
 
-
 ## Contribution
 
 Support the plugin if you like it:
@@ -115,7 +117,7 @@ Support the plugin if you like it:
 - Report bugs or feature requests or even fix / implement them
 - Reach out to me directly at dominik@offbeat-pioneer.net
 
-### Implement features or fix bugs
+### Implement Features or Fix Bugs
 
 Fork this repository to your own GitHub account and then clone it to
 your local device. Open a pull request with improvements.
@@ -123,10 +125,21 @@ your local device. Open a pull request with improvements.
 Please read the [IntelliJ Platform SDK Documentation](http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/setting_up_environment.html)
 on how to set up the development environment.
 
-### Reporting issue
+### Reporting Bugs
 
-If you find any issues, please report them directly by using the GitHub issue
-tracker instead of review comments.
+If you find any issues, please report them directly by using the [GitHub issue
+tracker](https://github.com/PioBeat/GravSupport/issues) instead of review comments.
+
+**Automatic Bug Reports**
+
+The plugin offers the possibiliy to report errors directly within the IDE.
+If an exception occurs, the user can submit the error by clicking a link and providing
+additional details.
+After, the bug report will be added automatically to this repository as an issue: [https://github.com/Grav-IntelliJ-Plugin/GravSupport-Plugin-BugTracker/issues](https://github.com/Grav-IntelliJ-Plugin/GravSupport-Plugin-BugTracker/issues).
+
+Nevertheless, feature requests, enhancements and bugs not captured by the plugin 
+can still be filed in this repository ([https://github.com/PioBeat/GravSupport/issues](https://github.com/PioBeat/GravSupport/issues)).
+
 
 
 <!-- - Vote for it: Write your review and vote for it at the IntelliJ plugin repository. -->
