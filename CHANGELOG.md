@@ -1,8 +1,32 @@
 # Changelog
 
+## [UNRELEASED]
+
+### Added
+- Automatic error reporting feature implemented. All plugin's exceptions 
+that are occurring within IntelliJ IDE can now be reported within the IDE. 
+The issues will be added to a specific repository (https://github.com/Grav-IntelliJ-Plugin/GravSupport-Plugin-BugTracker)
+dedicated for automatic error reports. Additional user requests can be still 
+submitted to the original issue tracker (https://github.com/PioBeat/GravSupport).
+
+- Improved notifications: Warnings are shown when PHP version does not match the Grav requirements for:
+    - Actions (Create Grav Theme) and Devtool plugin installation
+
+### Changed
+- *Create New Grav Project* wizard updated. Layout is more clear now.
+
+### Bugfix
+- Fixed some bugs concerning the detection whether Grav's devtool plugin is being installed correctly or not.
+- "Create Theme" action should work now correctly again
+- Bugfixes in the *Create New Grav Project* wizard
+
 ## [0.4.1] - 2019-01-04
+
+### Bugfix
 - Compatibility Fix: Plugin works now for the latest IDEA platforms: 182-183.*
 - Grav Tool Window is getting deactivated when plugin is disabled for the current project and vice versa
+
+### Removed
 - Disabled the "create src and test directory" option in the project wizard: will be removed in the future
 
 ## [0.4.0] - 2018-10-14

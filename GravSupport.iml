@@ -23,5 +23,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="org.eclipse.egit.github.core-2.1.5" level="project" />
   </component>
 </module>
