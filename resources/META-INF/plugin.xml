@@ -234,13 +234,18 @@
             <descriptionDirectoryName>ConvertTwigResource</descriptionDirectoryName>
         </intentionAction>
 
-        <errorHandler implementation="net.offbeatpioneer.intellij.plugins.grav.reporting.GravExceptionTracker"/>
+        <errorHandler implementation="net.offbeatpioneer.intellij.plugins.grav.errorreporting.GitHubErrorReporter"/>
     </extensions>
 
 
     <actions>
         <!-- Add your actions here -->
         <action id="Grav.CreateTheme" class="net.offbeatpioneer.intellij.plugins.grav.action.CreateNewThemeAction">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+        </action>
+
+        <action id="Grav.ThrowException" class="net.offbeatpioneer.intellij.plugins.grav.errorreporting.TriggerExceptionAction">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
         </action>
