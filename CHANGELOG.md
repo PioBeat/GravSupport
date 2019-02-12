@@ -17,7 +17,8 @@ submitted to the original issue tracker (https://github.com/PioBeat/GravSupport)
 
 ### Bugfix
 - Fixed some bugs concerning the detection whether Grav's devtool plugin is being installed correctly or not.
-- "Create Theme" action should work now correctly again
+- "Create Theme" action should work now correctly again. Moreover, folder 
+is refreshed afterwards. Prior to that, the folder has to be manually synchronized.
 - Bugfixes in the *Create New Grav Project* wizard
 
 ## [0.4.1] - 2019-01-04
