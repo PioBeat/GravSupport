@@ -36,6 +36,7 @@ and then search for _Plugins -> Install plugins from disk_
 
 The [Twig Support](https://plugins.jetbrains.com/plugin/7303-twig-support) plugin 
 must be also installed when using IntelliJ Ultimate/Community.
+This also applies for YAML, PHP and CSS support.
 
 
 ## Configuration
