@@ -12,6 +12,11 @@ Tested with:
 
 The plugin is also available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support).
 
+## Version
+
+This plugin supports the following Grav versions: 1.4.*, 1.5.*, 1.6.*, ...
+
+
 ## Install
 
 **JetBrains Plugins Repository**
@@ -27,9 +32,10 @@ This way you will get notified if a new update is available!
 install it via the settings menu: <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
 and then search for _Plugins -> Install plugins from disk_
 
-## Version
+<br/>
 
-This plugin supports the following Grav versions: 1.4.*, 1.5.*, 1.6.*, ...
+The [Twig Support](https://plugins.jetbrains.com/plugin/7303-twig-support) plugin 
+must be also installed when using IntelliJ Ultimate/Community.
 
 
 ## Configuration
