@@ -41,7 +41,7 @@ public class FileCreateUtil {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
     }
-
+    @Deprecated
     public static VirtualFile getParentDirectory(VirtualFile src, String dirName) {
         if (src.getParent().isDirectory() && src.getParent().getName().equals(dirName)) {
             return src.getParent();
