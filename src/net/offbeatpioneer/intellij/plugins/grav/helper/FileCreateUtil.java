@@ -12,6 +12,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.Processor;
 import com.intellij.util.indexing.FileBasedIndex;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,6 +42,7 @@ public class FileCreateUtil {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
     }
+
     @Deprecated
     public static VirtualFile getParentDirectory(VirtualFile src, String dirName) {
         if (src.getParent().isDirectory() && src.getParent().getName().equals(dirName)) {
@@ -52,14 +54,24 @@ public class FileCreateUtil {
     //https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000080064-find-virtual-file-for-relative-path-under-content-roots
     public static List<VirtualFile> findFileByRelativePath(@NotNull Project project, @NotNull String fileRelativePath) {
         String relativePath = fileRelativePath.startsWith("/") ? fileRelativePath : "/" + fileRelativePath;
-        Set<FileType> fileTypes = Collections.singleton(FileTypeManager.getInstance().getFileTypeByFileName(relativePath));
+        FileType fileTypes = FileTypeManager.getInstance().getFileTypeByFileName(relativePath);
         final List<VirtualFile> fileList = new ArrayList<>();
-        FileBasedIndex.getInstance().processFilesContainingAllKeys(FileTypeIndex.NAME, fileTypes, GlobalSearchScope.projectScope(project), null, virtualFile -> {
-            if (virtualFile.getPath().endsWith(relativePath)) {
-                fileList.add(virtualFile);
+//        Collection<VirtualFile> files = FileTypeIndex.getFiles(fileTypes, GlobalSearchScope.projectScope(project));
+        FileTypeIndex.processFiles(fileTypes, new Processor<VirtualFile>() {
+            @Override
+            public boolean process(VirtualFile virtualFile) {
+                if (virtualFile.getPath().endsWith(relativePath)) {
+                    fileList.add(virtualFile);
+                }
+                return true;
             }
-            return true;
-        });
+        }, GlobalSearchScope.projectScope(project));
+//        FileBasedIndex.getInstance().processFilesContainingAllKeys(FileTypeIndex.NAME, fileTypes, GlobalSearchScope.projectScope(project), null, virtualFile -> {
+//            if (virtualFile.getPath().endsWith(relativePath)) {
+//                fileList.add(virtualFile);
+//            }
+//            return true;
+//        });
         return fileList;
     }
 }
