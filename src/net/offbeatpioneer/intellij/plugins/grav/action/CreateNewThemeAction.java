@@ -2,33 +2,25 @@ package net.offbeatpioneer.intellij.plugins.grav.action;
 
 import com.intellij.ide.IdeView;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteActionAware;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
-import com.intellij.openapi.module.WebModuleType;
 import com.intellij.openapi.module.WebModuleTypeBase;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.sun.xml.internal.ws.api.server.WebModule;
+import com.intellij.openapi.vfs.VirtualFileManager;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
-import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.helper.ProcessUtils;
 import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
-import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-
-import static com.intellij.ide.projectView.actions.MarkRootActionBase.findContentEntry;
+import java.util.Objects;
 
 /**
  * @author Dominik Grzelak
@@ -90,6 +82,10 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
 
         if (dialog.getExitCode() == 0) {
             themeData = dialog.getThemeData();
+            if (Objects.isNull(project) || Objects.isNull(module)) {
+                NotificationHelper.showBaloon("Project or module couldn't be determined. Please try again or restart the IDE.", MessageType.ERROR, project);
+                return;
+            }
             createTheme(project, module);
         }
     }
@@ -103,28 +99,12 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
                 "--developer", themeData.getDeveloper(),
                 "--email", themeData.getEmail()};
 
-        GravProjectSettings settings = GravProjectSettings.getInstance(project);
-        ModuleRootManager root = ModuleRootManager.getInstance(module);
-        VirtualFile srcFile = null;
-        for (VirtualFile file : root.getSourceRoots()) {
-            if (file.isDirectory() && file.getName().contentEquals("src")) {
-                srcFile = file;
-                break;
-            }
+        String srcPath = module.getProject().getBasePath();
+        if (Objects.isNull(srcPath)) {
+            NotificationHelper.showBaloon("Project path couldn't be determined. Please try again or restart the IDE.", MessageType.ERROR, project);
+            return;
         }
-
-        if (srcFile == null) {
-            if (settings != null && settings.withSrcDirectory) {
-                NotificationHelper.showBaloon("No source root found in module '" + module.getName() + "'",
-                        MessageType.ERROR, project);
-                return;
-            } else {
-                srcFile = FileCreateUtil.getParentDirectory(module.getModuleFile(), module.getName());
-            }
-        }
-
-        VirtualFile finalSrcFile = srcFile;
-        ProcessUtils processUtils = new ProcessUtils(commands, new File(finalSrcFile.getPath()));
+        ProcessUtils processUtils = new ProcessUtils(commands, new File(srcPath));
         Task.Backgroundable t = new Task.Backgroundable(project, "Create New Grav Theme in Module '" + module.getName() + "'") {
             @Override
             public boolean shouldStartInBackground() {
@@ -142,7 +122,7 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
                     NotificationHelper.showBaloon(output, MessageType.WARNING, project, 5000);
                 } else {
                     NotificationHelper.showBaloon("Theme '" + themeData.getName() + "' was created", MessageType.INFO, project);
-                    finalSrcFile.refresh(false, true);
+                    VirtualFileManager.getInstance().syncRefresh();
                 }
             }
 
