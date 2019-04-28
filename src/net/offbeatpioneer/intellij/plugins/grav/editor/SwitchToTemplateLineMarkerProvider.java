@@ -35,13 +35,13 @@ import java.util.List;
 public class SwitchToTemplateLineMarkerProvider extends RelatedItemLineMarkerProvider {
 
     @Override
-    protected void collectNavigationMarkers(@NotNull PsiElement element, Collection<? super RelatedItemLineMarkerInfo> result) {
+    protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo> result) {
         Project project = element.getProject();
         if (!GravProjectComponent.isEnabled(project)) return;
         if (!element.getText().contentEquals("---")) return;
         PsiElement[] horizontalLines = PsiTreeUtil.collectElements(element.getContainingFile(), new PsiElementFilter() {
             @Override
-            public boolean isAccepted(PsiElement element) {
+            public boolean isAccepted(@NotNull PsiElement element) {
                 return element.getText().contentEquals("---");
             }
         });
@@ -101,7 +101,7 @@ public class SwitchToTemplateLineMarkerProvider extends RelatedItemLineMarkerPro
         int isWithinHeader = 0;
 
         @Override
-        public boolean isAccepted(PsiElement element) {
+        public boolean isAccepted(@NotNull PsiElement element) {
             if (isWithinHeader >= 2) return false;
             if (element.getText().contentEquals("---")) {
                 isWithinHeader++;

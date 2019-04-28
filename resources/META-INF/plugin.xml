@@ -10,6 +10,31 @@
 
     <change-notes><![CDATA[
         <p>
+            <span>0.4.2</span>
+            <ul>
+                <li>Added</li>
+                <ul>
+                    <li>Automatic error reporting feature implemented. All plugin's exceptions
+                    that are occurring within IntelliJ IDE can now be reported within the IDE.
+                    The issues will be added to a specific repository (https://github.com/Grav-IntelliJ-Plugin/GravSupport-Plugin-BugTracker)
+                    dedicated for automatic error reports. Additional user requests can be still
+                    submitted to the original issue tracker (https://github.com/PioBeat/GravSupport).
+                    </li>
+                    <li>Improved notifications: Warnings are shown when PHP version does not match the Grav requirements of the current Grav installation</li>
+                </ul>
+                <li>Changed</li>
+                <ul>
+                    <li>*Create New Grav Project* wizard updated. Layout is more clear now.</li>
+                </ul>
+                <li>Bugfix</li>
+                <ul>
+                    <li>Fixed some bugs concerning the detection whether Grav's devtool plugin is being installed correctly or not.</li>
+                    <li>"Create Theme" action should work now correctly again. Moreover, folder is refreshed afterwards. Prior to that, the folder has to be manually synchronized.</li>
+                    <li>Bugfixes in the *Create New Grav Project* wizard</li>
+                </ul>
+            </ul>
+        </p>
+        <p>
             <span>0.4.1</span>
             <ul>
                 <li>Compatibility Fix</li>
@@ -205,7 +230,7 @@
                 nonDefaultProject="true"
         />
 
-        <codeInsight.lineMarkerProvider language="Markdown"
+        <codeInsight.lineMarkerProvider language=""
                                         implementationClass="net.offbeatpioneer.intellij.plugins.grav.editor.SwitchToTemplateLineMarkerProvider"/>
         <fileEditorProvider
                 implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>
@@ -245,10 +270,10 @@
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
         </action>
 
-        <action id="Grav.ThrowException" class="net.offbeatpioneer.intellij.plugins.grav.errorreporting.TriggerExceptionAction">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
-        </action>
+        <!--        <action id="Grav.ThrowException" class="net.offbeatpioneer.intellij.plugins.grav.errorreporting.TriggerExceptionAction">-->
+        <!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
+        <!--            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>-->
+        <!--        </action>-->
 
         <action id="Grav.NewFile"
                 class="net.offbeatpioneer.intellij.plugins.grav.action.NewThemeConfigurationFileAction"
