@@ -1,6 +1,6 @@
 # Changelog
 
-## [UNRELEASED]
+## [0.4.2]
 
 ### Added
 - Automatic error reporting feature implemented. All plugin's exceptions 

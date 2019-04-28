@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Dominik Grzelak</vendor>
 
     <description><![CDATA[
