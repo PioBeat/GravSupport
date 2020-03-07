@@ -6,16 +6,17 @@ within for IntelliJ Community / Ultimate Edition and PhpStorm
 [Grav](https://getgrav.org/) is a flat-file CMS and it's open source.
 
 Tested with:
-* PhpStorm 2018.3.*, 2019.1.1
-* IntelliJ IDEA Ultimate 2018.2.4, 2019.1.1
+* PhpStorm 2018.3.*, 2019.1.1, 2019.3.3
+* IntelliJ IDEA Ultimate 2018.2.4, 2019.1.1, 2019.3.3
 * IntelliJ IDEA Community 2017.2.*
 
 The plugin is also available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support).
 
 ## Version
 
-This plugin supports the following Grav versions: 1.4.*, 1.5.*, 1.6.*, ...
+The latest plugin supports the following Grav versions: 1.6.*, ...
 
+Furthermore, I only provide support for PHP 7.*. If you have a lower version than the plugin may not work correctly.
 
 ## Install
 

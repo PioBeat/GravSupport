@@ -4,19 +4,21 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.yaml.YAMLLanguage;
 
 import javax.swing.*;
 
 /**
- * Created by Dome on 16.07.2017.
+ * Concrete implementation of Grav's theme configuration file.
+ *
+ * @author Dominik Grzelak
+ * @since 16.07.2017.
  */
-public class ThemeConfigurationFileType extends GravConfigurationFileType {
+public class ThemeConfigurationFileType extends AbstractGravFileType {
     public static final LanguageFileType INSTANCE = new ThemeConfigurationFileType();
     private String defaultFileName;
 
     public ThemeConfigurationFileType() {
-        super(YAMLLanguage.INSTANCE);
+        super();
     }
 
     @NotNull

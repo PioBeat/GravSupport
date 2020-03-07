@@ -8,6 +8,8 @@ import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConf
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * @author Daniel Espendiller <daniel@espendiller.net>
  * @author Dominik Grzelak
@@ -35,7 +37,7 @@ public class IdeHelper {
     }
 
     private static void enablePluginAndConfigure(@NotNull Project project) {
-        GravProjectSettings.getInstance(project).pluginEnabled = true;
+        Objects.requireNonNull(GravProjectSettings.getInstance(project)).pluginEnabled = true;
         GravProjectConfigurable.enableGravToolWindow(project, true);
     }
 }

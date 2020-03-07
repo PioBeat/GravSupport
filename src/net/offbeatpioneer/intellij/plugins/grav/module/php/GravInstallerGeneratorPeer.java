@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.io.File;
+import java.io.*;
 
 import static net.offbeatpioneer.intellij.plugins.grav.module.wizard.CreateGravProjectWizardStep.LAST_USED_GRAV_HOME;
 

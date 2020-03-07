@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.4.2</version>
+    <version>0.5.0</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Dominik Grzelak</vendor>
 
     <description><![CDATA[
@@ -9,6 +9,16 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>
+            <span>0.5.0</span>
+            <ul>
+                <li>Internal Changes</li>
+                <ul>
+                    <li>Plugin availability for IDEA 2019.3.*</li>
+                    <li>Revised codebase because of upcoming breaking changes in IDEA 2019.3.* and above</li>
+                </ul>
+            </ul>
+        </p>
         <p>
             <span>0.4.2</span>
             <ul>
@@ -164,7 +174,7 @@
     </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-    <idea-version since-build="182" until-build="191.*"/>
+    <idea-version since-build="193" until-build="193.*"/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
@@ -176,7 +186,7 @@
     <!--<depends>com.intellij.modules.json</depends>-->
     <depends>org.jetbrains.plugins.yaml</depends>
     <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
-    <depends optional="true">com.jetbrains.twig</depends>
+    <depends optional="true" config-file="">com.jetbrains.twig</depends>
     <depends optional="true">org.intellij.plugins.markdown</depends>
     <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
@@ -184,19 +194,26 @@
 
     <!-- Dependency on PHP functionality -->
 
-    <application-components>
-    </application-components>
+    <!--    <application-components>-->
+    <!--    </application-components>-->
 
-    <project-components>
-        <component>
-            <implementation-class>net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent
-            </implementation-class>
-        </component>
-    </project-components>
+    <!--        <project-components>-->
+    <!--            <component>-->
+    <!--                <implementation-class>net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent-->
+    <!--                </implementation-class>-->
+    <!--            </component>-->
+    <!--        </project-components>-->
+
+    <!-- replaces the former project-component class -->
+    <projectListeners>
+        <listener class="net.offbeatpioneer.intellij.plugins.grav.project.GravProjectListener"
+                  topic="com.intellij.openapi.project.impl.ProjectLifecycleListener"/>
+    </projectListeners>
 
 
     <extensions defaultExtensionNs="com.intellij">
         <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType"/>
+
         <moduleType id="GRAV_TYPE"
                     implementationClass="net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType"/>
         <!--<framework.type implementation="net.offbeatpioneer.module.GravFrameworkType"/>-->
@@ -239,9 +256,16 @@
         <treeStructureProvider
                 implementation="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageTreeStructureProvider"/>
 
+        <!-- file types are now specified individually instead of using the file type factory-->
+        <fileType name="Theme blueprints"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.files.ThemeBlueprintsFileType"
+                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>
+        <fileType name="Theme configuration"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.files.ThemeConfigurationFileType"
+                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>
 
-        <fileTypeFactory
-                implementation="net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileTypeFactory"/>
+        <!--        <fileTypeFactory-->
+        <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileTypeFactory"/>-->
         <!--File type support-->
         <internalFileTemplate name="Grav Theme Blueprints"/>
         <internalFileTemplate name="Grav Theme Configuration"/>
@@ -265,10 +289,10 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="Grav.CreateTheme" class="net.offbeatpioneer.intellij.plugins.grav.action.CreateNewThemeAction">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
-            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
-        </action>
+                <action id="Grav.CreateTheme" class="net.offbeatpioneer.intellij.plugins.grav.action.CreateNewThemeAction">
+                    <add-to-group group-id="ToolsMenu" anchor="first"/>
+                    <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+                </action>
 
         <!--        <action id="Grav.ThrowException" class="net.offbeatpioneer.intellij.plugins.grav.errorreporting.TriggerExceptionAction">-->
         <!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->

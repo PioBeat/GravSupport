@@ -96,6 +96,9 @@ public class ProcessUtils {
                     linesb.append(line).append("\n");
                 }
                 this.errorOutput = linesb.toString();
+                if (this.errorOutput.isEmpty()) {
+                    this.errorOutput = "No error message was generated from Grav. Maybe the PHP installation is not correct";
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

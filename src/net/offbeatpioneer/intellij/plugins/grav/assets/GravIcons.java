@@ -5,6 +5,8 @@ import com.intellij.openapi.util.IconLoader;
 import javax.swing.*;
 
 /**
+ * Icons for various files in Grav or other purposes.
+ *
  * @author Dominik Grzelak
  */
 public class GravIcons {

@@ -28,7 +28,7 @@ import com.intellij.openapi.util.Ref;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.JBUI;
-import net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileType;
+import net.offbeatpioneer.intellij.plugins.grav.files.AbstractGravFileType;
 import net.offbeatpioneer.intellij.plugins.grav.files.GravFileTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +105,7 @@ public class CustomCreateFileFromTemplateDialog extends DialogWrapper {
         myKindCombo.getComboBox().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (GravConfigurationFileType each : GravFileTypes.CONFIGURATION_FILE_TYPES) {
+                for (AbstractGravFileType each : GravFileTypes.CONFIGURATION_FILE_TYPES) {
                     if (getKindCombo().getSelectedName().equalsIgnoreCase(each.getCorrespondingTemplateFile())) {
                         disableEnableFields(each.needsFilename());
                         if (!each.needsFilename()) {

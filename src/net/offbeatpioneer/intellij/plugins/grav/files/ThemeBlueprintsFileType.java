@@ -4,24 +4,26 @@ import com.intellij.openapi.fileTypes.LanguageFileType;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.yaml.YAMLLanguage;
 
 import javax.swing.*;
 
 /**
- * Created by Dome on 16.07.2017.
+ * Concrete implementation of Grav's theme blueprint configuration file.
+ *
+ * @author Dominik Grzelak
+ * @since 16.07.2017.
  */
-public class ThemeBlueprintsFileType extends GravConfigurationFileType {
+public class ThemeBlueprintsFileType extends AbstractGravFileType {
     public static final LanguageFileType INSTANCE = new ThemeBlueprintsFileType();
 
     public ThemeBlueprintsFileType() {
-        super(YAMLLanguage.INSTANCE);
+        super();
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "blueprints";
+        return "Theme blueprints";
     }
 
     @NotNull

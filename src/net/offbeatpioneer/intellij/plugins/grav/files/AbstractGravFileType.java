@@ -1,25 +1,27 @@
 package net.offbeatpioneer.intellij.plugins.grav.files;
 
-import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.yaml.YAMLLanguage;
 
 /**
- * Base class for Gravs configuration files
- * Configuration files are in the yaml format.
+ * Base abstarct class for all Grav-specific files (i.e., mainly configuration files).
+ * Configuration files come mostly in the YAML format:
  * <ul>
  * <li>Blueprints for theme (yaml)</li>
  * <li>THEME.yaml</li>
  * </ul>
- * Created by Dome on 16.07.2017.
+ *
+ * @author Dominik Grzelak
+ * @since 16.07.2017.
  */
-public abstract class GravConfigurationFileType extends LanguageFileType {
-
-    protected GravConfigurationFileType(@NotNull Language language) {
-        super(language);
-    }
+public abstract class AbstractGravFileType extends LanguageFileType {
 
     public static final String DEFAULT_EXTENSION = "yaml";
+
+    protected AbstractGravFileType() {
+        super(YAMLLanguage.INSTANCE);
+    }
 
     @NotNull
     @Override

@@ -8,16 +8,18 @@ public class NewThemeData {
     private String developer;
     private String description;
     private String email;
+    private String githubId;
 
     public NewThemeData() {
-        this(null, "", "", "");
+        this(null, "", "", "", "");
     }
 
-    public NewThemeData(String name, String developer, String description, String email) {
+    public NewThemeData(String name, String developer, String description, String email, String githubId) {
         this.name = name;
         this.developer = developer;
         this.description = description;
         this.email = email;
+        this.githubId = githubId;
     }
 
     public String getName() {
@@ -50,5 +52,13 @@ public class NewThemeData {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getGitHubId() {
+        return githubId;
+    }
+
+    public void setGitHubId(String text) {
+        this.githubId = text;
     }
 }

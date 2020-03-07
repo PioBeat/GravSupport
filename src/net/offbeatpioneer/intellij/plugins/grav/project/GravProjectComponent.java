@@ -1,64 +1,17 @@
 package net.offbeatpioneer.intellij.plugins.grav.project;
 
-import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
-import net.offbeatpioneer.intellij.plugins.grav.helper.IdeHelper;
-import net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.SystemIndependent;
-
-import java.nio.file.Paths;
 
 /**
- * Project component gets instantiated for every GRAV project created
+ * Project component
  *
  * @author Dominik Grzelak
  */
-public class GravProjectComponent implements ProjectComponent {
-    final private static Logger LOG = Logger.getInstance("Grav-Plugin");
-    private GravProjectSettings settings;
-    private Project project;
-
-    public GravProjectComponent(Project project) {
-        this.project = project;
-    }
-
-
-    @Override
-    public void projectOpened() {
-        notifyPluginEnableDialog();
-    }
-
-    @Override
-    public void projectClosed() {
-    }
-
-    @Override
-    public void initComponent() {
-        settings = GravProjectSettings.getInstance(project);
-        if (settings != null) {
-            @SystemIndependent String basePath = project.getBasePath();
-            settings.withSrcDirectory = false;
-            if (basePath != null) {
-                VirtualFile file = VfsUtil.findFile(Paths.get(project.getBasePath(), "src"), true);
-                if (file != null) {
-                    settings.withSrcDirectory = true;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void disposeComponent() {
-
-    }
-
+public class GravProjectComponent {
     public static boolean isEnabled(Project project) {
         if (project == null) return false;
         GravProjectSettings settings = GravProjectSettings.getInstance(project);
@@ -82,25 +35,4 @@ public class GravProjectComponent implements ProjectComponent {
         return null;
     }
 
-    @NotNull
-    @Override
-    public String getComponentName() {
-        return "GravProjectComponent";
-    }
-
-    private void notifyPluginEnableDialog() {
-        // Enable Project dialog
-        VirtualFile vf = project.getBaseDir();
-        if (!settings.pluginEnabled && !settings.dismissEnableNotification) {
-            //is a src directory present?
-            if (settings.withSrcDirectory && vf.findChild("src") != null) {
-                vf = vf.findChild("src");
-                if (vf != null && !GravSdkType.isValidGravSDK(vf)) vf = project.getBaseDir();
-            }
-//            vf = settings.withSrcDirectory && vf.findChild("src") == null ? vf : vf.findChild("src");
-            if (vf != null && GravSdkType.isValidGravSDK(vf)) { //grav module found
-                IdeHelper.notifyEnableMessage(project);
-            }
-        }
-    }
 }

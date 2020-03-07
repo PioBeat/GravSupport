@@ -12,7 +12,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.util.SmartList;
 import com.intellij.util.containers.ContainerUtil;
 import com.jetbrains.twig.TwigFile;
-import net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileType;
+import net.offbeatpioneer.intellij.plugins.grav.files.AbstractGravFileType;
 import org.jetbrains.yaml.psi.YAMLFile;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
 
@@ -29,7 +29,7 @@ public class GravFileTemplateUtil {
         return getApplicableTemplates(new Condition<FileTemplate>() {
             @Override
             public boolean value(FileTemplate fileTemplate) {
-                return GravConfigurationFileType.DEFAULT_EXTENSION.equals(fileTemplate.getExtension());
+                return AbstractGravFileType.DEFAULT_EXTENSION.equals(fileTemplate.getExtension());
             }
         });
     }

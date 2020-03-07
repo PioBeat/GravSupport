@@ -97,7 +97,9 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
                 "--name", themeData.getName(),
                 "--description", themeData.getDescription(),
                 "--developer", themeData.getDeveloper(),
-                "--email", themeData.getEmail()};
+                "--email", themeData.getEmail(),
+                "--githubid", themeData.getGitHubId()
+        };
 
         String srcPath = module.getProject().getBasePath();
         if (Objects.isNull(srcPath)) {

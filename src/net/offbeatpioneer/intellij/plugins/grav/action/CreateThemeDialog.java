@@ -11,6 +11,7 @@ public class CreateThemeDialog extends JDialog implements CaretListener {
     public JTextField textField2;
     public JTextField textField3;
     public JTextField textField4;
+    private JTextField textField5;
 
     private NewThemeData themeData = new NewThemeData();
 
@@ -22,6 +23,7 @@ public class CreateThemeDialog extends JDialog implements CaretListener {
         textField2.addCaretListener(this);
         textField3.addCaretListener(this);
         textField4.addCaretListener(this);
+        textField5.addCaretListener(this);
     }
 
     public static void main(String[] args) {
@@ -44,6 +46,9 @@ public class CreateThemeDialog extends JDialog implements CaretListener {
         }
         if (e.getSource() == textField4) {
             themeData.setEmail(textField4.getText());
+        }
+        if (e.getSource() == textField4) {
+            themeData.setGitHubId(textField5.getText());
         }
     }
 
