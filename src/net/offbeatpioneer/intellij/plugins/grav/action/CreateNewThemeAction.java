@@ -74,10 +74,6 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
         final Project project = CommonDataKeys.PROJECT.getData(dataContext);
         final Module module = LangDataKeys.MODULE.getData(dataContext);
         final IdeView view = LangDataKeys.IDE_VIEW.getData(dataContext);
-
-        ProjectChecker.checkProject(project);
-
-
         if (view == null) {
             return;
         }
