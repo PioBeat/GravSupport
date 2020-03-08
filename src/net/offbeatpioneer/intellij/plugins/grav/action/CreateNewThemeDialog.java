@@ -41,7 +41,7 @@ public class CreateNewThemeDialog extends DialogWrapper {
     protected ValidationInfo doValidate() {
         if (dialog.textField1.getText().isEmpty()) {
             return new ValidationInfo("Please specify a name for the new theme", dialog.textField1);
-        } else if(dialog.textField2.getText().isEmpty() || dialog.textField3.getText().isEmpty() || dialog.textField4.getText().isEmpty()) {
+        } else if(dialog.textField2.getText().isEmpty() || dialog.textField3.getText().isEmpty() || dialog.textField4.getText().isEmpty() || dialog.textField5.getText().isEmpty()) {
             return new ValidationInfo("Please fill out all empty fields", dialog.textField1);
         }
         return super.doValidate();

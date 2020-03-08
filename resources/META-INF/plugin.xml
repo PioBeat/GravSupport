@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Dominik Grzelak</vendor>
 
     <description><![CDATA[
@@ -9,6 +9,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <p>
+            <span>0.5.2</span>
+            <ul>
+                <li>Bugfix</li>
+                <ul>
+                    <li>Create theme dialog now working again (GitHub-ID field was added)</li>
+                </ul>
+            </ul>
+        </p>
         <p>
             <span>0.5.0/0.5.1</span>
             <ul>
