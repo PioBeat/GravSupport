@@ -4,8 +4,8 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.project.Project;
-import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConfigurable;
-import net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.configurables.GravProjectConfigurable;
+import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -15,6 +15,12 @@ import java.util.Objects;
  * @author Dominik Grzelak
  */
 public class IdeHelper {
+
+    public static void notifyShowGenericErrorMessage(@NotNull final Project project) {
+        Notifications.Bus.notify(new Notification("Grav Plugin", "Grav Plugin: Operation not possible", "Operation could not be executed.",
+                NotificationType.INFORMATION), project);
+    }
+
     public static void notifyEnableMessage(@NotNull final Project project) {
         Notification notification = new Notification("Grav Plugin", "Grav Plugin",
                 "<a href=\"enable\">Enable</a> the Grav Plugin now, or open <a href=\"config\">Project Settings</a>. <br/>" +

@@ -13,11 +13,11 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
-import net.offbeatpioneer.intellij.plugins.grav.files.GravFileTypes;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.files.GravFileTypes;
 import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravFileTemplateUtil;
-import net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType;
-import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -71,7 +71,7 @@ public class NewThemeConfigurationFileAction extends CustomCreateFromTemplateAct
     @Override
     protected void buildDialog(Project project, PsiDirectory directory, CustomCreateFileFromTemplateDialog.Builder builder) {
         builder.setTitle(IdeBundle.message("action.create.new.class"));
-        for (FileTemplate fileTemplate : GravFileTemplateUtil.getAvailableThemeConfigurationTemplates()) {
+        for (FileTemplate fileTemplate : GravFileTemplateUtil.getAvailableThemeConfigurationTemplates(project)) {
             final String templateName = fileTemplate.getName();
             final String shortName = GravFileTemplateUtil.getTemplateShortName(templateName);
             final Icon icon = GravIcons.Grav;

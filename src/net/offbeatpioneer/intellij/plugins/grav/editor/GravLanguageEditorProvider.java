@@ -8,7 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles;
-import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 
 import static net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles.LangFileEditorType.NONE;

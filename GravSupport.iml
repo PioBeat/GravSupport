@@ -9,10 +9,8 @@
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/testresources" type="java-test-resource" />
     </content>
-    <orderEntry type="jdk" jdkName="IntelliJ IDEA IU-193.6494.35 (2)" jdkType="IDEA JDK" />
+    <orderEntry type="jdk" jdkName="IntelliJ IDEA IU-193.6494.35" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="yaml" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="twig" level="project" />
     <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
@@ -22,6 +20,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" scope="PROVIDED" name="yaml" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="twig" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="php-openapi-src" level="project" />
     <orderEntry type="library" name="gson-2.8.5" level="project" />
     <orderEntry type="library" name="org.eclipse.egit.github.core-2.1.5" level="project" />

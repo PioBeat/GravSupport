@@ -50,7 +50,7 @@ public class TranslationTableModel extends AbstractTableModel {
     }
 
     private void addElement0(String language, YAMLKeyValue value) {
-        dataMap.get(language).add(value);
+        dataMap.computeIfAbsent(language, k -> new HashSet<>()).add(value);
     }
 
     public void addElement(String lang, YAMLKeyValue value) {
@@ -211,9 +211,9 @@ public class TranslationTableModel extends AbstractTableModel {
      * @param lang
      */
     public void addLanguage(String lang) {
+        data.put(lang, new ConcurrentHashMap<>());
         languages.add(lang);
         columnNames.add(lang);
-        data.put(lang, new ConcurrentHashMap<>());
         fireTableStructureChanged();
     }
 

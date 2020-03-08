@@ -14,7 +14,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import icons.TwigIcons;
 import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravFileTemplateUtil;
-import net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

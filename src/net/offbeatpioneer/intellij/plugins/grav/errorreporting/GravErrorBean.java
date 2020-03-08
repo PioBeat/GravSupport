@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Copy of the deprecated {@link com.intellij.errorreport.bean.ErrorBean} class of IntelliJ.
+ * Copy of the deprecated {@code com.intellij.errorreport.bean.ErrorBean} class of IntelliJ.
  * Kept for compatibility reasons.
  */
 public class GravErrorBean {

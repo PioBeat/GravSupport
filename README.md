@@ -17,21 +17,22 @@ The plugin is also available in the [JetBrains Plugins Repository](https://plugi
 The latest plugin supports the following Grav versions: 1.6.*, ...
 
 Furthermore, I only provide support for PHP 7.*. If you have a lower version than the plugin may not work correctly.
+To work with Grav, the PHP extensions `mbstring`, `curl` and `openssl` must be enabled.
 
 ## Install
 
-**JetBrains Plugins Repository**
+### JetBrains Plugins Repository
 
-Open the settings menu <kbd>CTRL+ALT+S</kbd> or _File -> Settings_ and then
-go to _Plugins_. Click on the button _Browse repositories_ and search for
+Open the settings menu <kbd>CTRL+ALT+S</kbd> or **File | Settings** and then
+go to **Plugins**. Click on the button _Browse repositories_ and search for
 **Grav Support**.
 This way you will get notified if a new update is available!
 
-**GitHub Release**
+### GitHub Releases
 
 [Download the latest plugin](https://github.com/PioBeat/GravSupport/releases) and
-install it via the settings menu: <kbd>CTRL+ALT+S</kbd> or _File -> Settings_
-and then search for _Plugins -> Install plugins from disk_
+install it via the settings menu: <kbd>CTRL+ALT+S</kbd> or **File | Settings**
+and then under the category **Plugins**, click on the configuration wheel in the top bar and select **Install Plugin from Disk...**.
 
 <br/>
 

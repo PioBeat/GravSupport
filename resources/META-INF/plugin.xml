@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Dominik Grzelak</vendor>
 
     <description><![CDATA[
@@ -10,7 +10,7 @@
 
     <change-notes><![CDATA[
         <p>
-            <span>0.5.0</span>
+            <span>0.5.0/0.5.1</span>
             <ul>
                 <li>Internal Changes</li>
                 <ul>
@@ -199,26 +199,26 @@
 
     <!--        <project-components>-->
     <!--            <component>-->
-    <!--                <implementation-class>net.offbeatpioneer.intellij.plugins.grav.project.GravProjectComponent-->
+    <!--                <implementation-class>net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent-->
     <!--                </implementation-class>-->
     <!--            </component>-->
     <!--        </project-components>-->
 
     <!-- replaces the former project-component class -->
     <projectListeners>
-        <listener class="net.offbeatpioneer.intellij.plugins.grav.project.GravProjectListener"
+        <listener class="net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectListener"
                   topic="com.intellij.openapi.project.impl.ProjectLifecycleListener"/>
     </projectListeners>
 
 
     <extensions defaultExtensionNs="com.intellij">
-        <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.module.GravSdkType"/>
+        <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType"/>
 
         <moduleType id="GRAV_TYPE"
-                    implementationClass="net.offbeatpioneer.intellij.plugins.grav.module.GravModuleType"/>
+                    implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType"/>
         <!--<framework.type implementation="net.offbeatpioneer.module.GravFrameworkType"/>-->
         <moduleBuilder order="first"
-                       builderClass="net.offbeatpioneer.intellij.plugins.grav.module.builder.GravModuleBuilder"/>
+                       builderClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.builder.GravModuleBuilder"/>
         <!--ModuleConfigurationExtensionProvider-->
         <!--<fileTypeFactory implementation="com.jetbrains.php.PhpFileTypeFactory"/>-->
 
@@ -233,14 +233,14 @@
                 serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"
                 serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"/>
         <projectService
-                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"
-                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectSettings"/>
+                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"
+                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"/>
         <applicationConfigurable groupId="languages"
                                  displayName="Grav"
                                  id="preferences.Grav.AppSettings"
                                  instance="net.offbeatpioneer.intellij.plugins.grav.application.settings.GravApplicationConfigurable"/>
         <projectConfigurable
-                instance="net.offbeatpioneer.intellij.plugins.grav.project.settings.GravProjectConfigurable"
+                instance="net.offbeatpioneer.intellij.plugins.grav.extensions.configurables.GravProjectConfigurable"
                 displayName="Grav"
                 groupId="language"
                 id="preferences.Grav.ProjectSettings"
@@ -258,14 +258,14 @@
 
         <!-- file types are now specified individually instead of using the file type factory-->
         <fileType name="Theme blueprints"
-                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.files.ThemeBlueprintsFileType"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeBlueprintsFileType"
                   fieldName="INSTANCE" language="yaml" extensions="yaml"/>
         <fileType name="Theme configuration"
-                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.files.ThemeConfigurationFileType"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeConfigurationFileType"
                   fieldName="INSTANCE" language="yaml" extensions="yaml"/>
 
         <!--        <fileTypeFactory-->
-        <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.files.GravConfigurationFileTypeFactory"/>-->
+        <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.files.GravConfigurationFileTypeFactory"/>-->
         <!--File type support-->
         <internalFileTemplate name="Grav Theme Blueprints"/>
         <internalFileTemplate name="Grav Theme Configuration"/>
@@ -274,11 +274,11 @@
                 id="Grav"
                 anchor="right"
                 icon="/icons/icon_toolwindow.png"
-                conditionClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsToolWindowFactory"
-                factoryClass="net.offbeatpioneer.intellij.plugins.grav.toolwindow.SystemSettingsToolWindowFactory"/>
+                conditionClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"
+                factoryClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"/>
 
         <intentionAction>
-            <className>net.offbeatpioneer.intellij.plugins.grav.intentions.ConvertTwigResource</className>
+            <className>net.offbeatpioneer.intellij.plugins.grav.extensions.intentions.ConvertTwigResource</className>
             <category>Grav</category>
             <descriptionDirectoryName>ConvertTwigResource</descriptionDirectoryName>
         </intentionAction>

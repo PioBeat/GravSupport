@@ -29,10 +29,10 @@ import java.util.*;
 public class FileCreateUtil {
 
     public static PsiElement createFile(String className, @NotNull PsiDirectory directory, final String templateName, AnAction actionClass) throws Exception {
-        final Properties props = new Properties(FileTemplateManager.getInstance().getDefaultProperties(directory.getProject()));
+        final Properties props = new Properties(FileTemplateManager.getInstance(directory.getProject()).getDefaultProperties());
         props.setProperty(FileTemplate.ATTRIBUTE_NAME, className);
 
-        final FileTemplate template = FileTemplateManager.getInstance().getInternalTemplate(templateName);
+        final FileTemplate template = FileTemplateManager.getInstance(directory.getProject()).getInternalTemplate(templateName);
 
         return FileTemplateUtil.createFromTemplate(template, className, props, directory, actionClass.getClass().getClassLoader());
     }
