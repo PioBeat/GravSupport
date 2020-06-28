@@ -195,32 +195,19 @@
     <!--<depends>com.intellij.modules.json</depends>-->
     <depends>org.jetbrains.plugins.yaml</depends>
     <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
-    <depends optional="true" config-file="">com.jetbrains.twig</depends>
-    <depends optional="true">org.intellij.plugins.markdown</depends>
+<!--    <depends optional="true" config-file="">com.jetbrains.twig</depends>-->
+<!--    <depends optional="true">org.intellij.plugins.markdown</depends>-->
     <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
 
-
-    <!-- Dependency on PHP functionality -->
-
-    <!--    <application-components>-->
-    <!--    </application-components>-->
-
-    <!--        <project-components>-->
-    <!--            <component>-->
-    <!--                <implementation-class>net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent-->
-    <!--                </implementation-class>-->
-    <!--            </component>-->
-    <!--        </project-components>-->
-
-    <!-- replaces the former project-component class -->
     <projectListeners>
         <listener class="net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectListener"
-                  topic="com.intellij.openapi.project.impl.ProjectLifecycleListener"/>
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
     </projectListeners>
 
 
     <extensions defaultExtensionNs="com.intellij">
+<!--        <postStartupActivity implementation="net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectListener"/>-->
         <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType"/>
 
         <moduleType id="GRAV_TYPE"
@@ -283,7 +270,6 @@
                 id="Grav"
                 anchor="right"
                 icon="/icons/icon_toolwindow.png"
-                conditionClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"
                 factoryClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"/>
 
         <intentionAction>
