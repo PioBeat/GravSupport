@@ -1,6 +1,9 @@
 package net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow;
 
+import com.intellij.openapi.application.Application;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.util.Condition;
@@ -38,7 +41,7 @@ import java.util.Objects;
  * @author Dominik Grzelak
  * @since 2017-08-24
  */
-public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener, Condition {
+public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTreeChangeListener {
     private final static String SYSTEM_SYSTEM_CONFIG_FILE = "system/config/system.yaml";
     private final static String USER_SYSTEM_CONFIG_FILE = "user/config/system.yaml";
 
@@ -93,15 +96,21 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     private void refreshComponents(boolean addListener) {
         Project firstProject = ProjectChecker.getFirstOpenedProject();
         if (firstProject == null) return;
-        systemYamlFile = getSystemFile(firstProject);
-        if (systemYamlFile != null && systemYamlFile.getElement() != null && systemYamlFile.getElement().getDocuments().size() > 0) {
-            systemDocument = SmartPointerManagerImpl.getInstance(firstProject)
-                    .createSmartPsiElementPointer(systemYamlFile.getElement().getDocuments().get(0), systemYamlFile.getElement());
-        }
+        ApplicationManager.getApplication().runReadAction(new Runnable() {
+            @Override
+            public void run() {
 
-        for (Triple<String[], Class, JComponent> each : componentList) {
-            applyGravSettings(each.getFirst(), each.getSecond(), each.getThird(), firstProject, addListener);
-        }
+                systemYamlFile = getSystemFile(firstProject);
+                if (systemYamlFile != null && systemYamlFile.getElement() != null && systemYamlFile.getElement().getDocuments().size() > 0) {
+                    systemDocument = SmartPointerManagerImpl.getInstance(firstProject)
+                            .createSmartPsiElementPointer(systemYamlFile.getElement().getDocuments().get(0), systemYamlFile.getElement());
+                }
+
+                for (Triple<String[], Class, JComponent> each : componentList) {
+                    applyGravSettings(each.getFirst(), each.getSecond(), each.getThird(), firstProject, addListener);
+                }
+            }
+        });
     }
 
     private void applyGravSettings(String[] qualifiedKey, Class dataType, JComponent component, final Project project, boolean addListener) {
@@ -173,16 +182,27 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     }
 
     @Override
+    public boolean isApplicable(@NotNull Project project) {
+        return shouldBeAvailable(project);
+    }
+
+    @Override
     public boolean shouldBeAvailable(@NotNull Project project) {
         systemYamlFile = null;
         boolean pluginEnabled = GravProjectComponent.isEnabled(project);
         generator = YAMLElementGenerator.getInstance(project);
         if (pluginEnabled) {
-            systemYamlFile = getSystemFile(project);
-            if (systemYamlFile != null && systemYamlFile.getElement() != null && systemYamlFile.getElement().getDocuments().size() > 0) {
-                PsiManager.getInstance(project).addPsiTreeChangeListener(this);
-                systemDocument = SmartPointerManagerImpl.getInstance(project).createSmartPsiElementPointer(systemYamlFile.getElement().getDocuments().get(0), systemYamlFile.getElement());
-            }
+            ApplicationManager.getApplication().runReadAction(new Runnable() {
+                @Override
+                public void run() {
+
+                    systemYamlFile = getSystemFile(project);
+                    if (systemYamlFile != null && systemYamlFile.getElement() != null && systemYamlFile.getElement().getDocuments().size() > 0) {
+                        PsiManager.getInstance(project).addPsiTreeChangeListener(SystemSettingsToolWindowFactory.this);
+                        systemDocument = SmartPointerManagerImpl.getInstance(project).createSmartPsiElementPointer(systemYamlFile.getElement().getDocuments().get(0), systemYamlFile.getElement());
+                    }
+                }
+            });
         }
         return pluginEnabled && systemYamlFile != null && systemDocument != null;
     }
@@ -269,10 +289,5 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     @Override
     public void propertyChanged(@NotNull PsiTreeChangeEvent event) {
 
-    }
-
-    @Override
-    public boolean value(Object o) {
-        return true;
     }
 }
