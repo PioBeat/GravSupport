@@ -33,12 +33,10 @@ intellij {
     version ideaVersion
     updateSinceUntilBuild false
     alternativeIdePath 'D:\\Programme\\JetBrains\\PhpStorm 2020.1.2'
-//    sandboxDirectory 'C:\\Users\\Dome\\.IntelliJIdea2019.3\\system\\plugins-sandbox'
     project.version = '0.5.2-SNAPSHOT'
     plugins = [
             "com.jetbrains.php:${phpPluginVersion}",
             "com.jetbrains.twig:${twigPluginVersion}",
-            "com.jetbrains.php.dql:${dqlPluginVersion}",
             "de.espend.idea.php.annotation:${annotationPluginVersion}",
             "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
             'coverage',
@@ -61,7 +59,6 @@ intellij {
 }
 
 runIde {
-    ideDirectory 'D:\\Programme\\JetBrains\\PhpStorm 2020.1.2'
     jbrVersion = '11_0_2b159'
 }
 
