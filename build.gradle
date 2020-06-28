@@ -7,7 +7,7 @@ plugins {
 def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
 
 group 'net.offbeatpioneer.intellij.plugins.grav'
-version '0.5.2-SNAPSHOT'
+version '0.5.3'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -33,7 +33,7 @@ intellij {
     version ideaVersion
     updateSinceUntilBuild false
     alternativeIdePath 'D:\\Programme\\JetBrains\\PhpStorm 2020.1.2'
-    project.version = '0.5.2-SNAPSHOT'
+    project.version = project.version
     plugins = [
             "com.jetbrains.php:${phpPluginVersion}",
             "com.jetbrains.twig:${twigPluginVersion}",
