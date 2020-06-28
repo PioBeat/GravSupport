@@ -1,0 +1,318 @@
+<idea-plugin>
+    <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
+    <name>Grav Support</name>
+    <version>0.5.2</version>
+    <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Dominik Grzelak</vendor>
+
+    <description><![CDATA[
+      Grav Support for IntelliJ PhpStorm, Community Edition and Ultimate<br>
+    ]]></description>
+
+<!--    <change-notes><![CDATA[-->
+<!--        <p>-->
+<!--            <span>0.5.2</span>-->
+<!--            <ul>-->
+<!--                <li>Bugfix</li>-->
+<!--                <ul>-->
+<!--                    <li>Create theme dialog now working again (GitHub-ID field was added)</li>-->
+<!--                </ul>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.5.0/0.5.1</span>-->
+<!--            <ul>-->
+<!--                <li>Internal Changes</li>-->
+<!--                <ul>-->
+<!--                    <li>Plugin availability for IDEA 2019.3.*</li>-->
+<!--                    <li>Revised codebase because of upcoming breaking changes in IDEA 2019.3.* and above</li>-->
+<!--                </ul>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.4.2</span>-->
+<!--            <ul>-->
+<!--                <li>Added</li>-->
+<!--                <ul>-->
+<!--                    <li>Automatic error reporting feature implemented. All plugin's exceptions-->
+<!--                    that are occurring within IntelliJ IDE can now be reported within the IDE.-->
+<!--                    The issues will be added to a specific repository (https://github.com/Grav-IntelliJ-Plugin/GravSupport-Plugin-BugTracker)-->
+<!--                    dedicated for automatic error reports. Additional user requests can be still-->
+<!--                    submitted to the original issue tracker (https://github.com/PioBeat/GravSupport).-->
+<!--                    </li>-->
+<!--                    <li>Improved notifications: Warnings are shown when PHP version does not match the Grav requirements of the current Grav installation</li>-->
+<!--                </ul>-->
+<!--                <li>Changed</li>-->
+<!--                <ul>-->
+<!--                    <li>*Create New Grav Project* wizard updated. Layout is more clear now.</li>-->
+<!--                </ul>-->
+<!--                <li>Bugfix</li>-->
+<!--                <ul>-->
+<!--                    <li>Fixed some bugs concerning the detection whether Grav's devtool plugin is being installed correctly or not.</li>-->
+<!--                    <li>"Create Theme" action should work now correctly again. Moreover, folder is refreshed afterwards. Prior to that, the folder has to be manually synchronized.</li>-->
+<!--                    <li>Bugfixes in the *Create New Grav Project* wizard</li>-->
+<!--                </ul>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.4.1</span>-->
+<!--            <ul>-->
+<!--                <li>Compatibility Fix</li>-->
+<!--                <ul>-->
+<!--                    <li>Plugin works now for the latest IDEA platforms: 182-183.*</li>-->
+<!--                </ul>-->
+<!--                <li>Grav Tool Window is getting deactivated when plugin is disabled for the current project and vice versa</li>-->
+<!--                <li>Disabled the "create src and test directory" option in the project wizard: will be removed in the future</li>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.4.0</span>-->
+<!--            <ul>-->
+<!--                <li>New Features</li>-->
+<!--                <ul>-->
+<!--                    <li>Latest Grav versions are now retrieved from Github directly.</li>-->
+<!--                    <li>Minor user interface improvement in the Create Project wizard</li>-->
+<!--                    <li>Plugin works now for the latest IDEA platforms</li>-->
+<!--                </ul>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.3.3.1</span>-->
+<!--            <ul>-->
+<!--                <li>Bugfix release</li>-->
+<!--                <ul>-->
+<!--                    <li><strong>New</strong> Grav versions 1.3.3 - 1.3.8 can now be downloaded in the new project wizard</li>-->
+<!--                    <li>Fixed warning: ToolWindow icon size is now 13x13 as recommended in <code>openapi.wm.impl.ToolWindowImpl</code>.-->
+<!--                    </li>-->
+<!--                    <li>Language Editor will only be opened if the plugin is enabled in the <i>Settings</i> for the current-->
+<!--                        project.-->
+<!--                    </li>-->
+<!--                    <li>Last valid used Grav installation path is now saved in PhpStorm (like in the Community Edition) when-->
+<!--                        creating a new project.-->
+<!--                    </li>-->
+<!--                    <li>Bugfix for the Grav tool window: fixed a writing issue when changing to another project. Reason: the-->
+<!--                        old component listeners were still attached when the old project was disposed.-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.3.3</span>-->
+<!--            <ul>-->
+<!--                <li>New features for the language file editor</li>-->
+<!--                <ul>-->
+<!--                    <li>Remove Key: delete a key for all languages</li>-->
+<!--                    <li>Jump To Key: locate the key in the yaml file</li>-->
+<!--                    <li>add new key dialog will use the current opened language as preset</li>-->
+<!--                </ul>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.3.2</span>-->
+<!--            <ul>-->
+<!--                <li>-->
+<!--                    Simply switch to the template from a content page. The filename of the <code>.md</code> file is-->
+<!--                    evaluated-->
+<!--                    as well as the <code>template</code> variable in the header of the markdown file. You will find an Twig-->
+<!--                    icon-->
+<!--                    on the gutter and provides navigation to the related template files.-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.3.1</span>-->
+<!--            <ul>-->
+<!--                <li>bugfix: no duplicate Grav entries anymore in the <i>New Project Wizard</i></li>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.3</span>-->
+<!--            <ul>-->
+<!--                <li>Twig intention: convert HTML ``src`` and ``href`` links into _theme_ resource links <br/>-->
+<!--                    *Example* <br/>-->
+<!--                    Before: <code>&lt;img src=&quot;assets/img/picture.png&quot;/&gt;</code><br/>-->
+<!--                    After: <code>&lt;img src=&quot;{{ url(&quot; theme://assets/img/picture.png&quot;) }}&quot;/&gt;</code>-->
+<!--                </li>-->
+<!--                <li>Tool window for displaying and configuring basic Grav system files. Currently supported is only-->
+<!--                    <code>system/config/system.yaml</code>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.2</span>-->
+<!--            <ul>-->
+<!--                <li>-->
+<!--                    language file editor improvements-->
+<!--                    <ul>-->
+<!--                        <li>view and add values for <code>languages.yaml</code> file inside theme directory</li>-->
+<!--                        <li>view and add values for language files inside the system directory</li>-->
+<!--                    </ul>-->
+<!--                </li>-->
+<!--                <li>bugfixes and improvements</li>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.1-beta3</span>-->
+<!--            <ul>-->
+<!--                <li>language file editor improvements</li>-->
+<!--                <li>-->
+<!--                    PhpStorm support-->
+<!--                    <ul>-->
+<!--                        <li>create new Grav project (File -> New Project ...)</li>-->
+<!--                        <li>code refactoring</li>-->
+<!--                    </ul>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        <p>-->
+<!--            <span>0.1-beta</span>-->
+<!--            <ul>-->
+<!--                <li>Create SDK for Grav</li>-->
+<!--                <li>Create a Grav module using IntelliJ Wizard</li>-->
+<!--                <li>Ability to download and install Grav from the Module Wizard</li>-->
+<!--                <li>Create specific configuration files for a theme in the theme directory (blueprints.yaml,-->
+<!--                    THEME_NAME.yaml)-->
+<!--                </li>-->
+<!--                <li>Recognition of basic Grav configuration files</li>-->
+<!--                <li>New icons</li>-->
+<!--                <li>Create new theme</li>-->
+<!--                <li>Settings menu (application and project)</li>-->
+<!--                <li>Special localization file editor</li>-->
+<!--            </ul>-->
+<!--        </p>-->
+<!--        ]]>-->
+<!--    </change-notes>-->
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+<!--    <idea-version since-build="193" until-build="193.*"/>-->
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    -->
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <!--<depends>com.intellij.modules.xml</depends>-->
+    <!--<depends>com.intellij.modules.json</depends>-->
+    <depends>org.jetbrains.plugins.yaml</depends>
+    <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
+    <depends optional="true" config-file="">com.jetbrains.twig</depends>
+    <depends optional="true">org.intellij.plugins.markdown</depends>
+    <!--config-file="grav-php-features.xml"-->
+    <!--<depends>com.intellij.modules.all</depends>-->
+
+
+    <!-- Dependency on PHP functionality -->
+
+    <!--    <application-components>-->
+    <!--    </application-components>-->
+
+    <!--        <project-components>-->
+    <!--            <component>-->
+    <!--                <implementation-class>net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent-->
+    <!--                </implementation-class>-->
+    <!--            </component>-->
+    <!--        </project-components>-->
+
+    <!-- replaces the former project-component class -->
+    <projectListeners>
+        <listener class="net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectListener"
+                  topic="com.intellij.openapi.project.impl.ProjectLifecycleListener"/>
+    </projectListeners>
+
+
+    <extensions defaultExtensionNs="com.intellij">
+        <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType"/>
+
+        <moduleType id="GRAV_TYPE"
+                    implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType"/>
+        <!--<framework.type implementation="net.offbeatpioneer.module.GravFrameworkType"/>-->
+        <moduleBuilder order="first"
+                       builderClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.builder.GravModuleBuilder"/>
+        <!--ModuleConfigurationExtensionProvider-->
+        <!--<fileTypeFactory implementation="com.jetbrains.php.PhpFileTypeFactory"/>-->
+
+
+        <!--<facetType implementation="st.redline.smalltalk.module.facet.RsFacetType"/>-->
+        <!--<projectStructureDetector implementation="st.redline.smalltalk.module.RsProjectStructureDetector"/>-->
+
+
+        <!--http://corochann.com/intellij-plugin-development-introduction-applicationconfigurable-projectconfigurable-873.html-->
+        <!--projectConfigurable-->
+        <applicationService
+                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"
+                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"/>
+        <projectService
+                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"
+                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"/>
+        <applicationConfigurable groupId="languages"
+                                 displayName="Grav"
+                                 id="preferences.Grav.AppSettings"
+                                 instance="net.offbeatpioneer.intellij.plugins.grav.application.settings.GravApplicationConfigurable"/>
+        <projectConfigurable
+                instance="net.offbeatpioneer.intellij.plugins.grav.extensions.configurables.GravProjectConfigurable"
+                displayName="Grav"
+                groupId="language"
+                id="preferences.Grav.ProjectSettings"
+                nonDefaultProject="true"
+        />
+
+        <codeInsight.lineMarkerProvider language=""
+                                        implementationClass="net.offbeatpioneer.intellij.plugins.grav.editor.SwitchToTemplateLineMarkerProvider"/>
+        <fileEditorProvider
+                implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>
+        <fileType.fileViewProviderFactory filetype="yml"
+                                          implementationClass="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageFileViewProvider"/>
+        <treeStructureProvider
+                implementation="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageTreeStructureProvider"/>
+
+        <!-- file types are now specified individually instead of using the file type factory-->
+        <fileType name="Theme blueprints"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeBlueprintsFileType"
+                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>
+        <fileType name="Theme configuration"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeConfigurationFileType"
+                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>
+
+        <!--        <fileTypeFactory-->
+        <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.files.GravConfigurationFileTypeFactory"/>-->
+        <!--File type support-->
+        <internalFileTemplate name="Grav Theme Blueprints"/>
+        <internalFileTemplate name="Grav Theme Configuration"/>
+
+        <toolWindow
+                id="Grav"
+                anchor="right"
+                icon="/icons/icon_toolwindow.png"
+                conditionClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"
+                factoryClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"/>
+
+        <intentionAction>
+            <className>net.offbeatpioneer.intellij.plugins.grav.extensions.intentions.ConvertTwigResource</className>
+            <category>Grav</category>
+            <descriptionDirectoryName>ConvertTwigResource</descriptionDirectoryName>
+        </intentionAction>
+
+        <errorHandler implementation="net.offbeatpioneer.intellij.plugins.grav.errorreporting.GitHubErrorReporter"/>
+    </extensions>
+
+
+    <actions>
+        <!-- Add your actions here -->
+                <action id="Grav.CreateTheme" class="net.offbeatpioneer.intellij.plugins.grav.action.CreateNewThemeAction">
+                    <add-to-group group-id="ToolsMenu" anchor="first"/>
+                    <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+                </action>
+
+        <!--        <action id="Grav.ThrowException" class="net.offbeatpioneer.intellij.plugins.grav.errorreporting.TriggerExceptionAction">-->
+        <!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
+        <!--            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>-->
+        <!--        </action>-->
+
+        <action id="Grav.NewFile"
+                class="net.offbeatpioneer.intellij.plugins.grav.action.NewThemeConfigurationFileAction"
+                text="Grav Theme Config File" description="Create New Theme Configuration File">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+        </action>
+    </actions>
+
+</idea-plugin>

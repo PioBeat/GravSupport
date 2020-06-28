@@ -15,6 +15,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+//TODO: make service listener
 public class GravProjectListener implements ProjectLifecycleListener {
 
     public GravProjectListener() {
@@ -30,7 +31,7 @@ public class GravProjectListener implements ProjectLifecycleListener {
         System.out.println(project);
     }
 
-    @Override
+//    @Override
     public void postStartupActivitiesPassed(@NotNull Project project) {
         initComponent(project);
         notifyPluginEnableDialog(project);
