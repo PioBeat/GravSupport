@@ -3,7 +3,6 @@ package net.offbeatpioneer.intellij.plugins.grav.editor;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
-import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import static net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles.LangFileEditorType.NONE;
 
 //TODO listen for file deletion and updates
-public class GravLanguageEditorProvider implements FileEditorProvider, DumbAware {
+public class GravLanguageEditorProvider implements FileEditorProvider {
 
     private final String ID = "GravLanguageEditorProvider";
     GravLangFileEditor gravLangFileEditor = null;

@@ -12,7 +12,7 @@ Tested with:
 
 The plugin is also available in the [JetBrains Plugins Repository](https://plugins.jetbrains.com/plugin/9971-grav-support).
 
-## Version
+## Supported Versions of Grav and PHP
 
 The latest plugin supports the following Grav versions: 1.6.*, ...
 

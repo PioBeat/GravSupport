@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.21'
+    id 'com.palantir.git-version' version "0.11.0"
+}
+
+def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
+
+group 'net.offbeatpioneer.intellij.plugins.grav'
+version '0.5.3'
+
+apply plugin: 'idea'
+apply plugin: 'java'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+apply plugin: 'org.jetbrains.intellij'
+
+
+repositories {
+    mavenCentral()
+    maven { url "https://www.jetbrains.com/intellij-repository/releases" }
+    maven { url "https://jetbrains.bintray.com/intellij-third-party-dependencies" }
+    maven { url 'https://dl.bintray.com/jetbrains/intellij-plugin-service' }
+}
+
+dependencies {
+    compile group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version ideaVersion
+    updateSinceUntilBuild false
+    alternativeIdePath 'D:\\Programme\\JetBrains\\PhpStorm 2020.1.2'
+    project.version = project.version
+    plugins = [
+            "com.jetbrains.php:${phpPluginVersion}",
+            "com.jetbrains.twig:${twigPluginVersion}",
+            "de.espend.idea.php.annotation:${annotationPluginVersion}",
+            "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
+            'coverage',
+            'webDeployment',
+            'yaml',
+            'CSS',
+            'java-i18n',
+            'properties',
+            'xpath',
+            'java'
+    ]
+
+    // Can't instantiate configurable for PHP Toolbox
+    // at de.espend.idea.php.toolbox.ui.application.ToolboxApplicationForm.<init>(ToolboxApplicationForm.java:26)
+    tasks {
+        "buildSearchableOptions" {
+            enabled = false
+        }
+    }
+}
+
+runIde {
+    jbrVersion = '11_0_2b159'
+}
+
+patchPluginXml {
+    sinceBuild '193'
+    untilBuild '201.*'
+    changeNotes = htmlFixer('src/main/resources/META-INF/change-notes.html')
+//    changeNotes """
+//      Add change notes here.<br>
+//      <em>most HTML tags may be used</em>"""
+}

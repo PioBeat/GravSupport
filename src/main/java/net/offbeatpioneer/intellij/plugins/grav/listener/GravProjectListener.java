@@ -1,7 +1,9 @@
 package net.offbeatpioneer.intellij.plugins.grav.listener;
 
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManagerListener;
 import com.intellij.openapi.project.impl.ProjectLifecycleListener;
+import com.intellij.openapi.startup.StartupActivity;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -15,29 +17,18 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-public class GravProjectListener implements ProjectLifecycleListener {
+/**
+ * Project listener that tries to show a notification to activate the plugin if it's not activated yet.
+ */
+public class GravProjectListener implements ProjectManagerListener {
 
     public GravProjectListener() {
     }
 
     @Override
-    public void beforeProjectLoaded(@NotNull Project project) {
-        System.out.println(project);
-    }
-
-    @Override
-    public void afterProjectClosed(@NotNull Project project) {
-        System.out.println(project);
-    }
-
-    @Override
-    public void postStartupActivitiesPassed(@NotNull Project project) {
+    public void projectOpened(@NotNull Project project) {
         initComponent(project);
         notifyPluginEnableDialog(project);
-    }
-
-    @Override
-    public void projectComponentsInitialized(@NotNull Project project) {
     }
 
     public void initComponent(Project project) {
@@ -62,17 +53,18 @@ public class GravProjectListener implements ProjectLifecycleListener {
         VirtualFile projectPath = LocalFileSystem.getInstance().findFileByIoFile(new File(project.getBasePath()));
         GravProjectSettings settings = GravProjectSettings.getInstance(project);
         // Enable Project dialog
-        if (!settings.pluginEnabled && !settings.dismissEnableNotification) {
+        if (settings != null && !settings.pluginEnabled && !settings.dismissEnableNotification) {
             //is a src directory present?
-            if (settings.withSrcDirectory && projectPath.findChild("src") != null) {
+            if (settings.withSrcDirectory && projectPath != null && projectPath.findChild("src") != null) {
                 projectPath = projectPath.findChild("src");
                 if (projectPath != null && !GravSdkType.isValidGravSDK(projectPath))
                     projectPath = LocalFileSystem.getInstance().findFileByIoFile(new File(project.getBasePath()));
             }
-//            vf = settings.withSrcDirectory && vf.findChild("src") == null ? vf : vf.findChild("src");
             if (projectPath != null && GravSdkType.isValidGravSDK(projectPath)) { //grav module found
                 IdeHelper.notifyEnableMessage(project);
             }
         }
     }
+
+
 }

@@ -27,7 +27,8 @@ public class GravYamlFiles {
 
     public static LangFileEditorType getLanguageFileType(@NotNull final VirtualFile file) {
         VirtualFile parent = file.getParent();
-        if (GravYamlFiles.withYamlExtension(file) && parent != null && parent.exists() && parent.getName().equalsIgnoreCase("languages")) {
+        if (parent != null && parent.exists() && parent.getName().equalsIgnoreCase("languages") &&
+                GravYamlFiles.withYamlExtension(file)) {
             return LANGUAGE_FOLDER;
         } else if (GravYamlFiles.withYamlExtension(file) && file.getNameWithoutExtension().equalsIgnoreCase("languages")) {
             return LANGUAGE_FILE;

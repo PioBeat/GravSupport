@@ -1,0 +1,130 @@
+<idea-plugin>
+    <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
+    <name>Grav Support</name>
+<!--    <version>0.5.2</version>-->
+    <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Dominik Grzelak</vendor>
+
+    <description><![CDATA[
+      Grav Support for IntelliJ PhpStorm, Community Edition and Ultimate<br>
+    ]]></description>
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <!--    <idea-version since-build="193" until-build="193.*"/>-->
+
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    -->
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.xml</depends>
+    <depends>com.intellij.modules.json</depends>
+    <depends>org.jetbrains.plugins.yaml</depends>
+    <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
+    <depends optional="true" config-file="">com.jetbrains.twig</depends>
+    <!--    <depends optional="true">org.intellij.plugins.markdown</depends>-->
+    <!--config-file="grav-php-features.xml"-->
+    <!--<depends>com.intellij.modules.all</depends>-->
+
+    <projectListeners>
+        <listener class="net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </projectListeners>
+
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!--        <postStartupActivity implementation="net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectListener"/>-->
+        <sdkType implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType"/>
+
+        <moduleType id="GRAV_TYPE"
+                    implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType"/>
+        <!--<framework.type implementation="net.offbeatpioneer.module.GravFrameworkType"/>-->
+        <moduleBuilder order="first"
+                       builderClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.builder.GravModuleBuilder"/>
+        <!--ModuleConfigurationExtensionProvider-->
+        <!--<fileTypeFactory implementation="com.jetbrains.php.PhpFileTypeFactory"/>-->
+
+
+        <!--<facetType implementation="st.redline.smalltalk.module.facet.RsFacetType"/>-->
+        <!--<projectStructureDetector implementation="st.redline.smalltalk.module.RsProjectStructureDetector"/>-->
+
+
+        <!--http://corochann.com/intellij-plugin-development-introduction-applicationconfigurable-projectconfigurable-873.html-->
+        <!--projectConfigurable-->
+        <applicationService
+                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"
+                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"/>
+        <projectService
+                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"
+                serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"/>
+        <applicationConfigurable groupId="languages"
+                                 displayName="Grav"
+                                 id="preferences.Grav.AppSettings"
+                                 instance="net.offbeatpioneer.intellij.plugins.grav.application.settings.GravApplicationConfigurable"/>
+        <projectConfigurable
+                instance="net.offbeatpioneer.intellij.plugins.grav.extensions.configurables.GravProjectConfigurable"
+                displayName="Grav"
+                groupId="language"
+                id="preferences.Grav.ProjectSettings"
+                nonDefaultProject="true"
+        />
+
+        <codeInsight.lineMarkerProvider language=""
+                                        implementationClass="net.offbeatpioneer.intellij.plugins.grav.editor.SwitchToTemplateLineMarkerProvider"/>
+        <fileEditorProvider
+                implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>
+        <fileType.fileViewProviderFactory filetype="yml"
+                                          implementationClass="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageFileViewProvider"/>
+        <treeStructureProvider
+                implementation="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageTreeStructureProvider"/>
+
+        <!-- file types are now specified individually instead of using the file type factory-->
+        <fileType name="Theme blueprints"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeBlueprintsFileType"
+                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>
+        <fileType name="Theme configuration"
+                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeConfigurationFileType"
+                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>
+
+        <!--        <fileTypeFactory-->
+        <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.files.GravConfigurationFileTypeFactory"/>-->
+        <!--File type support-->
+        <internalFileTemplate name="Grav Theme Blueprints"/>
+        <internalFileTemplate name="Grav Theme Configuration"/>
+
+        <toolWindow
+                id="Grav"
+                anchor="right"
+                icon="/icons/icon_toolwindow.png"
+                factoryClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"/>
+
+        <intentionAction>
+            <className>net.offbeatpioneer.intellij.plugins.grav.extensions.intentions.ConvertTwigResource</className>
+            <category>Grav</category>
+            <descriptionDirectoryName>ConvertTwigResource</descriptionDirectoryName>
+        </intentionAction>
+
+        <errorHandler implementation="net.offbeatpioneer.intellij.plugins.grav.errorreporting.GitHubErrorReporter"/>
+    </extensions>
+
+
+    <actions>
+        <!-- Add your actions here -->
+        <action id="Grav.CreateTheme" class="net.offbeatpioneer.intellij.plugins.grav.action.CreateNewThemeAction">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+        </action>
+
+        <!--        <action id="Grav.ThrowException" class="net.offbeatpioneer.intellij.plugins.grav.errorreporting.TriggerExceptionAction">-->
+        <!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
+        <!--            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>-->
+        <!--        </action>-->
+
+        <action id="Grav.NewFile"
+                class="net.offbeatpioneer.intellij.plugins.grav.action.NewThemeConfigurationFileAction"
+                text="Grav Theme Config File" description="Create New Theme Configuration File">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
+        </action>
+    </actions>
+
+</idea-plugin>

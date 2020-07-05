@@ -1,5 +1,7 @@
 # Changelog
 
+> **Note:** See `./src/main/resources/META-INF/change-notes.html` for all further changelog details.
+
 ## [0.4.2]
 
 ### Added
