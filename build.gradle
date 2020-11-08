@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.4.21'
-    id 'com.palantir.git-version' version "0.11.0"
+    id 'org.jetbrains.intellij' version '0.6.2'
+    id 'com.palantir.git-version' version "0.12.3"
 }
 
 def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
@@ -30,16 +30,18 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
+    type = platformType
     version ideaVersion
+//    intellij.localPath = "${localIdePath}"
     updateSinceUntilBuild false
-    alternativeIdePath 'D:\\Programme\\JetBrains\\PhpStorm 2020.1.2'
+    alternativeIdePath "${alternativeIdePathTesting}" // Absolute path to the locally installed JetBrains (for testing)
     project.version = project.version
     plugins = [
             "com.jetbrains.php:${phpPluginVersion}",
             "com.jetbrains.twig:${twigPluginVersion}",
-            "de.espend.idea.php.annotation:${annotationPluginVersion}",
+            "de.espend.idea.php.annotation:${phpAnnotationPluginVersion}",
             "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
-            'coverage',
+//            'coverage',
             'webDeployment',
             'yaml',
             'CSS',
@@ -51,11 +53,11 @@ intellij {
 
     // Can't instantiate configurable for PHP Toolbox
     // at de.espend.idea.php.toolbox.ui.application.ToolboxApplicationForm.<init>(ToolboxApplicationForm.java:26)
-    tasks {
-        "buildSearchableOptions" {
-            enabled = false
-        }
-    }
+//    tasks {
+//        "buildSearchableOptions" {
+//            enabled = false
+//        }
+//    }
 }
 
 runIde {
@@ -63,8 +65,8 @@ runIde {
 }
 
 patchPluginXml {
-    sinceBuild '193'
-    untilBuild '201.*'
+    sinceBuild '201.*'
+    untilBuild '203.*'
     changeNotes = htmlFixer('src/main/resources/META-INF/change-notes.html')
 //    changeNotes """
 //      Add change notes here.<br>
