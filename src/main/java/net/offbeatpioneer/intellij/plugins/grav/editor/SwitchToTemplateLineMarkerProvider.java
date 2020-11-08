@@ -36,7 +36,7 @@ import java.util.List;
 public class SwitchToTemplateLineMarkerProvider extends RelatedItemLineMarkerProvider {
 
     @Override
-    protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo> result) {
+    protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo<?>> result) {
         Project project = element.getProject();
         if (!GravProjectComponent.isEnabled(project)) return;
         if (!element.getText().contentEquals("---")) return;
