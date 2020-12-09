@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -57,10 +58,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CreateGravProjectWizardGUI implements ActionListener {
     // points to the file that defines the URL format of the Grav release in GitHub
     private static final String DOWNLOAD_CONFIG_PROPERTIES = "download-config.properties";
-    boolean downloaded = false;
     private final Project project;
     private String[] DEFAULT_GRAV_VERSIONS = new String[]{"1.6.30", "1.6.29", "1.6.28"};
-    private boolean gotLatestVersions = false; //flag indicates if latest version tags could be retrieved from github
+    private AtomicBoolean gotLatestVersions; //flag indicates if latest version tags could be retrieved from github
     private String[] gravVersions = null;
     private JPanel mainPanel;
     private JPanel ptop;
@@ -92,6 +92,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     public CreateGravProjectWizardGUI(Project project) {
         this.project = project;
         initDownloadConfigurationFile();
+        gotLatestVersions = Objects.isNull(gotLatestVersions) ? new AtomicBoolean(false) : gotLatestVersions;
     }
 
     public JPanel getMainPanel() {
@@ -99,7 +100,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     }
 
     private void initDownloadConfigurationFile() {
-        if(Objects.isNull(downloadProps)) {
+        if (Objects.isNull(downloadProps)) {
             downloadProps = loadDownloadConfig();
         }
     }
@@ -115,14 +116,20 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     }
 
     public void initLayout() {
+        if (!gotLatestVersions.get()) {
+//            //download versions
+            refreshVersionAction();
+        }
         rbSelectGrav.setSelected(true);
         rbSelectGrav.setSelected(false);
         enablePanel(panelSelectGrav, true);
         enablePanel(panelDownloadGrav, false);
         wizardOption = WizardOption.SELECT;
+
     }
 
     public void createUIComponents() {
+        gotLatestVersions = new AtomicBoolean(false);
         initDownloadConfigurationFile();
 
         lblIntro = new JLabel();
@@ -162,14 +169,14 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         btnRefreshGravVersions.setActionCommand("refreshGrav");
 
         gravVersionComboBox = new ComboBox<>(DEFAULT_GRAV_VERSIONS);
-        if (!gotLatestVersions) {
-            //download versions
-            refreshVersionAction();
-        }
+//        if (!gotLatestVersions.get()) {
+//            //download versions
+//            refreshVersionAction();
+//        }
 
 
 //        initRefreshLink();
-        myDownloadLink = new ActionLink("Download and Install Grav", new AnAction() {
+        myDownloadLink = new ActionLink("Download selected Grav 'SDK'", new AnAction() {
             @Override
             public void actionPerformed(AnActionEvent e) {
                 FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
@@ -259,7 +266,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         });
         // must be place after downloadLink, otherwise downloadLink doesn't work ...
         JTextField textField = new JTextField();
-        browseFilesListener = new BrowseFilesListener(textField, "Select Grav 'SDK' Installation Folder", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
+        browseFilesListener = new BrowseFilesListener(textField, "Select Grav 'SDK' Download Folder", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
         fieldPanel = ModuleWizardStep.createFieldPanel(textField, "", browseFilesListener);
 
     }
@@ -274,7 +281,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
                 () -> {
 //                    ProgressIndicator progress = ProgressManager.getInstance().getProgressIndicator();
                     List<String> gravVersionReleases = GithubApi.getGravVersionReleases(downloadProps.getProperty("gravReleases"));
-                    gotLatestVersions = true;
+                    gotLatestVersions.set(true);
                     return gravVersionReleases.toArray(new String[0]);
                 }, () -> IOExceptionDialog.showErrorDialog("Download Error", "Could not retrieve current Grav releases from: '" + GithubApi.GravRepoUrl + "'")
         );
@@ -289,14 +296,13 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     }
 
     public void initRefreshLink() {
-        refreshLink = new ActionLink("Refresh Grav Versions", new AnAction() {
+        refreshLink = new ActionLink("Refresh Grav versions", new AnAction() {
 
             @Override
             public void actionPerformed(AnActionEvent e) {
                 refreshVersionAction();
             }
         });
-
         refreshLink.setVisible(false);
     }
 

@@ -140,7 +140,11 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware, 
                 if (Objects.nonNull(virtualFile)) {
                     VirtualFile childDirectory = FileCreateUtil.getChildDirectory(virtualFile, "user/themes/" + themeData.getName());
                     if (!childDirectory.equals(virtualFile)) {
-                        childDirectory.navigate(true);
+                        PsiManager instance = PsiManager.getInstance(project);
+                        PsiDirectory directory = instance.findDirectory(childDirectory);
+                        if (Objects.nonNull(directory)) {
+                            directory.navigate(true);
+                        }
                     }
                 }
             }
