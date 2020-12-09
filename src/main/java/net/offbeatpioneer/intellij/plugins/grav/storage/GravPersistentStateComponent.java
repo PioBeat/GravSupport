@@ -3,6 +3,7 @@ package net.offbeatpioneer.intellij.plugins.grav.storage;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.XmlSerializerUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -37,7 +38,7 @@ public class GravPersistentStateComponent implements PersistentStateComponent<Gr
     }
 
     @Override
-    public void loadState(GravPersistentStateComponent state) {
+    public void loadState(@NotNull GravPersistentStateComponent state) {
         XmlSerializerUtil.copyBean(state, this);
     }
 

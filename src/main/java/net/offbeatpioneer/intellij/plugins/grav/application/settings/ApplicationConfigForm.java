@@ -27,7 +27,7 @@ public class ApplicationConfigForm {
 
     private void createUIComponents() {
         textField = new JTextField();
-        browseFilesListener = new BrowseFilesListener(textField, "Select Directory for Default Grav Installation", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
+        browseFilesListener = new BrowseFilesListener(textField, "Select Directory for Default Grav 'SDK' Installation", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
         fieldPanel = ModuleWizardStep.createFieldPanel(textField, "", browseFilesListener);
     }
 

@@ -9,11 +9,11 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 /**
- * Application based configuration for Grav in the Settings menu of IntelliJ
+ * Application based configuration for Grav in the settings menu of IntelliJ IDEA.
  * <p>
  * What it does:
  * <ul>
- * <li>Set default download directory for Grav downloads when creating a Grav project/module</li>
+ * <li>Enables to specify the default Grav 'SDK' installation folder that is used when a new Grav project shall be created.</li>
  * </ul>
  *
  * @author Dominik Grzelak
@@ -60,7 +60,7 @@ public class GravApplicationConfigurable implements Configurable {
     @Nullable
     @Override
     public String getHelpTopic() {
-        return "Select the directory where the Grav installation exists or should be downloaded when creating a new module";
+        return "Select the default directory that is inspected for existing Grav 'SDK' downloads when creating a new project";
     }
 
     @Override
