@@ -81,9 +81,9 @@
         <fileType name="Theme blueprints"
                   implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeBlueprintsFileType"
                   fieldName="INSTANCE" language="yaml" extensions="yaml"/>
-        <fileType name="Theme configuration"
-                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeConfigurationFileType"
-                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>
+<!--        <fileType name="Theme configuration"-->
+<!--                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeConfigurationFileType"-->
+<!--                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>-->
 
         <!--        <fileTypeFactory-->
         <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.files.GravConfigurationFileTypeFactory"/>-->
