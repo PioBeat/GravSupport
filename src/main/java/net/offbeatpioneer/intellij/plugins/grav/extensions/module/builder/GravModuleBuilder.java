@@ -101,7 +101,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     public void moduleCreated(@NotNull Module module) {
         Project project = module.getProject();
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-        String msg = String.format("Please wait while module for project %s is created", project.getName());
+        String msg = String.format("Please wait while module for project '%s' is created", project.getName());
         settings = GravProjectSettings.getInstance(project);
 
         JBPopupFactory.getInstance()
@@ -115,7 +115,6 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
             final VirtualFile src = roots1[0];
             settings.withSrcDirectory = false;
             settings.gravInstallationPath = getGravInstallPath().getPath();
-//            settings.withSrcDirectory =
             GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil();
             generatorUtil.generateProject(project, src, settings, module);
         }

@@ -18,6 +18,7 @@ public class GravIcons {
     }
 
     public static final Icon GravDefaultIcon = load("/icons/gravLogo.svg");
+    public static final Icon GravDefaultIconLegacy = load("/icons/gravLogoLegacy.png");
     public static final Icon ThemeBlueprints = load("/icons/gravFileIcon.svg");
     public static final Icon ThemeConfiguration = load("/icons/gravFileIcon.svg");
 }

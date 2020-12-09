@@ -8,6 +8,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.newvfs.impl.VirtualFileImpl;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.search.FileTypeIndex;
@@ -21,6 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author Dominik Grzelak
@@ -49,6 +51,18 @@ public class FileCreateUtil {
             return src.getParent();
         }
         return getParentDirectory(src.getParent(), dirName);
+    }
+
+    public static VirtualFile getChildDirectory(VirtualFile src, String dirName) {
+        String[] split = dirName.split("/");
+        if (split.length > 0 && !split[0].isEmpty()) {
+            VirtualFile child = src.findChild(split[0]);
+            if (Objects.nonNull(child)) {
+                String collect = Arrays.stream(split).skip(1).filter(Objects::nonNull).collect(Collectors.joining("/"));
+                return getChildDirectory(child, collect);
+            }
+        }
+        return src;
     }
 
     //https://intellij-support.jetbrains.com/hc/en-us/community/posts/115000080064-find-virtual-file-for-relative-path-under-content-roots

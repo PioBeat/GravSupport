@@ -28,7 +28,7 @@ import static net.offbeatpioneer.intellij.plugins.grav.extensions.module.wizard.
  */
 public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProjectSettings> {
     private CreateGravProjectWizardGUI form;
-    private GravPersistentStateComponent storage;
+    private final GravPersistentStateComponent storage;
     private GravProjectSettings settings;
 
     public GravInstallerGeneratorPeer() {
@@ -88,23 +88,15 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     public void addSettingsListener(@NotNull SettingsListener listener) {
     }
 
-    /**
-     * empty method - will be removed in the future. Don't put anything in this method.
-     */
-    @Deprecated
-    @Override
-    public void addSettingsStateListener(@NotNull WebProjectGenerator.SettingsStateListener listener) {
-    }
-
     @Nullable
     @Override
     public ValidationInfo validate() {
         int code = validate0();
         switch (code) {
             case -1:
-                return new ValidationInfo("Path pointing to Grav installation is empty").withOKEnabled();
+                return new ValidationInfo("The path pointing to Grav installation is empty").withOKEnabled();
             case -2:
-                new ValidationInfo("Path to Grav installation does not exist").withOKEnabled();
+                new ValidationInfo("The path to Grav installation does not exist").withOKEnabled();
             case -3:
                 return new ValidationInfo("Grav installation isn't valid").withOKEnabled();
             default:

@@ -3,6 +3,7 @@ package net.offbeatpioneer.intellij.plugins.grav.helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.internal.StringMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,11 +23,18 @@ public class GithubApi {
 
     public static String GravRepoUrl = "https://api.github.com/repos/getgrav/grav/releases";
 
-    public static List<String> getGravVersionReleases() throws IOException {
+    public static List<String> getGravVersionReleases(String gravReleasesUrl) throws IOException {
         List<String> versions;
-        String response = getRequest(GravRepoUrl);
-        Object[] map = gson.fromJson(response, Object[].class);
-        versions = Arrays.stream(map).map(x -> ((LinkedTreeMap<String, String>) x).get("tag_name")).collect(Collectors.toList());
+        String response = getRequest(gravReleasesUrl);
+        LinkedTreeMap<String, String>[] map = gson.fromJson(response, LinkedTreeMap[].class);
+        versions = Arrays.stream(map)
+                .map(x -> {
+                    return x.get("tag_name");
+                })
+                .filter(Objects::nonNull)
+                .filter(x -> !x.isEmpty())
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
         return versions;
     }
 

@@ -64,12 +64,12 @@ public class GravProjectGeneratorUtil {
             return false;
         }
         Task.Backgroundable installDevtools = new InstallDevtoolsPlugin(project, "Installing Devtools Plugin", new File(targetPath));
-        Task.Backgroundable t = new Task.Backgroundable(project, "Copying Grav SDK to Module Folder") {
+        Task.Backgroundable t = new Task.Backgroundable(project, "Copying Grav SDK to module folder") {
 
             @Override
             public void onSuccess() {
                 super.onSuccess();
-                NotificationHelper.showInfoNotification(getProject(), "Grav project created");
+                NotificationHelper.showInfoNotification(getProject(), String.format("New Grav project '%s' was created.", getProject().getName()));
 //                JBPopupFactory.getInstance()
 //                        .createHtmlTextBalloonBuilder("Grav project created", MessageType.INFO, null)
 //                        .setFadeoutTime(3500)

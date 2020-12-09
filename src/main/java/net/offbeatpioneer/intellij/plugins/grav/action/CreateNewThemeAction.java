@@ -9,30 +9,36 @@ import com.intellij.openapi.module.WebModuleTypeBase;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiManager;
 import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
+import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.helper.ProcessUtils;
-import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
  * @author Dominik Grzelak
  */
-public class CreateNewThemeAction extends AnAction implements WriteActionAware {
+public class CreateNewThemeAction extends AnAction implements WriteActionAware, DumbAware {
 
     private final static String Text = "Grav Create Theme";
 
     private NewThemeData themeData;
 
     public CreateNewThemeAction() {
-        super(Text, "Create A New Theme", GravIcons.GravDefaultIcon);
+        super(Text, "Create a new theme", GravIcons.GravDefaultIcon);
     }
 
     @Override
@@ -50,7 +56,6 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
             String moduleName = module == null ? "" : module.getName();
             presentation.setText(Text + " (" + moduleName + ")");
         }
-//        throw new RuntimeException("msndmsd");
     }
 
     private boolean isAvailable(DataContext dataContext) {
@@ -125,6 +130,18 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
                 } else {
                     NotificationHelper.showBaloon("Theme '" + themeData.getName() + "' was created", MessageType.INFO, project);
                     VirtualFileManager.getInstance().syncRefresh();
+                }
+            }
+
+            @Override
+            public void onFinished() {
+                super.onFinished();
+                VirtualFile virtualFile = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(Paths.get(srcPath));
+                if (Objects.nonNull(virtualFile)) {
+                    VirtualFile childDirectory = FileCreateUtil.getChildDirectory(virtualFile, "user/themes/" + themeData.getName());
+                    if (!childDirectory.equals(virtualFile)) {
+                        childDirectory.navigate(true);
+                    }
                 }
             }
 
