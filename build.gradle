@@ -1,18 +1,18 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.6.2'
+    id 'org.jetbrains.intellij' version '0.6.5'
     id 'com.palantir.git-version' version "0.12.3"
 }
 
 def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
 
 group 'net.offbeatpioneer.intellij.plugins.grav'
-version '0.5.3'
+version '0.6.0-alpha'
 
 apply plugin: 'idea'
 apply plugin: 'java'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 apply plugin: 'org.jetbrains.intellij'
 
 
@@ -34,13 +34,13 @@ intellij {
     version ideaVersion
 //    intellij.localPath = "${localIdePath}"
     updateSinceUntilBuild false
-    alternativeIdePath "${alternativeIdePathTesting}" // Absolute path to the locally installed JetBrains (for testing)
+    alternativeIdePath "${alternativeIdePathTesting}" // Absolute path to the locally installed JetBrains, e.g., PhpStorm (for testing)
     project.version = project.version
     plugins = [
             "com.jetbrains.php:${phpPluginVersion}",
             "com.jetbrains.twig:${twigPluginVersion}",
             "de.espend.idea.php.annotation:${phpAnnotationPluginVersion}",
-            "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
+//            "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
 //            'coverage',
             'webDeployment',
             'yaml',
@@ -65,7 +65,7 @@ runIde {
 }
 
 patchPluginXml {
-    sinceBuild '201.*'
+    sinceBuild '203'
     untilBuild '203.*'
     changeNotes = htmlFixer('src/main/resources/META-INF/change-notes.html')
 //    changeNotes """
