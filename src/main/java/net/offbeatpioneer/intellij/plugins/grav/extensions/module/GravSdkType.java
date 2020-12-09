@@ -48,7 +48,7 @@ public class GravSdkType extends SdkType {
 
     @Override
     public Icon getIcon() {
-        return GravIcons.Grav;
+        return GravIcons.GravDefaultIcon;
     }
 
     @Override

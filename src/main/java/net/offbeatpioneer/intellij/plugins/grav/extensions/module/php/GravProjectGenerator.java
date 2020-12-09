@@ -50,7 +50,7 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
 
     @Override
     public Icon getIcon() {
-        return GravIcons.Node_Grav;
+        return GravIcons.GravDefaultIcon;
     }
 
     @Nls

@@ -26,7 +26,7 @@ public class GravProjectTemplateFactory extends ProjectTemplatesFactory {
     }
 
     public Icon getGroupIcon(String group) {
-        return GravIcons.Grav;
+        return GravIcons.GravDefaultIcon;
     }
 
     @NotNull

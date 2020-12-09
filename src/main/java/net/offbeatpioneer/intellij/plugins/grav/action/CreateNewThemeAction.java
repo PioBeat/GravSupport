@@ -16,7 +16,6 @@ import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import net.offbeatpioneer.intellij.plugins.grav.helper.ProcessUtils;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
-import net.offbeatpioneer.intellij.plugins.grav.helper.ProjectChecker;
 import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +32,7 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware {
     private NewThemeData themeData;
 
     public CreateNewThemeAction() {
-        super(Text, "Create A New Theme", GravIcons.Grav);
+        super(Text, "Create A New Theme", GravIcons.GravDefaultIcon);
     }
 
     @Override

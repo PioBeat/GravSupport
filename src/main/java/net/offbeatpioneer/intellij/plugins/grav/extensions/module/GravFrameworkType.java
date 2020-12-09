@@ -32,6 +32,6 @@ public class GravFrameworkType extends FrameworkTypeEx {
     @NotNull
     @Override
     public Icon getIcon() {
-        return GravIcons.Grav;
+        return GravIcons.GravDefaultIcon;
     }
 }

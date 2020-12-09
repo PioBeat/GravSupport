@@ -119,7 +119,7 @@ public class SwitchToTemplateLineMarkerProvider extends RelatedItemLineMarkerPro
         try {
             return TwigIcons.TwigFileIcon;
         } catch (Exception e) {
-            return GravIcons.Node_Grav;
+            return GravIcons.GravDefaultIcon;
         }
     }
 }

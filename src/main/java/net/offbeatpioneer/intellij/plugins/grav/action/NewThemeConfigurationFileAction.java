@@ -33,7 +33,7 @@ import javax.swing.*;
  */
 public class NewThemeConfigurationFileAction extends CustomCreateFromTemplateAction implements WriteActionAware {
     public NewThemeConfigurationFileAction() {
-        super("Grav Files", null, GravIcons.Grav);
+        super("Grav Files", null, GravIcons.GravDefaultIcon);
     }
 
     private String themeName;
@@ -74,7 +74,7 @@ public class NewThemeConfigurationFileAction extends CustomCreateFromTemplateAct
         for (FileTemplate fileTemplate : GravFileTemplateUtil.getAvailableThemeConfigurationTemplates(project)) {
             final String templateName = fileTemplate.getName();
             final String shortName = GravFileTemplateUtil.getTemplateShortName(templateName);
-            final Icon icon = GravIcons.Grav;
+            final Icon icon = GravIcons.GravDefaultIcon;
             builder.addKind(shortName, icon, templateName);
         }
 

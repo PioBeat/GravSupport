@@ -1,6 +1,7 @@
 package net.offbeatpioneer.intellij.plugins.grav.assets;
 
 import com.intellij.openapi.util.IconLoader;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -10,9 +11,13 @@ import javax.swing.*;
  * @author Dominik Grzelak
  */
 public class GravIcons {
-    public static final Icon Grav = IconLoader.getIcon("/icons/favicon.png");
-    public static final Icon ThemeBlueprints = IconLoader.getIcon("/icons/thumbnail.jpg");
-    public static final Icon ThemeConfiguration = IconLoader.getIcon("/icons/thumbnail.jpg");
-    public static final Icon BigGrav = IconLoader.getIcon("/icons/logo.png");
-    public static final Icon Node_Grav = IconLoader.getIcon("/icons/logo.png");
+
+    private static @NotNull Icon load(@NotNull String path) {
+        return IconLoader.getIcon(path, GravIcons.class);
+//        return IconManager.getInstance().getIcon(path, GravIcons.class);
+    }
+
+    public static final Icon GravDefaultIcon = load("/icons/gravLogo.svg");
+    public static final Icon ThemeBlueprints = load("/icons/gravFileIcon.svg");
+    public static final Icon ThemeConfiguration = load("/icons/gravFileIcon.svg");
 }

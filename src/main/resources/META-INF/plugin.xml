@@ -1,7 +1,6 @@
 <idea-plugin>
     <id>net.offbeatpioneer.intellij.plugins.gravsupport</id>
     <name>Grav Support</name>
-<!--    <version>0.5.2</version>-->
     <vendor email="dominik@offbeat-pioneer.net" url="http://www.offbeat-pioneer.net/">Dominik Grzelak</vendor>
 
     <description><![CDATA[
@@ -95,7 +94,7 @@
         <toolWindow
                 id="Grav"
                 anchor="right"
-                icon="/icons/icon_toolwindow.png"
+                icon="/icons/gravToolWindowIcon.svg"
                 factoryClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"/>
 
         <intentionAction>

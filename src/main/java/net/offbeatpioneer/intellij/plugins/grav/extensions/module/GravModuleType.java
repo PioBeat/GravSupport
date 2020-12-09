@@ -34,13 +34,13 @@ public class GravModuleType extends ModuleType<GravModuleBuilder> {
     }
 
     @Override
-    public Icon getIcon() {
-        return GravIcons.Grav;
+    public @NotNull Icon getIcon() {
+        return GravIcons.GravDefaultIcon;
     }
 
     @Override
     public Icon getNodeIcon(@Deprecated boolean b) {
-        return GravIcons.Node_Grav;
+        return GravIcons.GravDefaultIcon;
     }
 
     public static GravModuleType getInstance() {
