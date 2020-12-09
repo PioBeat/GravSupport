@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 /**
- * Created by Dome on 11.08.2017.
+ * @author Dominik Grzelak
+ * @since 2017-08-11
  */
 public class GravProjectTemplateFactory extends ProjectTemplatesFactory {
 
@@ -19,9 +20,8 @@ public class GravProjectTemplateFactory extends ProjectTemplatesFactory {
         System.out.println("GravProjectTemplateFactory");
     }
 
-    @NotNull
     @Override
-    public String[] getGroups() {
+    public String @NotNull [] getGroups() {
         return new String[]{"PHP", WebModuleBuilder.GROUP_NAME};
     }
 
@@ -29,9 +29,8 @@ public class GravProjectTemplateFactory extends ProjectTemplatesFactory {
         return GravIcons.GravDefaultIcon;
     }
 
-    @NotNull
     @Override
-    public ProjectTemplate[] createTemplates(@Nullable String group, WizardContext context) {
+    public ProjectTemplate @NotNull [] createTemplates(@Nullable String group, WizardContext context) {
         return new ProjectTemplate[]{new GravProjectGenerator()};
     }
 }

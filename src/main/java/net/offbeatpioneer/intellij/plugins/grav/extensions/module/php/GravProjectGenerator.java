@@ -50,7 +50,11 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
 
     @Override
     public Icon getIcon() {
-        return GravIcons.GravDefaultIcon;
+        if(PlatformUtils.isPhpStorm()) {
+            return GravIcons.GravDefaultIcon;
+        } else {
+            return GravIcons.GravDefaultIconLegacy;
+        }
     }
 
     @Nls
