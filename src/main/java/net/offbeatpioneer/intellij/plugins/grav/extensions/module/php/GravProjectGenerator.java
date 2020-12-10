@@ -45,16 +45,16 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
 
     @Override
     public String getDescription() {
-        return "Create a new Grav project. A local PHP interpreter is required.";
+        return "Create a new Grav project. A PHP interpreter is required.";
     }
 
     @Override
     public Icon getIcon() {
-        if(PlatformUtils.isPhpStorm()) {
-            return GravIcons.GravDefaultIcon;
-        } else {
-            return GravIcons.GravDefaultIconLegacy;
-        }
+//        if(PlatformUtils.isPhpStorm()) {
+        return GravIcons.GravDefaultIcon;
+//        } else {
+//            return GravIcons.GravDefaultIcon_PNG;
+//        }
     }
 
     @Nls
