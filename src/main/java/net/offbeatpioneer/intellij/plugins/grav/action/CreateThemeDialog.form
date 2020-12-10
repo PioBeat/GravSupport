@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="net.offbeatpioneer.intellij.plugins.grav.action.CreateThemeDialog">
-  <grid id="cbd77" binding="mainPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="cbd77" binding="mainPanel" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="436" height="297"/>
+      <xy x="48" y="54" width="436" height="372"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -11,7 +11,7 @@
       <grid id="e3588" layout-manager="GridLayoutManager" row-count="5" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="true"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -48,7 +48,7 @@
               <text value="Email"/>
             </properties>
           </component>
-          <component id="27a41" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+          <component id="27a41" class="javax.swing.JTextField" binding="themeName" default-binding="true">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -56,7 +56,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="94dbb" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+          <component id="94dbb" class="javax.swing.JTextField" binding="description" default-binding="true">
             <constraints>
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -64,7 +64,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="2efa3" class="javax.swing.JTextField" binding="textField3" default-binding="true">
+          <component id="2efa3" class="javax.swing.JTextField" binding="developer" default-binding="true">
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -72,7 +72,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="5e462" class="javax.swing.JTextField" binding="textField4" default-binding="true">
+          <component id="5e462" class="javax.swing.JTextField" binding="email" default-binding="true">
             <constraints>
               <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -88,7 +88,7 @@
               <text value="GitHub-ID"/>
             </properties>
           </component>
-          <component id="e1cc1" class="javax.swing.JTextField" binding="textField5" default-binding="true">
+          <component id="e1cc1" class="javax.swing.JTextField" binding="githubId" default-binding="true">
             <constraints>
               <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -98,6 +98,26 @@
           </component>
         </children>
       </grid>
+      <vspacer id="45698">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="12"/>
+          </grid>
+        </constraints>
+      </vspacer>
+      <component id="6dd6d" class="javax.swing.JSeparator" binding="jpsep">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
+      <vspacer id="d12a9">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="12"/>
+          </grid>
+        </constraints>
+      </vspacer>
     </children>
   </grid>
 </form>

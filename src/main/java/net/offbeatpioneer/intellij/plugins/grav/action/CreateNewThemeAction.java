@@ -82,7 +82,7 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware, 
             return;
         }
 
-        CreateNewThemeDialog dialog = new CreateNewThemeDialog(project);
+        CreateNewThemeDialogWrapper dialog = new CreateNewThemeDialogWrapper(project);
         dialog.show();
 
         if (dialog.getExitCode() == 0) {
@@ -95,7 +95,6 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware, 
         }
     }
 
-    //TODO extract error message correctly, eg, wrong PHP version
     private void createTheme(@NotNull Project project, Module module) {
 //        String[] commands = {"echo", "0", "|", "php", "bin/plugin", "devtools", "new-theme",
         String[] commands = {"echo", "pure-blank", "|", "php", "bin/plugin", "devtools", "new-theme",
@@ -138,7 +137,7 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware, 
                 super.onFinished();
                 VirtualFile virtualFile = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(Paths.get(srcPath));
                 if (Objects.nonNull(virtualFile)) {
-                    VirtualFile childDirectory = FileCreateUtil.getChildDirectory(virtualFile, "user/themes/" + themeData.getName());
+                    VirtualFile childDirectory = FileCreateUtil.getChildDirectory(virtualFile, "user/themes/" + themeData.getName().replaceAll("\\s+","-"));
                     if (!childDirectory.equals(virtualFile)) {
                         PsiManager instance = PsiManager.getInstance(project);
                         PsiDirectory directory = instance.findDirectory(childDirectory);
