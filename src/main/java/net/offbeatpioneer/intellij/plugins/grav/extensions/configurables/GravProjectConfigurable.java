@@ -1,6 +1,7 @@
 package net.offbeatpioneer.intellij.plugins.grav.extensions.configurables;
 
 import com.intellij.ide.actions.ShowSettingsUtilImpl;
+import com.intellij.ide.projectView.ProjectView;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
@@ -77,6 +78,7 @@ public class GravProjectConfigurable implements Configurable {
         if (Objects.nonNull(settings)) {
             settings.pluginEnabled = enabled.isSelected();
             GravProjectConfigurable.enableGravToolWindow(project, settings.pluginEnabled);
+//            ProjectView.getInstance(project).refresh();
         }
     }
 

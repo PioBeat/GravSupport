@@ -5,6 +5,7 @@ import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.WebProjectTemplate;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectGeneratorPeer;
@@ -18,6 +19,7 @@ import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateCompo
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
@@ -61,6 +63,11 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
         return GravIcons.GravDefaultIcon;
     }
 
+    @Override
+    public @Nullable String getHelpId() {
+        return "grav help id";
+    }
+
     @Nls
     @NotNull
     @Override
@@ -82,7 +89,7 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
     public void generateProject(@NotNull Project project, @NotNull VirtualFile baseDir, @NotNull GravProjectSettings settings, @NotNull Module module) {
         VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(settings.gravInstallationPath));
         if (vf == null || !GravSdkType.isValidGravSDK(vf)) {
-            NotificationHelper.showErrorNotification(project, "Project couldn't be created because Grav Installation seems invalid");
+            NotificationHelper.showErrorNotification(project, "Project '" + project.getName() + "' couldn't be created because the selected Grav download seems invalid");
         } else {
             module.setModuleType(createModuleBuilder().getModuleType().getId());
             storage.setDefaultGravDownloadPath(settings.gravInstallationPath);
@@ -90,6 +97,17 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
             GravProjectGeneratorUtil projectGenerator = new GravProjectGeneratorUtil(project);
             projectGenerator.generateProject(project, baseDir, settings, module);
         }
+    }
+
+    @Override
+    public boolean postponeValidation() {
+        return false; //super.postponeValidation();
+    }
+
+    @Override
+    public @Nullable ValidationInfo validateSettings() {
+        return generatorPeer.validate();
+//        return super.validateSettings();
     }
 
     public boolean isPrimaryGenerator() {

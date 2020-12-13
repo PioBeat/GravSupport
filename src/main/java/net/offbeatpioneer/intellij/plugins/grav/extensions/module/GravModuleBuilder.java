@@ -95,13 +95,24 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 //        };
 //    }
 
+
+    @Override
+    public boolean isTemplate() {
+        return super.isTemplate();
+    }
+
+    @Override
+    public boolean isTemplateBased() {
+        return super.isTemplateBased();
+    }
+
     @Override
     public void moduleCreated(@NotNull Module module) {
         Project project = module.getProject();
-        StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         String msg = String.format("Please wait while module for project '%s' is created", project.getName());
         settings = GravProjectSettings.getInstance(project);
 
+        StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         JBPopupFactory.getInstance()
                 .createHtmlTextBalloonBuilder(msg, MessageType.WARNING, null)
                 .setFadeoutTime(4000)

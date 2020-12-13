@@ -2,10 +2,9 @@ package net.offbeatpioneer.intellij.plugins.grav.extensions.module.php;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.SettingsStep;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 import com.intellij.openapi.ui.ValidationInfo;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectGeneratorPeer;
@@ -20,22 +19,29 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.io.File;
+import java.util.Objects;
 
 import static net.offbeatpioneer.intellij.plugins.grav.extensions.module.wizard.CreateGravProjectWizardStep.LAST_USED_GRAV_HOME;
 
 /**
+ * Project wizard for PhpStorm.
+ *
  * @author Dominik Grzelak
  * @since 11.08.2017
  */
 public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProjectSettings> {
     private CreateGravProjectWizardGUI form;
     private final GravPersistentStateComponent storage;
-    private GravProjectSettings settings;
-//    Disposable disposable;
+    private TextFieldWithBrowseButton myLocationField;
 
     public GravInstallerGeneratorPeer() {
         this.storage = GravPersistentStateComponent.getInstance();
-//        disposable = Disposer.newDisposable();
+    }
+
+    @Override
+    public @NotNull JComponent getComponent(@NotNull TextFieldWithBrowseButton myLocationField, @NotNull Runnable checkValid) {
+        this.myLocationField = myLocationField;
+        return getComponent();
     }
 
     @NotNull
@@ -43,52 +49,37 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     public JComponent getComponent() {
         if (form == null) {
             form = new CreateGravProjectWizardGUI(ProjectManager.getInstance().getDefaultProject());
-            String path = storage.getDefaultGravDownloadPath();
-            if ((path == null || path.isEmpty()) && PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME) != null) {
-                path = PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME);
-            }
-            form.setDefaultInstallationPath(path);
-            form.getFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentListener() {
+
+            form.getGravDownloadFolderFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
                     validate0();
+                    if (Objects.nonNull(myLocationField))
+                        myLocationField.getTextField().setText(myLocationField.getTextField().getText()); // to trigger re-validation of project wizard in PhpStorm
                 }
 
                 @Override
                 public void removeUpdate(DocumentEvent e) {
                     validate0();
+                    if (Objects.nonNull(myLocationField))
+                        myLocationField.getTextField().setText(myLocationField.getTextField().getText()); // to trigger re-validation of project wizard in PhpStorm
                 }
 
                 @Override
                 public void changedUpdate(DocumentEvent e) {
                     validate0();
+                    if (Objects.nonNull(myLocationField))
+                        myLocationField.getTextField().setText(myLocationField.getTextField().getText()); // to trigger re-validation of project wizard in PhpStorm
                 }
             });
-
-//            ComponentValidator cv = new ComponentValidator(disposable);
-//            Supplier<? extends ValidationInfo> validator = (Supplier<ValidationInfo>) () -> {
-//                int code = validate0();
-//                switch (code) {
-//                    case -1:
-//                        return new ValidationInfo("The path pointing to Grav download is empty").withOKEnabled();
-//                    case -2:
-//                        new ValidationInfo("The path to the selected Grav download does not exist").withOKEnabled();
-//                    case -3:
-//                        return new ValidationInfo("The selected Grav download isn't valid").withOKEnabled();
-//                    default:
-//                        return null;
-//                }
-//            };
-//            cv.withValidator(validator);
-//            form.getFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
-//                @Override
-//                protected void textChanged(@NotNull DocumentEvent e) {
-//                    ComponentValidator.getInstance(form.getFieldPanel().getTextField()).ifPresent(ComponentValidator::revalidate);
-//                }
-//            });
-//            cv.installOn(form.getFieldPanel().getTextField());
-////                Disposable.dispose();
         }
+        String path = storage.getDefaultGravDownloadPath();
+        if ((path == null || path.isEmpty())) {
+            path = System.getProperty("user.home");
+        } else if (PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME) != null) {
+            path = PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME);
+        }
+        form.setDefaultInstallationPath(path);
         form.initLayout();
         return form.getMainPanel();
     }
@@ -98,15 +89,17 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
         settingsStep.addSettingsComponent(getComponent());
     }
 
-    //after create button was pressed and everthing is valid
+    /**
+     * This method is called after the create button was clicked while the settings being valid
+     */
     @NotNull
     @Override
     public GravProjectSettings getSettings() {
-        settings = GravProjectSettings.getInstance(ProjectManager.getInstance().getDefaultProject());
+        GravProjectSettings settings = GravProjectSettings.getInstance(ProjectManager.getInstance().getDefaultProject());
         if (settings == null) {
             settings = new GravProjectSettings();
         }
-        settings.gravInstallationPath = form.getGravDirectory();
+        settings.gravInstallationPath = form.getGravFinalInstallationDirectory();
         settings.pluginEnabled = true;
         return settings;
     }
@@ -114,27 +107,26 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     @Nullable
     @Override
     public ValidationInfo validate() {
-//        int code = validate0();
-//        switch (code) {
-//            case -1:
-//                return new ValidationInfo("The path pointing to Grav download is empty").withOKEnabled();
-//            case -2:
-//                new ValidationInfo("The path to the selected Grav download does not exist").withOKEnabled();
-//            case -3:
-//                return new ValidationInfo("The selected Grav download isn't valid").withOKEnabled();
-//            default:
-//                return null;
-//        }
-        return null;
+        int code = validate0();
+        switch (code) {
+            case -1:
+                return new ValidationInfo("The path pointing to Grav is empty for the selected option"); //.withOKEnabled();
+            case -2:
+                new ValidationInfo("The path pointing to Grav doesn't exist for the selected option"); //.withOKEnabled();
+            case -3:
+                return new ValidationInfo("The selected Grav 'SDK' seems not valid for the selected option"); //.withOKEnabled();
+            default:
+                return null;
+        }
     }
 
     private int validate0() {
-        if (form.getGravDirectory().isEmpty()) {
+        String gravDir = form.getGravFinalInstallationDirectory().trim();
+        if (gravDir.isEmpty()) {
             form.showHint(true);
             return -1;
         } else {
-            String file = form.getGravDirectory();
-            VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(file));
+            VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(gravDir));
             if (vf == null) {
                 form.showHint(true);
                 return -2;
@@ -144,7 +136,7 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
                     return -3;
                 }
             }
-            String gravSdkVersion = GravSdkType.findGravSdkVersion(file);
+            String gravSdkVersion = GravSdkType.findGravSdkVersion(gravDir);
             form.setDeterminedGravVersion(gravSdkVersion);
         }
         form.showHint(false);

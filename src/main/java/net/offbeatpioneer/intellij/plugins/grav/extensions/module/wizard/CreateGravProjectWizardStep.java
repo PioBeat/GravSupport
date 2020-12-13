@@ -13,6 +13,8 @@ import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateCompo
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.io.File;
 import java.util.Objects;
 
@@ -34,39 +36,66 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep implements Dis
     public JComponent getComponent() {
         if (form == null) {
             form = new CreateGravProjectWizardGUI(this.project);
-            String path = storage.getDefaultGravDownloadPath();
-            if ((path == null || path.isEmpty()) && PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME) != null) {
-                path = PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME);
-            }
-            form.setDefaultInstallationPath(path);
+            form.getGravDownloadFolderFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    try {
+                        validate();
+                    } catch (ConfigurationException configurationException) {
+                    }
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    try {
+                        validate();
+                    } catch (ConfigurationException configurationException) {
+                    }
+
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    try {
+                        validate();
+                    } catch (ConfigurationException configurationException) {
+                    }
+                }
+            });
         }
+        String path = storage.getDefaultGravDownloadPath();
+        if ((path == null || path.isEmpty())) {
+            path = System.getProperty("user.home");
+        } else if (PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME) != null) {
+            path = PropertiesComponent.getInstance().getValue(LAST_USED_GRAV_HOME);
+        }
+        form.setDefaultInstallationPath(path);
         form.initLayout();
         return form.getMainPanel();
     }
 
     @Override
     public boolean validate() throws ConfigurationException {
-        if (form.getGravDirectory().isEmpty()) {
+        String finalGravInstallDir = form.getGravFinalInstallationDirectory().trim();
+        if (finalGravInstallDir.isEmpty()) {
             form.showHint(true);
-            throw new ConfigurationException("The path pointing to Grav download is empty");
+            throw new ConfigurationException("The path pointing to Grav is empty for the selected option");
         } else {
-            String file = form.getGravDirectory();
-            VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(file));
+            VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(finalGravInstallDir));
             if (vf == null) {
                 form.showHint(true);
-                throw new ConfigurationException("The path to the selected Grav download does not exist");
+                throw new ConfigurationException("The path pointing to Grav doesn't exist for the selected option");
             } else {
                 if (!GravSdkType.isValidGravSDK(vf)) {
                     form.showHint(true);
-                    throw new ConfigurationException("The selected Grav download isn't valid");
+                    throw new ConfigurationException("The selected Grav 'SDK' seems not valid");
                 }
             }
+            String gravSdkVersion = GravSdkType.findGravSdkVersion(finalGravInstallDir);
+            form.setDeterminedGravVersion(gravSdkVersion);
         }
-//        if (StringUtil.isEmpty(sdkPanel.getSdkName())) {
-//            throw new ConfigurationException("Specify Grav SDK");
-//        }
         form.showHint(false);
-        return super.validate();
+        return true;
     }
 
     /**
@@ -74,7 +103,7 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep implements Dis
      */
     @Override
     public void updateDataModel() {
-        String file = form.getGravDirectory();
+        String file = form.getGravFinalInstallationDirectory();
         builder.setGravInstallPath(LocalFileSystem.getInstance().findFileByIoFile(new File(file)));
         PropertiesComponent.getInstance().setValue(LAST_USED_GRAV_HOME, new File(file).getAbsolutePath());
     }

@@ -39,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     private JPanel pbottom;
     private JLabel lblIntro;
     private ActionLink myDownloadLink;
-    private FieldPanel fieldPanel;
+    private FieldPanel gravDownloadFolderFieldPanel;
     private JLabel lblHint;
     private JComboBox<String> gravVersionComboBox;
     private JLabel lblVersionPrompt;
@@ -171,7 +172,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
             public void actionPerformed(AnActionEvent e) {
                 FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
                 PathChooserDialog pathChooser = FileChooserFactory.getInstance()
-                        .createPathChooser(descriptor, null, mainPanel);
+                        .createPathChooser(descriptor, null, null);
                 pathChooser.choose(VfsUtil.getUserHomeDir(), new FileChooser.FileChooserConsumer() {
 
                     @Override
@@ -182,7 +183,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
 
                         AtomicReference<VirtualFile> dir = new AtomicReference<>(virtualFiles.get(0));
                         String dirName = dir.get().getName();
-                        fieldPanel.setText(dir.get().getPath());
+                        gravDownloadFolderFieldPanel.setText(dir.get().getPath());
                         boolean completed = false;
                         if (!dirName.toLowerCase().contains("grav")) {
                             WriteAction.compute(() -> {
@@ -195,7 +196,6 @@ public class CreateGravProjectWizardGUI implements ActionListener {
                             });
                         }
                         String newdirpath = dir.get().getPresentableUrl() + File.separator + "grav-admin" + File.separator;
-//                        fieldPanel.setText(newdirpath);
 
                         String downloadUrl = MessageFormat.format(downloadProps.getProperty("downloadUrl"), getSelectedGravVersion(), getSelectedGravVersion());
                         String filename = MessageFormat.format(downloadProps.getProperty("filename"), getSelectedGravVersion());
@@ -207,18 +207,16 @@ public class CreateGravProjectWizardGUI implements ActionListener {
                         List<DownloadableFileDescription> descriptions = new ArrayList<>();
                         descriptions.add(fileDescription);
                         FileDownloader downloader = fileService.createDownloader(descriptions, presentableName);
-
-                        List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.get().getPath(), project, mainPanel);//downloader.toDirectory(dir.getPath()).download();
+                        List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.get().getPath(), project, mainPanel);
                         if (files != null && files.size() == 1) {
                             try {
                                 VirtualFile finalDir = dir.get();
-
-
                                 completed = ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
-                                    ProgressIndicator parentIndicator = ProgressManager.getInstance().getProgressIndicator();
-                                    parentIndicator = new EmptyProgressIndicator();
-                                    parentIndicator.setModalityProgress(parentIndicator);
-                                    parentIndicator.setText("Please wait ...");
+//                                    ProgressIndicator parentIndicator; // = ProgressManager.getInstance().getProgressIndicator();
+//                                    parentIndicator = new EmptyProgressIndicator();
+//                                    parentIndicator.setIndeterminate(false);
+//                                    parentIndicator.setModalityProgress(parentIndicator);
+//                                    parentIndicator.setText("Please wait ...");
                                     try {
 //                                        ZipUtil.extract(VfsUtil.virtualToIoFile(files.get(0)).toPath(),
 //                                                VfsUtil.virtualToIoFile(finalDir).toPath(),
@@ -227,20 +225,14 @@ public class CreateGravProjectWizardGUI implements ActionListener {
                                     } catch (IOException e1) {
                                         NotificationHelper.showErrorNotification(project, e1.getMessage());
                                     }
-                                }, "Extracting zip file", false, project, mainPanel);
-
-//                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
-                                PropertiesComponent.getInstance().setValue(CreateGravProjectWizardStep.LAST_USED_GRAV_HOME, newdirpath);
+                                }, "Extracting zip file", false, project, null);
                             } catch (Exception e) {
                                 NotificationHelper.showErrorNotification(project, e.getMessage());
                             } finally {
                                 dir.get().refresh(false, true);
                                 if (completed) {
-                                    String gravSdkVersion = GravSdkType.findGravSdkVersion(newdirpath);
-                                    setDeterminedGravVersion(gravSdkVersion);
-                                    showDeterminedVersion(true);
-                                    fieldPanel.setText(newdirpath); //validation will be performed automatically (see GravInstallerGeneratorPeer)
-                                    lblGravDownloadPath.setText(newdirpath);
+                                    PropertiesComponent.getInstance().setValue(CreateGravProjectWizardStep.LAST_USED_GRAV_HOME, newdirpath);
+                                    refreshVersionViewAfterDownload(newdirpath);
                                 }
                             }
                         }
@@ -248,7 +240,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
 
                     @Override
                     public void cancelled() {
-
+                        NotificationHelper.showErrorNotification(project, "The process was canceled");
                     }
                 });
             }
@@ -256,8 +248,18 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         // must be place after downloadLink, otherwise downloadLink doesn't work ...
         JTextField textField = new JTextField();
         browseFilesListener = new BrowseFilesListener(textField, "Select Grav 'SDK' Download Folder", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
-        fieldPanel = ModuleWizardStep.createFieldPanel(textField, "", browseFilesListener);
+        gravDownloadFolderFieldPanel = ModuleWizardStep.createFieldPanel(textField, "", browseFilesListener);
+    }
 
+    private void refreshVersionViewAfterDownload(final String newdirpath) {
+//        lblHint.setVisible(false);
+        setDeterminedGravVersion(GravSdkType.findGravSdkVersion(newdirpath));
+//        showDeterminedVersion(true);
+        gravDownloadFolderFieldPanel.getTextField().setText(newdirpath); // validation will be performed automatically (see GravInstallerGeneratorPeer)
+        lblGravDownloadPath.setText(newdirpath);
+//        mainPanel.invalidate();
+//        mainPanel.repaint();
+//        showHint(true);
     }
 
     private void refreshVersionAction() {
@@ -306,8 +308,8 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     }
 
     public void setDefaultInstallationPath(String path) {
-        if ((fieldPanel.getText() == null || fieldPanel.getText().isEmpty()) && path != null) {
-            fieldPanel.setText(path);
+        if ((gravDownloadFolderFieldPanel.getText() == null || gravDownloadFolderFieldPanel.getText().isEmpty()) && path != null) {
+            gravDownloadFolderFieldPanel.setText(path);
             String gravSdkVersion = GravSdkType.findGravSdkVersion(path);
             setDeterminedGravVersion(gravSdkVersion);
             showDeterminedVersion(true);
@@ -318,8 +320,8 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         return (String) gravVersionComboBox.getSelectedItem();
     }
 
-    public FieldPanel getFieldPanel() {
-        return fieldPanel;
+    public FieldPanel getGravDownloadFolderFieldPanel() {
+        return gravDownloadFolderFieldPanel;
     }
 
     /**
@@ -327,9 +329,9 @@ public class CreateGravProjectWizardGUI implements ActionListener {
      *
      * @return the path to the grav directory, or empty string
      */
-    public String getGravDirectory() {
+    public String getGravFinalInstallationDirectory() {
         if (wizardOption == WizardOption.SELECT) {
-            return fieldPanel.getText();
+            return gravDownloadFolderFieldPanel.getText();
         } else if (wizardOption == WizardOption.DOWNLOAD) {
             return lblGravDownloadPath.getText();
         }
@@ -337,7 +339,9 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     }
 
     public void showHint(boolean flag) {
+//        if (wizardOption == WizardOption.SELECT) {
         lblHint.setVisible(flag);
+//        }
         showDeterminedVersion(!flag);
     }
 

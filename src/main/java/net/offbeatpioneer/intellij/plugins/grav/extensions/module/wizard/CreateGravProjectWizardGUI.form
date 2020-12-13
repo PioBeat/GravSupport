@@ -33,7 +33,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="231e4" class="com.intellij.ui.FieldPanel" binding="fieldPanel" custom-create="true">
+              <component id="231e4" class="com.intellij.ui.FieldPanel" binding="gravDownloadFolderFieldPanel" custom-create="true">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
@@ -57,7 +57,7 @@
                 <properties>
                   <background color="-12828863"/>
                   <horizontalAlignment value="10"/>
-                  <text value="Label"/>
+                  <text value="unspecified"/>
                 </properties>
               </component>
               <component id="d5029" class="javax.swing.JLabel" binding="lblHint" custom-create="true">
@@ -66,7 +66,7 @@
                   <forms/>
                 </constraints>
                 <properties>
-                  <text value="&lt;html&gt;&lt;i&gt;Please select a valid Grav root directory. The directory should contain the sub folders: &#10;&lt;br/&gt; &#10;&lt;code&gt;'bin', 'system' and 'user'&lt;/code&gt;&#10;&lt;/i&gt;&lt;/html&gt;"/>
+                  <text value="&lt;html&gt;&lt;i&gt;Please select a valid root directory for Grav. The directory should contain the sub folders: &#10;&lt;br/&gt; &#10;&lt;code&gt;'bin', 'system' and 'user'&lt;/code&gt;&#10;&lt;/i&gt;&lt;/html&gt;"/>
                 </properties>
               </component>
             </children>

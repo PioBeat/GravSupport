@@ -97,7 +97,7 @@ public class GravProjectGeneratorUtil {
             @Override
             public void onSuccess() {
                 super.onSuccess();
-                NotificationHelper.showInfoNotification(getProject(), String.format("New Grav project '%s' was created.", getProject().getName()));
+                NotificationHelper.showInfoNotification(getProject(), String.format("New project '%s' was created.", getProject().getName()));
                 ProgressManager.getInstance().run(installDevtools);
                 setupContentRoot(module);
             }
