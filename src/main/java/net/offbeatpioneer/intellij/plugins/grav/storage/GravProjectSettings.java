@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 )
 public class GravProjectSettings implements PersistentStateComponent<GravProjectSettings> {
     public String gravInstallationPath = "";
-    public boolean withSrcDirectory = true;
     public boolean pluginEnabled = false;
     public boolean dismissEnableNotification = false;
 
