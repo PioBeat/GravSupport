@@ -48,8 +48,7 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     @Override
     public JComponent getComponent() {
         if (form == null) {
-            form = new CreateGravProjectWizardGUI(ProjectManager.getInstance().getDefaultProject());
-
+            form = new CreateGravProjectWizardGUI();
             form.getGravDownloadFolderFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {

@@ -2,31 +2,29 @@ package net.offbeatpioneer.intellij.plugins.grav.extensions.module.wizard;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleBuilder;
-import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
+import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.io.File;
-import java.util.Objects;
 
 
-public class CreateGravProjectWizardStep extends ModuleWizardStep implements Disposable {
+public class CreateGravProjectWizardStep extends ModuleWizardStep { //implements Disposable {
     public static final String LAST_USED_GRAV_HOME = "LAST_USED_GRAV_HOME";
     private GravModuleBuilder builder;
     private CreateGravProjectWizardGUI form;
     private GravPersistentStateComponent storage;
     private final Project project;
 
-    public CreateGravProjectWizardStep(GravModuleBuilder builder, Project project) {
+    public CreateGravProjectWizardStep(GravModuleBuilder builder, @Nullable Project project) {
         this.builder = builder;
         this.storage = GravPersistentStateComponent.getInstance();
         this.project = project;
@@ -35,7 +33,7 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep implements Dis
     @Override
     public JComponent getComponent() {
         if (form == null) {
-            form = new CreateGravProjectWizardGUI(this.project);
+            form = new CreateGravProjectWizardGUI();
             form.getGravDownloadFolderFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentListener() {
                 @Override
                 public void insertUpdate(DocumentEvent e) {
@@ -113,10 +111,10 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep implements Dis
         super.updateStep();
     }
 
-    @Override
-    public void dispose() {
-        if (Objects.nonNull(form) && Objects.nonNull(form.getMainPanel())) {
-            DialogWrapper.cleanupRootPane(form.getMainPanel().getRootPane());
-        }
-    }
+//    @Override
+//    public void dispose() {
+//        if (Objects.nonNull(form) && Objects.nonNull(form.getMainPanel())) {
+//            DialogWrapper.cleanupRootPane(form.getMainPanel().getRootPane());
+//        }
+//    }
 }

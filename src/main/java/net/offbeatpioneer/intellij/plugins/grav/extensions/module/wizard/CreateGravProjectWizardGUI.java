@@ -8,10 +8,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.fileChooser.*;
-import com.intellij.openapi.progress.EmptyProgressIndicator;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -39,7 +36,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +55,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CreateGravProjectWizardGUI implements ActionListener {
     // points to the file that defines the URL format of the Grav release in GitHub
     private static final String DOWNLOAD_CONFIG_PROPERTIES = "download-config.properties";
-    private final Project project;
+
     private final String[] DEFAULT_GRAV_VERSIONS = new String[]{"1.6.30", "1.6.29", "1.6.28"};
     private AtomicBoolean gotLatestVersions; //flag indicates if latest version tags could be retrieved from github
     private String[] gravVersions = null;
@@ -90,8 +86,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
 
     private WizardOption wizardOption;
 
-    public CreateGravProjectWizardGUI(Project project) {
-        this.project = project;
+    public CreateGravProjectWizardGUI() {
         initDownloadConfigurationFile();
         gotLatestVersions = Objects.isNull(gotLatestVersions) ? new AtomicBoolean(false) : gotLatestVersions;
     }
@@ -207,7 +202,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
                         List<DownloadableFileDescription> descriptions = new ArrayList<>();
                         descriptions.add(fileDescription);
                         FileDownloader downloader = fileService.createDownloader(descriptions, presentableName);
-                        List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.get().getPath(), project, mainPanel);
+                        List<VirtualFile> files = downloader.downloadFilesWithProgress(dir.get().getPath(), null, null);
                         if (files != null && files.size() == 1) {
                             try {
                                 VirtualFile finalDir = dir.get();
@@ -223,11 +218,11 @@ public class CreateGravProjectWizardGUI implements ActionListener {
 //                                                null);
                                         ZipUtil.extract(VfsUtil.virtualToIoFile(files.get(0)), VfsUtil.virtualToIoFile(finalDir), null);
                                     } catch (IOException e1) {
-                                        NotificationHelper.showErrorNotification(project, e1.getMessage());
+                                        NotificationHelper.showErrorNotification(null, e1.getMessage());
                                     }
-                                }, "Extracting zip file", false, project, null);
+                                }, "Extracting zip file", false, null, null);
                             } catch (Exception e) {
-                                NotificationHelper.showErrorNotification(project, e.getMessage());
+                                NotificationHelper.showErrorNotification(null, e.getMessage());
                             } finally {
                                 dir.get().refresh(false, true);
                                 if (completed) {
@@ -240,11 +235,11 @@ public class CreateGravProjectWizardGUI implements ActionListener {
 
                     @Override
                     public void cancelled() {
-                        NotificationHelper.showErrorNotification(project, "The process was canceled");
                     }
                 });
             }
         });
+        myDownloadLink.setIcon(AllIcons.Actions.Download);
         // must be place after downloadLink, otherwise downloadLink doesn't work ...
         JTextField textField = new JTextField();
         browseFilesListener = new BrowseFilesListener(textField, "Select Grav 'SDK' Download Folder", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
@@ -266,7 +261,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
 //        btnRefreshGravVersions.setEnabled(false);
         //download versions
         Outcome<String[]> outcome = DownloadUtil.provideDataWithProgressSynchronously(
-                project,
+                null,
                 "Grav versions",
                 "Retrieving latest Grav versions ...",
                 () -> {

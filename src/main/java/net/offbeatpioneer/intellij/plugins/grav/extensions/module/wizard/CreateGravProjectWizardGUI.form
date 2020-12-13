@@ -140,9 +140,7 @@
                   <grid row="1" column="0" row-span="1" col-span="4" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
                   <forms/>
                 </constraints>
-                <properties>
-                  <icon value="actions/download.png"/>
-                </properties>
+                <properties/>
               </component>
               <component id="85896" class="javax.swing.JButton" binding="btnRefreshGravVersions" custom-create="true">
                 <constraints>

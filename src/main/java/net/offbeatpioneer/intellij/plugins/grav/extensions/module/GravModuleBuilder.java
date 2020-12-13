@@ -11,11 +11,9 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
@@ -26,7 +24,6 @@ import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.nio.file.Paths;
 import java.util.Objects;
 
@@ -81,17 +78,16 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     @Override
     @Nullable
-    public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-        CreateGravProjectWizardStep step = new CreateGravProjectWizardStep(this, context.getProject());
-        Disposer.register(parentDisposable, step);
+    public ModuleWizardStep getCustomOptionsStep(WizardContext wizardContext, Disposable parentDisposable) {
+        CreateGravProjectWizardStep step = new CreateGravProjectWizardStep(this, wizardContext.getProject());
+//        Disposer.register(parentDisposable, step);
         return step;
     }
 
 //    @Override
 //    public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
 //        return new ModuleWizardStep[]{
-////                new CreateGravProjectWizardStep(this),
-////                new GravModuleWizardStep(this)
+//                new CreateGravProjectWizardStep(this, wizardContext.getProject())
 //        };
 //    }
 
