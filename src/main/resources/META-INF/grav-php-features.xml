@@ -4,7 +4,6 @@
         <directoryProjectGenerator id="Grav"
                                    order="first"
                                    implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.php.GravProjectGenerator"/>
-
         <!--        <projectTemplatesFactory-->
         <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.php.GravProjectTemplateFactory"/>-->
     </extensions>

@@ -4,6 +4,13 @@ plugins {
     id 'com.palantir.git-version' version "0.12.3"
 }
 
+Properties properties = new Properties()
+def propertiesFile = project.rootProject.file('local.properties')
+if (propertiesFile.exists()) {
+    properties.load(propertiesFile.newDataInputStream())
+}
+def alternativeIdePathTesting = properties.getProperty('alternativeIdePathTesting')
+
 def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
 
 group 'net.offbeatpioneer.intellij.plugins.grav'
@@ -24,24 +31,25 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
+    implementation group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    type = platformType
-    version ideaVersion
-//    intellij.localPath = "${localIdePath}"
+    pluginName 'Grav Support'
+    type 'IU'
+    version 'IU-2020.2' //ideaVersion
+//    localPath = "${localIdePathIU}"
     updateSinceUntilBuild false
-    alternativeIdePath "${alternativeIdePathTesting}" // Absolute path to the locally installed JetBrains, e.g., PhpStorm (for testing)
-    project.version = project.version
+    // Absolute path to the locally installed JetBrains, e.g., PhpStorm (for testing)
+//    alternativeIdePath "${alternativeIdePathTesting}"
     plugins = [
             "com.jetbrains.php:${phpPluginVersion}",
             "com.jetbrains.twig:${twigPluginVersion}",
             "de.espend.idea.php.annotation:${phpAnnotationPluginVersion}",
-//            "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
-//            'coverage',
+            "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
+            'coverage',
             'webDeployment',
             'yaml',
             'CSS',
@@ -53,22 +61,49 @@ intellij {
 
     // Can't instantiate configurable for PHP Toolbox
     // at de.espend.idea.php.toolbox.ui.application.ToolboxApplicationForm.<init>(ToolboxApplicationForm.java:26)
-//    tasks {
-//        "buildSearchableOptions" {
-//            enabled = false
-//        }
-//    }
+    tasks {
+        buildSearchableOptions {
+            enabled = false
+        }
+        jarSearchableOptions {
+            enabled = true
+        }
+    }
 }
 
 runIde {
-    jbrVersion = '11_0_2b159'
+    jbrVersion '11_0_9b944.49'
+    if (project.hasProperty("idePhpStorm")) {
+        if (alternativeIdePathTesting != null && alternativeIdePathTesting.trim() != "") {
+            println "Using PhpStorm IDE for testing"
+            // Absolute path to the locally installed JetBrains, e.g., PhpStorm (for testing)
+            ideDirectory "${alternativeIdePathTesting}"
+        }
+    }
+    autoReloadPlugins true
+    maxHeapSize "2g"
 }
 
+//runPluginVerifier {
+
+//}
+
 patchPluginXml {
-    sinceBuild '203'
-    untilBuild '203.*'
+    sinceBuild '202'
+//    untilBuild '203.*'
     changeNotes = htmlFixer('src/main/resources/META-INF/change-notes.html')
-//    changeNotes """
-//      Add change notes here.<br>
-//      <em>most HTML tags may be used</em>"""
 }
+
+wrapper {
+    gradleVersion '6.7.1'
+}
+
+//task cleanUpGradleLogs() {
+//    def gradle = project.getGradle()
+//    new File("${gradle.getGradleUserHomeDir().getAbsolutePath()}/daemon/${gradle.getGradleVersion()}").listFiles().each {
+//        if (it.getName().endsWith('.out.log')) {
+//            logger.debug("Cleaning up daemon log file $it")
+//            it.delete()
+//        }
+//    }
+//}
