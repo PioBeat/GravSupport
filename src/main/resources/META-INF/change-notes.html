@@ -1,22 +1,35 @@
 <html>
 <p>
-    <span>0.6.0</span>
+    <span>0.6.0-alpha</span>
 <ul>
     <li>Added</li>
     <ul>
-        <li>After the 'Grav Create Theme' Action completed, the project file explorer jumps to the freshly created theme directory</li>
+        <li>After 'Grav Create Theme' action completes, the project file explorer jumps to the freshly created theme
+            directory
+        </li>
+        <li>Tool window: Navigate directly to Grav's <code>system/config/system.yaml</code> file from the tool window
+            via a link
+        </li>
+        <li>Project settings page: Grav version is now shown for the current project</li>
     </ul>
     <li>Changed</li>
     <ul>
-        <li>Now using *.svg icons</li>
+        <li>Now using <code>*.svg</code> icons</li>
         <li>Uniform icon usage for file explorer, tool window, project wizard, etc.</li>
         <li>Minor UI changes in Grav settings</li>
         <li>'Grav Create Theme' Action can now be called when indexing</li>
+        <li>Module type is set correctly now to <code>GRAV_TYPE</code> in PhpStorm. For IU this was set automatically.
+        </li>
+        <li>PhpStorm: Project icon is now visible (same as in IU)</li>
     </ul>
     <li>Internal Changes</li>
     <ul>
         <li>Platform Update to branch number 203.*, requiring now Java 11</li>
         <li>Compatibility fixes (e.g., error reporting)</li>
+        <li>Fixed: Grav version in project wizard were not downloaded / processed correctly</li>
+        <li>file type pattern <code>*.yaml</code> registration for blueprints/theme configuration fixed (no ambiguity
+            anymore)
+        </li>
     </ul>
 </ul>
 </p>
