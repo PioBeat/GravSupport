@@ -31,7 +31,6 @@ public class GravModuleProvider extends FrameworkSupportInModuleProvider {
 
     @Override
     public boolean isEnabledForModuleType(@NotNull ModuleType moduleType) {
-        // TODO
-        return true;
+        return GravModuleType.getInstance().getId().equals(moduleType.getId());
     }
 }

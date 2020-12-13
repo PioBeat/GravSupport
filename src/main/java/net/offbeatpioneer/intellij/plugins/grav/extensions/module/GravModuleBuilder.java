@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderListener {
 
@@ -57,12 +59,9 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     @Override
     public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
-        System.out.println("setupRootModel");
-        //if != phpstorm add include / exclude folders
-        //        setProject(rootModel.getProject());
+        super.setupRootModel(rootModel);
         ContentEntry contentEntry = doAddContentEntry(rootModel);
     }
-
 
     @Override
     public String getGroupName() {
@@ -83,7 +82,6 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
     @Override
     @Nullable
     public ModuleWizardStep getCustomOptionsStep(WizardContext context, Disposable parentDisposable) {
-//        setProject(context.getProject());
         CreateGravProjectWizardStep step = new CreateGravProjectWizardStep(this, context.getProject());
         Disposer.register(parentDisposable, step);
         return step;
@@ -110,18 +108,14 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
                 .createBalloon()
                 .show(RelativePoint.getSouthEastOf(statusBar.getComponent()), Balloon.Position.above);
 
-        VirtualFile[] roots1 = ModuleRootManager.getInstance(module).getContentRoots();
-        if (roots1.length != 0) {
-            final VirtualFile src = roots1[0];
-            settings.withSrcDirectory = false;
+//        VirtualFile[] roots1 = ModuleRootManager.getInstance(module).getContentRoots();
+        if (module.getProject().getBasePath() != null) {
+            final VirtualFile src = VfsUtil.findFile(Paths.get(module.getProject().getBasePath()), true);
+            Objects.requireNonNull(src);
             settings.gravInstallationPath = getGravInstallPath().getPath();
             GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil(project);
             generatorUtil.generateProject(project, src, settings, module);
         }
-    }
-
-    private static String getUrlByPath(final String path) {
-        return VfsUtil.getUrlForLibraryRoot(new File(path));
     }
 
     public GravProjectSettings getSettings() {
