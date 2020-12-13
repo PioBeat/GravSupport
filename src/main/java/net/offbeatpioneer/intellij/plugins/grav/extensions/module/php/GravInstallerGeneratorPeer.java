@@ -2,12 +2,13 @@ package net.offbeatpioneer.intellij.plugins.grav.extensions.module.php;
 
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.SettingsStep;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectGeneratorPeer;
-import com.intellij.platform.WebProjectGenerator;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.wizard.CreateGravProjectWizardGUI;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
@@ -30,9 +31,11 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     private CreateGravProjectWizardGUI form;
     private final GravPersistentStateComponent storage;
     private GravProjectSettings settings;
+//    Disposable disposable;
 
     public GravInstallerGeneratorPeer() {
         this.storage = GravPersistentStateComponent.getInstance();
+//        disposable = Disposer.newDisposable();
     }
 
     @NotNull
@@ -61,6 +64,30 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
                     validate0();
                 }
             });
+
+//            ComponentValidator cv = new ComponentValidator(disposable);
+//            Supplier<? extends ValidationInfo> validator = (Supplier<ValidationInfo>) () -> {
+//                int code = validate0();
+//                switch (code) {
+//                    case -1:
+//                        return new ValidationInfo("The path pointing to Grav download is empty").withOKEnabled();
+//                    case -2:
+//                        new ValidationInfo("The path to the selected Grav download does not exist").withOKEnabled();
+//                    case -3:
+//                        return new ValidationInfo("The selected Grav download isn't valid").withOKEnabled();
+//                    default:
+//                        return null;
+//                }
+//            };
+//            cv.withValidator(validator);
+//            form.getFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentAdapter() {
+//                @Override
+//                protected void textChanged(@NotNull DocumentEvent e) {
+//                    ComponentValidator.getInstance(form.getFieldPanel().getTextField()).ifPresent(ComponentValidator::revalidate);
+//                }
+//            });
+//            cv.installOn(form.getFieldPanel().getTextField());
+////                Disposable.dispose();
         }
         form.initLayout();
         return form.getMainPanel();
@@ -80,29 +107,25 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
             settings = new GravProjectSettings();
         }
         settings.gravInstallationPath = form.getGravDirectory();
-        settings.withSrcDirectory = false;
         settings.pluginEnabled = true;
         return settings;
-    }
-
-    @Override
-    public void addSettingsListener(@NotNull SettingsListener listener) {
     }
 
     @Nullable
     @Override
     public ValidationInfo validate() {
-        int code = validate0();
-        switch (code) {
-            case -1:
-                return new ValidationInfo("The path pointing to Grav installation is empty").withOKEnabled();
-            case -2:
-                new ValidationInfo("The path to Grav installation does not exist").withOKEnabled();
-            case -3:
-                return new ValidationInfo("Grav installation isn't valid").withOKEnabled();
-            default:
-                return null;
-        }
+//        int code = validate0();
+//        switch (code) {
+//            case -1:
+//                return new ValidationInfo("The path pointing to Grav download is empty").withOKEnabled();
+//            case -2:
+//                new ValidationInfo("The path to the selected Grav download does not exist").withOKEnabled();
+//            case -3:
+//                return new ValidationInfo("The selected Grav download isn't valid").withOKEnabled();
+//            default:
+//                return null;
+//        }
+        return null;
     }
 
     private int validate0() {

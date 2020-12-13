@@ -48,17 +48,17 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep implements Dis
     public boolean validate() throws ConfigurationException {
         if (form.getGravDirectory().isEmpty()) {
             form.showHint(true);
-            throw new ConfigurationException("Path pointing to Grav installation is empty");
+            throw new ConfigurationException("The path pointing to Grav download is empty");
         } else {
             String file = form.getGravDirectory();
             VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(file));
             if (vf == null) {
                 form.showHint(true);
-                throw new ConfigurationException("Path to Grav installation does not exist");
+                throw new ConfigurationException("The path to the selected Grav download does not exist");
             } else {
                 if (!GravSdkType.isValidGravSDK(vf)) {
                     form.showHint(true);
-                    throw new ConfigurationException("Grav installation isn't valid");
+                    throw new ConfigurationException("The selected Grav download isn't valid");
                 }
             }
         }
