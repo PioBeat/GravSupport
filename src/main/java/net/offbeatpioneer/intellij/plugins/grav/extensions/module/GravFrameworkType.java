@@ -2,7 +2,7 @@ package net.offbeatpioneer.intellij.plugins.grav.extensions.module;
 
 import com.intellij.framework.FrameworkTypeEx;
 import com.intellij.framework.addSupport.FrameworkSupportInModuleProvider;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

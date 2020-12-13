@@ -11,6 +11,7 @@ import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Dominik Grzelak
@@ -18,25 +19,25 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NotificationHelper {
 
-    public static void showBaloon(String msg, MessageType messageType, Project project) {
+    public static void showBaloon(String msg, MessageType messageType, @NotNull Project project) {
         showBaloon(msg, messageType, project, Balloon.Position.above, 3500);
     }
 
-    public static void showBaloon(String msg, MessageType messageType, Project project, int time) {
+    public static void showBaloon(String msg, MessageType messageType, @NotNull Project project, int time) {
         showBaloon(msg, messageType, project, Balloon.Position.above, time);
     }
 
-    public static void showBaloon(String msg, MessageType messageType, Project project, Balloon.Position position) {
+    public static void showBaloon(String msg, MessageType messageType, @NotNull Project project, Balloon.Position position) {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         showBaloon(msg, messageType, project, RelativePoint.getSouthEastOf(statusBar.getComponent()), position, 3500);
     }
 
-    public static void showBaloon(String msg, MessageType messageType, Project project, Balloon.Position position, int time) {
+    public static void showBaloon(String msg, MessageType messageType, @NotNull Project project, Balloon.Position position, int time) {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         showBaloon(msg, messageType, project, RelativePoint.getSouthEastOf(statusBar.getComponent()), position, time);
     }
 
-    public static void showBaloon(String msg, MessageType messageType, Project project, RelativePoint relativePoint, Balloon.Position position, int time) {
+    public static void showBaloon(String msg, MessageType messageType, @NotNull Project project, RelativePoint relativePoint, Balloon.Position position, int time) {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         JBPopupFactory.getInstance()
                 .createHtmlTextBalloonBuilder(msg, messageType, null)
@@ -45,11 +46,11 @@ public class NotificationHelper {
                 .show(relativePoint, position);
     }
 
-    public static void showErrorNotification(@NotNull Project project, @NotNull String content) {
+    public static void showErrorNotification(@Nullable Project project, @NotNull String content) {
         Notifications.Bus.notify(new Notification("GRAV_BUS_NOTIFICATIONS", "Grav", content, NotificationType.ERROR, null), project);
     }
 
-    public static void showInfoNotification(@NotNull Project project, @NotNull String content) {
+    public static void showInfoNotification(@Nullable Project project, @NotNull String content) {
         Notifications.Bus.notify(new Notification("GRAV_BUS_NOTIFICATIONS", "Grav", content, NotificationType.INFORMATION, null), project);
     }
 }

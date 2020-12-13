@@ -17,6 +17,7 @@ import com.intellij.util.Processor;
 import com.intellij.util.indexing.FileBasedIndex;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -43,6 +44,34 @@ public class FileCreateUtil {
             throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, encoding);
+    }
+
+    public static File findParentLike(String pattern, File dir, File limit) {
+        String[] names = pattern.split("/");
+        Collections.reverse(Arrays.asList(names));
+
+        while (dir != null && dir.getPath().startsWith(limit.getPath())) {
+            if (names[0].equals(dir.getName())) {
+                if (checkParents(dir, names)) {
+                    return dir;
+                }
+            }
+
+            dir = dir.getParentFile();
+        }
+        return null;
+    }
+
+
+    public static boolean checkParents(File dir, String[] names) {
+        for (String name : names) {
+            if (dir.getName().equals(name)) {
+                dir = dir.getParentFile();
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Deprecated

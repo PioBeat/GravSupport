@@ -76,8 +76,9 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
     @Override
     public GravProjectSettings getSettings() {
         settings = GravProjectSettings.getInstance(ProjectManager.getInstance().getDefaultProject());
-        if (settings == null)
-            throw new RuntimeException("Settings could not be loaded");
+        if (settings == null) {
+            settings = new GravProjectSettings();
+        }
         settings.gravInstallationPath = form.getGravDirectory();
         settings.withSrcDirectory = false;
         settings.pluginEnabled = true;
@@ -129,7 +130,7 @@ public class GravInstallerGeneratorPeer implements ProjectGeneratorPeer<GravProj
 
     @Override
     public boolean isBackgroundJobRunning() {
-        return false;
+        return true;
     }
 
 }

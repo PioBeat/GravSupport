@@ -7,6 +7,8 @@ import com.intellij.ide.util.frameworkSupport.FrameworkSupportModel;
 import com.intellij.openapi.module.ModuleType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * @author Dominik Grzelak
  */
@@ -18,7 +20,7 @@ public class GravModuleProvider extends FrameworkSupportInModuleProvider {
     @NotNull
     @Override
     public FrameworkTypeEx getFrameworkType() {
-        return FrameworkTypeEx.EP_NAME.findExtension(GravFrameworkType.class);
+        return Objects.requireNonNull(FrameworkTypeEx.EP_NAME.findExtension(GravFrameworkType.class));
     }
 
     @NotNull

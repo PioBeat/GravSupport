@@ -1,4 +1,4 @@
-package net.offbeatpioneer.intellij.plugins.grav.treestructure;
+package net.offbeatpioneer.intellij.plugins.grav.extensions.treestructure;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.vfs.VirtualFile;

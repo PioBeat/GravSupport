@@ -25,10 +25,10 @@ package net.offbeatpioneer.intellij.plugins.grav.errorreporting;
 import com.intellij.diagnostic.DiagnosticBundle;
 import com.intellij.diagnostic.IdeaReportingEvent;
 import com.intellij.diagnostic.LogMessage;
+import com.intellij.diagnostic.ReportMessages;
 import com.intellij.ide.DataManager;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.idea.IdeaLogger;
-import com.intellij.notification.NotificationGroupManager;
 import com.intellij.notification.NotificationListener;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -65,8 +65,15 @@ import java.util.LinkedHashMap;
  */
 public class GitHubErrorReporter extends ErrorReportSubmitter {
 
+//    @Override
+//    public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo, @NotNull Component parentComponent, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
+//        GitHubErrorBean errorBean = new GitHubErrorBean(events[0].getThrowable(), IdeaLogger.ourLastActionId);
+//        return doSubmit(events[0], parentComponent, consumer, errorBean, additionalInfo);
+//    }
+
+
     @Override
-    public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo, @NotNull Component parentComponent, @NotNull Consumer<? super SubmittedReportInfo> consumer) {
+    public boolean submit(IdeaLoggingEvent @NotNull [] events, @Nullable String additionalInfo, @NotNull Component parentComponent, @NotNull Consumer<SubmittedReportInfo> consumer) {
         GitHubErrorBean errorBean = new GitHubErrorBean(events[0].getThrowable(), IdeaLogger.ourLastActionId);
         return doSubmit(events[0], parentComponent, consumer, errorBean, additionalInfo);
     }
@@ -138,14 +145,16 @@ public class GitHubErrorReporter extends ErrorReportSubmitter {
             myOriginalConsumer.consume(reportInfo);
 
             if (reportInfo.getStatus().equals(SubmissionStatus.FAILED)) {
-                NotificationGroupManager.getInstance().getNotificationGroup("Error Report")
+//                NotificationGroupManager.getInstance().getNotificationGroup("Error Report")
+                ReportMessages.GROUP
                         .createNotification(
                                 DiagnosticBundle.message("error.report.title"),
                                 reportInfo.getLinkText(),
                                 NotificationType.ERROR,
                                 null).setImportant(false).notify(myProject);
             } else {
-                NotificationGroupManager.getInstance().getNotificationGroup("Error Report")
+//                NotificationGroupManager.getInstance().getNotificationGroup("Error Report")
+                ReportMessages.GROUP
                         .createNotification(
                                 DiagnosticBundle.message("error.report.title"),
                                 reportInfo.getLinkText(),

@@ -1,4 +1,4 @@
-package net.offbeatpioneer.intellij.plugins.grav.extensions.module.builder;
+package net.offbeatpioneer.intellij.plugins.grav.extensions.module;
 
 import com.intellij.ide.util.projectWizard.ModuleBuilder;
 import com.intellij.ide.util.projectWizard.ModuleBuilderListener;
@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ModuleRootManager;
-import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -22,7 +21,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.awt.RelativePoint;
-import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.wizard.CreateGravProjectWizardStep;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
 import org.jetbrains.annotations.NotNull;
@@ -59,24 +57,26 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
 
     @Override
     public void setupRootModel(ModifiableRootModel rootModel) throws ConfigurationException {
-//        setProject(rootModel.getProject());
+        System.out.println("setupRootModel");
+        //if != phpstorm add include / exclude folders
+        //        setProject(rootModel.getProject());
         ContentEntry contentEntry = doAddContentEntry(rootModel);
     }
 
 
     @Override
     public String getGroupName() {
-        return super.getGroupName();
+        return "PHP"; //super.getGroupName();
     }
 
     @Override
     public String getDescription() {
-        return "Grav module";
+        return "Create a new Grav project. A PHP interpreter is required.";
     }
 
 
     @Override
-    public ModuleType getModuleType() {
+    public ModuleType<GravModuleBuilder> getModuleType() {
         return GravModuleType.getInstance();
     }
 
@@ -89,13 +89,13 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
         return step;
     }
 
-    @Override
-    public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
-        return new ModuleWizardStep[]{
-//                new CreateGravProjectWizardStep(this),
-//                new GravModuleWizardStep(this)
-        };
-    }
+//    @Override
+//    public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull ModulesProvider modulesProvider) {
+//        return new ModuleWizardStep[]{
+////                new CreateGravProjectWizardStep(this),
+////                new GravModuleWizardStep(this)
+//        };
+//    }
 
     @Override
     public void moduleCreated(@NotNull Module module) {
@@ -115,7 +115,7 @@ public class GravModuleBuilder extends ModuleBuilder implements ModuleBuilderLis
             final VirtualFile src = roots1[0];
             settings.withSrcDirectory = false;
             settings.gravInstallationPath = getGravInstallPath().getPath();
-            GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil();
+            GravProjectGeneratorUtil generatorUtil = new GravProjectGeneratorUtil(project);
             generatorUtil.generateProject(project, src, settings, module);
         }
     }

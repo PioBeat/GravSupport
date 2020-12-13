@@ -68,7 +68,7 @@ public class ProcessUtils {
 
         try {
             Process process = probuilder.start();
-            System.out.printf("Output of running %s is:\n", command);
+//            System.out.printf("Output of running %s is:\n", command);
             InputStream errStream = process.getErrorStream();
             InputStream inStream = process.getInputStream();
             OutputStream outStream = process.getOutputStream();
@@ -80,7 +80,7 @@ public class ProcessUtils {
 
 
             int exitValue = process.waitFor();
-            System.out.println("\n\nExit Value is " + exitValue);
+//            System.out.println("\n\nExit Value is " + exitValue);
             if (exitValue == 0) {
                 if (inputStream.getOutput().contains("not installed")) {
                     setErrorOutput(inputStream.getOutput());

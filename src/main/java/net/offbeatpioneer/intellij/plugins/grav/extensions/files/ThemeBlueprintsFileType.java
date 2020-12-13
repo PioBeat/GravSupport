@@ -1,7 +1,7 @@
 package net.offbeatpioneer.intellij.plugins.grav.extensions.files;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

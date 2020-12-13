@@ -14,13 +14,18 @@
          on how to target different products -->
     <!-- uncomment to enable plugin in all products
     -->
+
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.xml</depends>
     <depends>com.intellij.modules.json</depends>
+    <depends>com.jetbrains.twig</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
-    <depends optional="true" config-file="grav-php-features.xml">com.jetbrains.php</depends>
-    <depends optional="true" config-file="">com.jetbrains.twig</depends>
+    <depends>com.jetbrains.twig</depends>
+    <depends config-file="grav-php-features.xml">com.jetbrains.php</depends>
+    <depends optional="true">de.espend.idea.php.annotation</depends>
+    <depends optional="true">de.espend.idea.php.toolbox</depends>
+    <!--    <depends optional="true" config-file="">com.jetbrains.php</depends>-->
     <!--    <depends optional="true">org.intellij.plugins.markdown</depends>-->
     <!--config-file="grav-php-features.xml"-->
     <!--<depends>com.intellij.modules.all</depends>-->
@@ -39,7 +44,7 @@
                     implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType"/>
         <!--<framework.type implementation="net.offbeatpioneer.module.GravFrameworkType"/>-->
         <moduleBuilder order="first"
-                       builderClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.builder.GravModuleBuilder"/>
+                       builderClass="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleBuilder"/>
         <!--ModuleConfigurationExtensionProvider-->
         <!--<fileTypeFactory implementation="com.jetbrains.php.PhpFileTypeFactory"/>-->
 
@@ -51,10 +56,8 @@
         <!--http://corochann.com/intellij-plugin-development-introduction-applicationconfigurable-projectconfigurable-873.html-->
         <!--projectConfigurable-->
         <applicationService
-                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"
                 serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent"/>
         <projectService
-                serviceInterface="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"
                 serviceImplementation="net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings"/>
         <applicationConfigurable groupId="languages"
                                  displayName="Grav"
@@ -68,22 +71,33 @@
                 nonDefaultProject="true"
         />
 
+<!--        <projectStructureValidator-->
+<!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravProjectValidator"-->
+<!--        />-->
+
+<!--        <projectStructureDetector-->
+<!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravProjectStructureDetector"-->
+<!--        />-->
+
+        <iconProvider implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIconProvider"
+                      order="first"/>
+
         <codeInsight.lineMarkerProvider language=""
                                         implementationClass="net.offbeatpioneer.intellij.plugins.grav.editor.SwitchToTemplateLineMarkerProvider"/>
         <fileEditorProvider
                 implementation="net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider"/>
         <fileType.fileViewProviderFactory filetype="yml"
-                                          implementationClass="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageFileViewProvider"/>
+                                          implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.treestructure.LanguageFileViewProvider"/>
         <treeStructureProvider
-                implementation="net.offbeatpioneer.intellij.plugins.grav.treestructure.LanguageTreeStructureProvider"/>
+                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.treestructure.LanguageTreeStructureProvider"/>
 
         <!-- file types are now specified individually instead of using the file type factory-->
         <fileType name="Theme blueprints"
                   implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeBlueprintsFileType"
                   fieldName="INSTANCE" language="yaml" extensions="yaml"/>
-<!--        <fileType name="Theme configuration"-->
-<!--                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeConfigurationFileType"-->
-<!--                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>-->
+        <!--        <fileType name="Theme configuration"-->
+        <!--                  implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.files.ThemeConfigurationFileType"-->
+        <!--                  fieldName="INSTANCE" language="yaml" extensions="yaml"/>-->
 
         <!--        <fileTypeFactory-->
         <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.files.GravConfigurationFileTypeFactory"/>-->
@@ -94,7 +108,7 @@
         <toolWindow
                 id="Grav"
                 anchor="right"
-                icon="/icons/gravToolWindowIcon.svg"
+                icon="/icons/gravToolWindowIcon.png"
                 factoryClass="net.offbeatpioneer.intellij.plugins.grav.extensions.toolwindow.SystemSettingsToolWindowFactory"/>
 
         <intentionAction>
@@ -109,7 +123,9 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="Grav.CreateTheme" class="net.offbeatpioneer.intellij.plugins.grav.action.CreateNewThemeAction">
+        <action id="Grav.CreateTheme"
+                class="net.offbeatpioneer.intellij.plugins.grav.action.CreateNewThemeAction"
+                icon="/icons/gravLogo.png">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
         </action>
@@ -120,8 +136,9 @@
         <!--        </action>-->
 
         <action id="Grav.NewFile"
+                icon="/icons/gravLogo.png"
                 class="net.offbeatpioneer.intellij.plugins.grav.action.NewThemeConfigurationFileAction"
-                text="Grav Theme Config File" description="Create New Theme Configuration File">
+                text="Grav Theme Config File" description="Create new 'Theme Configuration' file">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFromTemplate"/>
         </action>
     </actions>

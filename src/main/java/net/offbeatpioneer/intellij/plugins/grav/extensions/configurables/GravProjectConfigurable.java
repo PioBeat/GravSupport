@@ -5,6 +5,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
 import org.jetbrains.annotations.Nls;
@@ -12,20 +13,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Objects;
 
 /**
+ * Project-specific settings page for Grav.
+ *
  * @author Dominik Grzelak
  */
 public class GravProjectConfigurable implements Configurable {
     private GravProjectSettings settings;
     private JPanel mainPanel;
     private JCheckBox enabled;
-    private JCheckBox withSrcDir;
+    private JLabel gravVersionLbl;
+    private JLabel currentGravVersionLbl;
     private final Project project;
+    private String versionContent;
 
     public GravProjectConfigurable(Project project) {
         this.project = project;
         settings = GravProjectSettings.getInstance(project);
+        versionContent = GravSdkType.findGravSdkVersion(project.getBasePath());
     }
 
     /**
@@ -46,24 +53,31 @@ public class GravProjectConfigurable implements Configurable {
     @Nullable
     @Override
     public JComponent createComponent() {
+        currentGravVersionLbl.setText(versionContent);
         return mainPanel;
     }
 
     @Override
     public void reset() {
-        enabled.setSelected(settings.pluginEnabled);
-        withSrcDir.setSelected(settings.withSrcDirectory);
+        if (Objects.nonNull(settings)) {
+            enabled.setSelected(settings.pluginEnabled);
+        }
     }
 
     @Override
     public boolean isModified() {
-        return settings.pluginEnabled != enabled.isSelected();
+        if (Objects.nonNull(settings)) {
+            return settings.pluginEnabled != enabled.isSelected();
+        }
+        return false;
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        settings.pluginEnabled = enabled.isSelected();
-        GravProjectConfigurable.enableGravToolWindow(project, settings.pluginEnabled);
+        if (Objects.nonNull(settings)) {
+            settings.pluginEnabled = enabled.isSelected();
+            GravProjectConfigurable.enableGravToolWindow(project, settings.pluginEnabled);
+        }
     }
 
     public static void enableGravToolWindow(@NonNull Project project, boolean enable) {

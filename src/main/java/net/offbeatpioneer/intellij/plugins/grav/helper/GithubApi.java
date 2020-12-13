@@ -23,6 +23,7 @@ public class GithubApi {
 
     public static String GravRepoUrl = "https://api.github.com/repos/getgrav/grav/releases";
 
+    @SuppressWarnings("unchecked")
     public static List<String> getGravVersionReleases(String gravReleasesUrl) throws IOException {
         List<String> versions;
         String response = getRequest(gravReleasesUrl);

@@ -1,13 +1,18 @@
 package net.offbeatpioneer.intellij.plugins.grav.extensions.module;
 
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.*;
+import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +31,8 @@ import java.util.regex.PatternSyntaxException;
  * Created by Dome on 16.07.2017.
  */
 public class GravSdkType extends SdkType {
+    public final static String UNSPECIFIED = "unspecified";
+
     public GravSdkType() {
         super("Grav");
     }
@@ -73,38 +80,46 @@ public class GravSdkType extends SdkType {
         String path = sdk.getHomePath();
         if (path == null) {
             NotificationHelper.showBaloon("No home path specified", MessageType.ERROR, ProjectManager.getInstance().getDefaultProject());
-            return null;
+            return UNSPECIFIED;
         }
-//
-//        File file = new File(path);
-//        VirtualFile home = LocalFileSystem.getInstance().findFileByIoFile(file);
-//        if (home != null) {
-//            VirtualFile lib = home.findChild("lib");
-//            if (lib != null) {
-//                for (VirtualFile jar : lib.getChildren()) {
-//                    String name = jar.getName();
-//                    if (name.startsWith("grav-") && "jar".equalsIgnoreCase(jar.getExtension())) {
-//                        name = name.substring(8);
-//                        name = name.replace("-SNAPSHOT", "");
-//                        name = name.replace(".jar", "");
-//                        return name;
-//                    }
-//                }
-//            }
-//        }
-        //TODO
-        return "";
+        return findGravSdkVersion(path);
     }
 
     public static boolean isValidGravSDK(VirtualFile root) {
         return root.findChild("user") != null &&
-                VfsUtil.findRelativeFile(root, "system") != null &&
+                VfsUtil.findRelativeFile(root, "system", "defines.php") != null &&
+                VfsUtil.findRelativeFile(root, "system", "src", "Grav") != null &&
                 root.findFileByRelativePath("bin") != null;
+    }
+
+    public static boolean operationIsAvailableFor(Project project) {
+        return operationIsAvailableFor(project, true);
+    }
+
+    public static boolean operationIsAvailableFor(Project project, boolean checkSettings) {
+        if (project.getBasePath() == null) return false;
+        VirtualFile projectPath = LocalFileSystem.getInstance().findFileByIoFile(new File(project.getBasePath()));
+        if (!isGravModuleType(project)) return false;
+        if (projectPath == null ||
+                !GravSdkType.isValidGravSDK(projectPath) ||
+                (checkSettings && !GravProjectComponent.isEnabled(project))) return false;
+        return true;
+    }
+
+    public static boolean isGravModuleType(Project project) {
+        for (Module module : ModuleManager.getInstance(project).getModules()) {
+//            System.out.println(module);
+//            System.out.println("\t" + (module.getModuleTypeName().equals(GravModuleType.getInstance().getId())));
+            if (module.getModuleTypeName().equals(GravModuleType.getInstance().getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String findGravSdkVersion(String directory) {
         VirtualFile root = LocalFileSystem.getInstance().findFileByIoFile(new File(directory));
-        String version = "Version could not be determined.";
+        String version = UNSPECIFIED;
         if (VfsUtil.findRelativeFile(root, "system") != null) {
             VirtualFile system = VfsUtil.findRelativeFile(root, "system");
             try {

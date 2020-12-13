@@ -12,7 +12,7 @@ import com.intellij.openapi.ui.InputValidatorEx;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.util.IncorrectOperationException;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.files.GravFileTypes;
 import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravFileTemplateUtil;

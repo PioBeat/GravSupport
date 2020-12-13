@@ -1,14 +1,18 @@
 package net.offbeatpioneer.intellij.plugins.grav.extensions.module;
 
 import com.intellij.openapi.module.ModuleType;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
-import net.offbeatpioneer.intellij.plugins.grav.extensions.module.builder.GravModuleBuilder;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.io.File;
 
 public class GravModuleType extends ModuleType<GravModuleBuilder> {
-    private static final String ID = "GRAV_TYPE";
+    public static final String ID = "GRAV_TYPE";
     private static final GravModuleType INSTANCE = new GravModuleType();
 
     public GravModuleType() {
@@ -46,6 +50,7 @@ public class GravModuleType extends ModuleType<GravModuleBuilder> {
     public static GravModuleType getInstance() {
         return INSTANCE; //(GravModuleType) ModuleTypeManager.getInstance().findByID(ID);
     }
+
 //    @NotNull
 //    @Override
 //    public ModuleWizardStep[] createWizardSteps(@NotNull WizardContext wizardContext, @NotNull GravModuleBuilder moduleBuilder, @NotNull ModulesProvider modulesProvider) {

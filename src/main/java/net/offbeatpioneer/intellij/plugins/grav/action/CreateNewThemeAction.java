@@ -16,7 +16,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
@@ -137,7 +137,7 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware, 
                 super.onFinished();
                 VirtualFile virtualFile = VirtualFileManager.getInstance().refreshAndFindFileByNioPath(Paths.get(srcPath));
                 if (Objects.nonNull(virtualFile)) {
-                    VirtualFile childDirectory = FileCreateUtil.getChildDirectory(virtualFile, "user/themes/" + themeData.getName().replaceAll("\\s+","-"));
+                    VirtualFile childDirectory = FileCreateUtil.getChildDirectory(virtualFile, "user/themes/" + themeData.getName().replaceAll("\\s+", "-"));
                     if (!childDirectory.equals(virtualFile)) {
                         PsiManager instance = PsiManager.getInstance(project);
                         PsiDirectory directory = instance.findDirectory(childDirectory);
@@ -154,6 +154,5 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware, 
             }
         };
         ProgressManager.getInstance().run(t);
-
     }
 }

@@ -1,5 +1,6 @@
-package net.offbeatpioneer.intellij.plugins.grav.treestructure;
+package net.offbeatpioneer.intellij.plugins.grav.extensions.treestructure;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.impl.nodes.NestingTreeNode;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;

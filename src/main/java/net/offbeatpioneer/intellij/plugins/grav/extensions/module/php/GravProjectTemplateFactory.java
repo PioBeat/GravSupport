@@ -1,10 +1,9 @@
 package net.offbeatpioneer.intellij.plugins.grav.extensions.module.php;
 
 import com.intellij.ide.util.projectWizard.WizardContext;
-import com.intellij.openapi.module.WebModuleBuilder;
 import com.intellij.platform.ProjectTemplate;
 import com.intellij.platform.ProjectTemplatesFactory;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,16 +16,16 @@ import javax.swing.*;
 public class GravProjectTemplateFactory extends ProjectTemplatesFactory {
 
     public GravProjectTemplateFactory() {
-        System.out.println("GravProjectTemplateFactory");
     }
 
     @Override
     public String @NotNull [] getGroups() {
-        return new String[]{"PHP", WebModuleBuilder.GROUP_NAME};
+        return new String[]{"PHP"}; //WebModuleBuilder.GROUP_NAME
     }
 
+    @Override
     public Icon getGroupIcon(String group) {
-        return GravIcons.GravDefaultIcon;
+        return GravIcons.GravProjectWizardIcon;
     }
 
     @Override

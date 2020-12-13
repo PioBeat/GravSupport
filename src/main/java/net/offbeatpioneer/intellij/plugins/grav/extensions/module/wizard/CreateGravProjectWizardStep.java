@@ -5,14 +5,16 @@ import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import net.offbeatpioneer.intellij.plugins.grav.extensions.module.builder.GravModuleBuilder;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleBuilder;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 
 import javax.swing.*;
 import java.io.File;
+import java.util.Objects;
 
 
 public class CreateGravProjectWizardStep extends ModuleWizardStep implements Disposable {
@@ -74,7 +76,6 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep implements Dis
     public void updateDataModel() {
         String file = form.getGravDirectory();
         builder.setGravInstallPath(LocalFileSystem.getInstance().findFileByIoFile(new File(file)));
-//        builder.setWithSrcDirectory(false);
         PropertiesComponent.getInstance().setValue(LAST_USED_GRAV_HOME, new File(file).getAbsolutePath());
     }
 
@@ -85,6 +86,8 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep implements Dis
 
     @Override
     public void dispose() {
-
+        if (Objects.nonNull(form) && Objects.nonNull(form.getMainPanel())) {
+            DialogWrapper.cleanupRootPane(form.getMainPanel().getRootPane());
+        }
     }
 }

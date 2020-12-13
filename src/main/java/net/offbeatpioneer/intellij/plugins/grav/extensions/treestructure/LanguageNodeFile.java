@@ -1,4 +1,4 @@
-package net.offbeatpioneer.intellij.plugins.grav.treestructure;
+package net.offbeatpioneer.intellij.plugins.grav.extensions.treestructure;
 
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.ViewSettings;

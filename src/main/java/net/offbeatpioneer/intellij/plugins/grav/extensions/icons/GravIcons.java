@@ -1,4 +1,4 @@
-package net.offbeatpioneer.intellij.plugins.grav.assets;
+package net.offbeatpioneer.intellij.plugins.grav.extensions.icons;
 
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,9 @@ public class GravIcons {
     }
 
     public static final Icon GravDefaultIcon = load("/icons/gravLogo.svg");
-    public static final Icon GravDefaultIconLegacy = load("/icons/gravLogoLegacy.png");
     public static final Icon ThemeBlueprints = load("/icons/gravFileIcon.svg");
     public static final Icon ThemeConfiguration = load("/icons/gravFileIcon.svg");
+    public static final Icon GravFileLogoIcon = load("/icons/gravToolWindowIcon.svg");
+    public static final Icon GravToolWindowIcon = load("/icons/gravToolWindowIcon.svg");
+    public static final Icon GravProjectWizardIcon = load("/icons/gravToolWindowIcon.svg");
 }

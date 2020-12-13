@@ -6,8 +6,6 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.application.AccessToken;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.progress.EmptyProgressIndicator;
@@ -28,9 +26,11 @@ import com.intellij.util.download.FileDownloader;
 import com.intellij.util.io.ZipUtil;
 import com.intellij.util.net.IOExceptionDialog;
 import com.intellij.util.ui.JBUI;
-import net.offbeatpioneer.intellij.plugins.grav.helper.GithubApi;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.ui.SquareButton;
+import net.offbeatpioneer.intellij.plugins.grav.helper.GithubApi;
+import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +59,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     // points to the file that defines the URL format of the Grav release in GitHub
     private static final String DOWNLOAD_CONFIG_PROPERTIES = "download-config.properties";
     private final Project project;
-    private String[] DEFAULT_GRAV_VERSIONS = new String[]{"1.6.30", "1.6.29", "1.6.28"};
+    private final String[] DEFAULT_GRAV_VERSIONS = new String[]{"1.6.30", "1.6.29", "1.6.28"};
     private AtomicBoolean gotLatestVersions; //flag indicates if latest version tags could be retrieved from github
     private String[] gravVersions = null;
     private JPanel mainPanel;
@@ -138,7 +138,6 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         lblHint = new JLabel();
         lblHint.setVisible(false);
 
-
         panelSelectGrav = new JPanel();
         panelDownloadGrav = new JPanel();
 
@@ -152,11 +151,8 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         group.add(rbSelectGrav);
         group.add(rbDownloadGrav);
 
-        // Select Grav
-
 
         // Download Grav
-
         btnRefreshGravVersions = new SquareButton();
         btnRefreshGravVersions.setBorderPainted(false);
         btnRefreshGravVersions.setBorder(null);
@@ -169,13 +165,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         btnRefreshGravVersions.setActionCommand("refreshGrav");
 
         gravVersionComboBox = new ComboBox<>(DEFAULT_GRAV_VERSIONS);
-//        if (!gotLatestVersions.get()) {
-//            //download versions
-//            refreshVersionAction();
-//        }
 
-
-//        initRefreshLink();
         myDownloadLink = new ActionLink("Download selected Grav 'SDK'", new AnAction() {
             @Override
             public void actionPerformed(AnActionEvent e) {
@@ -229,28 +219,27 @@ public class CreateGravProjectWizardGUI implements ActionListener {
                                     parentIndicator = new EmptyProgressIndicator();
                                     parentIndicator.setModalityProgress(parentIndicator);
                                     parentIndicator.setText("Please wait ...");
-
                                     try {
+//                                        ZipUtil.extract(VfsUtil.virtualToIoFile(files.get(0)).toPath(),
+//                                                VfsUtil.virtualToIoFile(finalDir).toPath(),
+//                                                null);
                                         ZipUtil.extract(VfsUtil.virtualToIoFile(files.get(0)), VfsUtil.virtualToIoFile(finalDir), null);
                                     } catch (IOException e1) {
-                                        e1.printStackTrace();
-                                    } finally {
-//                                                accessToken.finish();
+                                        NotificationHelper.showErrorNotification(project, e1.getMessage());
                                     }
-
-                                }, "Extracting Zip File", false, project, mainPanel);
+                                }, "Extracting zip file", false, project, mainPanel);
 
 //                                    AccessToken accessToken = ApplicationManager.getApplication().acquireWriteActionLock(panel.getClass());
                                 PropertiesComponent.getInstance().setValue(CreateGravProjectWizardStep.LAST_USED_GRAV_HOME, newdirpath);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                NotificationHelper.showErrorNotification(project, e.getMessage());
                             } finally {
                                 dir.get().refresh(false, true);
                                 if (completed) {
                                     String gravSdkVersion = GravSdkType.findGravSdkVersion(newdirpath);
                                     setDeterminedGravVersion(gravSdkVersion);
                                     showDeterminedVersion(true);
-                                    fieldPanel.setText(newdirpath);//validation will be performed automatically (see GravInstallerGeneratorPeer)
+                                    fieldPanel.setText(newdirpath); //validation will be performed automatically (see GravInstallerGeneratorPeer)
                                     lblGravDownloadPath.setText(newdirpath);
                                 }
                             }
@@ -295,11 +284,12 @@ public class CreateGravProjectWizardGUI implements ActionListener {
 //        btnRefreshGravVersions.setEnabled(true);
     }
 
+    @SuppressWarnings("unused")
     public void initRefreshLink() {
         refreshLink = new ActionLink("Refresh Grav versions", new AnAction() {
 
             @Override
-            public void actionPerformed(AnActionEvent e) {
+            public void actionPerformed(@NotNull AnActionEvent e) {
                 refreshVersionAction();
             }
         });
@@ -379,6 +369,7 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         }
     }
 
+    @SuppressWarnings("unused")
     public WizardOption getWizardOption() {
         return wizardOption;
     }

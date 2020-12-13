@@ -12,7 +12,7 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement;
 import com.intellij.psi.util.PsiElementFilter;
 import com.intellij.psi.util.PsiTreeUtil;
 import icons.TwigIcons;
-import net.offbeatpioneer.intellij.plugins.grav.assets.GravIcons;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.helper.FileCreateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravFileTemplateUtil;
 import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
