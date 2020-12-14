@@ -122,12 +122,15 @@ public class CreateNewThemeAction extends AnAction implements WriteActionAware, 
                 super.onSuccess();
                 String output = processUtils.getOutputAsString();
                 if (processUtils.getErrorOutput() != null) {
-                    NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, project);
+//                    NotificationHelper.showBaloon(processUtils.getErrorOutput(), MessageType.ERROR, project);
+                    NotificationHelper.showErrorNotification(project, processUtils.getErrorOutput());
                 } else if (!output.contains("SUCCESS")) {
                     output = "Theme couldn't be created: " + output;
-                    NotificationHelper.showBaloon(output, MessageType.WARNING, project, 5000);
+//                    NotificationHelper.showBaloon(output, MessageType.WARNING, project, 5000);
+                    NotificationHelper.showErrorNotification(project, output);
                 } else {
-                    NotificationHelper.showBaloon("Theme '" + themeData.getName() + "' was created", MessageType.INFO, project);
+//                    NotificationHelper.showBaloon("Theme '" + themeData.getName() + "' was created", MessageType.INFO, project);
+                    NotificationHelper.showInfoNotification(project, "Theme '" + themeData.getName() + "' was created");
                     VirtualFileManager.getInstance().syncRefresh();
                 }
             }
