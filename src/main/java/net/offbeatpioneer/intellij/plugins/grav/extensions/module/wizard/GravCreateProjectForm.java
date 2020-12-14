@@ -10,8 +10,12 @@ import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.fileChooser.*;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.ui.ComboBox;
+import com.intellij.openapi.ui.ValidationInfo;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.platform.ProjectGeneratorPeer;
+import com.intellij.platform.WebProjectGenerator;
 import com.intellij.platform.templates.github.DownloadUtil;
 import com.intellij.platform.templates.github.Outcome;
 import com.intellij.ui.FieldPanel;
@@ -23,13 +27,17 @@ import com.intellij.util.download.FileDownloader;
 import com.intellij.util.io.ZipUtil;
 import com.intellij.util.net.IOExceptionDialog;
 import com.intellij.util.ui.JBUI;
+import com.intellij.util.ui.UIUtil;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.ui.SquareButton;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GithubApi;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,10 +45,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -52,7 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Dominik Grzelak
  */
-public class CreateGravProjectWizardGUI implements ActionListener {
+public class GravCreateProjectForm implements ActionListener {
     // points to the file that defines the URL format of the Grav release in GitHub
     private static final String DOWNLOAD_CONFIG_PROPERTIES = "download-config.properties";
 
@@ -80,18 +86,75 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     private BrowseFilesListener browseFilesListener;
     Properties downloadProps;
 
+    private final List<ProjectGeneratorPeer.SettingsListener> myStateListeners;
+
     public enum WizardOption {
         SELECT, DOWNLOAD
     }
 
     private WizardOption wizardOption;
 
-    public CreateGravProjectWizardGUI() {
+    public GravCreateProjectForm() {
         initDownloadConfigurationFile();
         gotLatestVersions = Objects.isNull(gotLatestVersions) ? new AtomicBoolean(false) : gotLatestVersions;
+        myStateListeners = new ArrayList<>();
+        this.fireStateChanged();
     }
 
-    public JPanel getMainPanel() {
+    public void addSettingsStateListener(ProjectGeneratorPeer.SettingsListener listener) {
+        this.myStateListeners.add(listener);
+    }
+
+    private void fireStateChanged() {
+        boolean validSettings = this.validate() == null;
+        Iterator<ProjectGeneratorPeer.SettingsListener> var2 = this.myStateListeners.iterator();
+
+        while (var2.hasNext()) {
+            ProjectGeneratorPeer.SettingsListener listener = var2.next();
+            listener.stateChanged(validSettings);
+        }
+
+    }
+
+    @Nullable
+    public ValidationInfo validate() {
+        int code = validate0();
+        switch (code) {
+            case -1:
+                return new ValidationInfo("The path pointing to Grav is empty for the selected option"); //.withOKEnabled();
+            case -2:
+                new ValidationInfo("The path pointing to Grav doesn't exist for the selected option"); //.withOKEnabled();
+            case -3:
+                return new ValidationInfo("The selected Grav 'SDK' seems not valid for the selected option"); //.withOKEnabled();
+            default:
+                return null;
+        }
+    }
+
+    private int validate0() {
+        String gravDir = getGravFinalInstallationDirectory().trim();
+        if (gravDir.isEmpty()) {
+            showHint(true);
+            return -1;
+        } else {
+            VirtualFile vf = LocalFileSystem.getInstance().findFileByIoFile(new File(gravDir));
+            if (vf == null) {
+                showHint(true);
+                return -2;
+            } else {
+                if (!GravSdkType.isValidGravSDK(vf)) {
+                    showHint(true);
+                    return -3;
+                }
+            }
+            String gravSdkVersion = GravSdkType.findGravSdkVersion(gravDir);
+            setDeterminedGravVersion(gravSdkVersion);
+        }
+        showHint(false);
+        return 0;
+    }
+
+    public JPanel getContentPane() {
         return mainPanel;
     }
 
@@ -125,6 +188,9 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     }
 
     public void createUIComponents() {
+        Runnable consumer = () -> {
+            this.fireStateChanged();
+        };
         gotLatestVersions = new AtomicBoolean(false);
         initDownloadConfigurationFile();
 
@@ -243,29 +309,26 @@ public class CreateGravProjectWizardGUI implements ActionListener {
         // must be place after downloadLink, otherwise downloadLink doesn't work ...
         JTextField textField = new JTextField();
         browseFilesListener = new BrowseFilesListener(textField, "Select Grav 'SDK' Download Folder", "", FileChooserDescriptorFactory.createSingleFileDescriptor());
-        gravDownloadFolderFieldPanel = ModuleWizardStep.createFieldPanel(textField, "", browseFilesListener);
+
+//        gravDownloadFolderFieldPanel = ModuleWizardStep.createFieldPanel(textField, "", browseFilesListener);
+        gravDownloadFolderFieldPanel = new FieldPanel(textField, "", null, browseFilesListener, consumer);
+        gravDownloadFolderFieldPanel.getFieldLabel().setFont(UIUtil.getLabelFont().deriveFont(Font.BOLD));
     }
 
     private void refreshVersionViewAfterDownload(final String newdirpath) {
-//        lblHint.setVisible(false);
         setDeterminedGravVersion(GravSdkType.findGravSdkVersion(newdirpath));
-//        showDeterminedVersion(true);
+        showHint(false);
         gravDownloadFolderFieldPanel.getTextField().setText(newdirpath); // validation will be performed automatically (see GravInstallerGeneratorPeer)
         lblGravDownloadPath.setText(newdirpath);
-//        mainPanel.invalidate();
-//        mainPanel.repaint();
-//        showHint(true);
+        this.fireStateChanged();
     }
 
     private void refreshVersionAction() {
-//        btnRefreshGravVersions.setEnabled(false);
-        //download versions
         Outcome<String[]> outcome = DownloadUtil.provideDataWithProgressSynchronously(
                 null,
                 "Grav versions",
                 "Retrieving latest Grav versions ...",
                 () -> {
-//                    ProgressIndicator progress = ProgressManager.getInstance().getProgressIndicator();
                     List<String> gravVersionReleases = GithubApi.getGravVersionReleases(downloadProps.getProperty("gravReleases"));
                     gotLatestVersions.set(true);
                     return gravVersionReleases.toArray(new String[0]);
@@ -278,7 +341,6 @@ public class CreateGravProjectWizardGUI implements ActionListener {
             gravVersions = DEFAULT_GRAV_VERSIONS;
         }
         gravVersionComboBox.setModel(new DefaultComboBoxModel<>(gravVersions));
-//        btnRefreshGravVersions.setEnabled(true);
     }
 
     @SuppressWarnings("unused")
@@ -334,9 +396,12 @@ public class CreateGravProjectWizardGUI implements ActionListener {
     }
 
     public void showHint(boolean flag) {
-//        if (wizardOption == WizardOption.SELECT) {
-        lblHint.setVisible(flag);
-//        }
+        if (wizardOption == WizardOption.SELECT) {
+            lblHint.setVisible(flag);
+        }
+        if (!flag && wizardOption == WizardOption.DOWNLOAD) {
+            lblHint.setVisible(false);
+        }
         showDeterminedVersion(!flag);
     }
 

@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.ValidationInfo;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectGeneratorPeer;
+import com.intellij.util.PlatformUtils;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleBuilder;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
@@ -36,7 +37,7 @@ import static net.offbeatpioneer.intellij.plugins.grav.extensions.module.wizard.
  */
 public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings> { //projecttemplate
 
-    private GravInstallerGeneratorPeer generatorPeer;
+    private GravProjectPeer generatorPeer;
     private final GravPersistentStateComponent storage;
 
     GravProjectGenerator() {
@@ -79,7 +80,7 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
     @Override
     public ProjectGeneratorPeer<GravProjectSettings> createPeer() {
         if (generatorPeer == null)
-            generatorPeer = new GravInstallerGeneratorPeer();
+            generatorPeer = new GravProjectPeer();
         return generatorPeer;
     }
 
@@ -107,10 +108,9 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
     @Override
     public @Nullable ValidationInfo validateSettings() {
         return generatorPeer.validate();
-//        return super.validateSettings();
     }
 
     public boolean isPrimaryGenerator() {
-        return true; //PlatformUtils.isPhpStorm();
+        return PlatformUtils.isPhpStorm();
     }
 }

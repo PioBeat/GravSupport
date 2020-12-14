@@ -12,15 +12,13 @@ import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateCompo
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.io.File;
 
 
 public class CreateGravProjectWizardStep extends ModuleWizardStep { //implements Disposable {
     public static final String LAST_USED_GRAV_HOME = "LAST_USED_GRAV_HOME";
     private GravModuleBuilder builder;
-    private CreateGravProjectWizardGUI form;
+    private GravCreateProjectForm form = new GravCreateProjectForm();
     private GravPersistentStateComponent storage;
     private final Project project;
 
@@ -28,39 +26,7 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep { //implements
         this.builder = builder;
         this.storage = GravPersistentStateComponent.getInstance();
         this.project = project;
-    }
 
-    @Override
-    public JComponent getComponent() {
-        if (form == null) {
-            form = new CreateGravProjectWizardGUI();
-            form.getGravDownloadFolderFieldPanel().getTextField().getDocument().addDocumentListener(new DocumentListener() {
-                @Override
-                public void insertUpdate(DocumentEvent e) {
-                    try {
-                        validate();
-                    } catch (ConfigurationException configurationException) {
-                    }
-                }
-
-                @Override
-                public void removeUpdate(DocumentEvent e) {
-                    try {
-                        validate();
-                    } catch (ConfigurationException configurationException) {
-                    }
-
-                }
-
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                    try {
-                        validate();
-                    } catch (ConfigurationException configurationException) {
-                    }
-                }
-            });
-        }
         String path = storage.getDefaultGravDownloadPath();
         if ((path == null || path.isEmpty())) {
             path = System.getProperty("user.home");
@@ -69,7 +35,11 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep { //implements
         }
         form.setDefaultInstallationPath(path);
         form.initLayout();
-        return form.getMainPanel();
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return form.getContentPane();
     }
 
     @Override
@@ -86,7 +56,7 @@ public class CreateGravProjectWizardStep extends ModuleWizardStep { //implements
             } else {
                 if (!GravSdkType.isValidGravSDK(vf)) {
                     form.showHint(true);
-                    throw new ConfigurationException("The selected Grav 'SDK' seems not valid");
+                    throw new ConfigurationException("The selected Grav 'SDK' seems not valid for the selected option");
                 }
             }
             String gravSdkVersion = GravSdkType.findGravSdkVersion(finalGravInstallDir);
