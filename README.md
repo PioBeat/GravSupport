@@ -92,7 +92,7 @@ You need a valid PHP installation on your machine. Php should be found in the ``
 
 The plugin uses the scripts in the ``bin`` directory of Grav to offer the functionality Grav supports via those scripts.
 
-## Help and Common Bugs
+## Help and Common Issues
 
 **Supported Grav versions**
 
@@ -101,6 +101,13 @@ automatically. They can be selected directly in the project wizard of IntelliJ.
 
 Furthermore, it is possible to use any other Grav installation by manually downloading them and specifying the path in
 the wizard.
+
+**The Grav plugin does not seem to work on existing projects**
+
+Grav projects that were not created via the project wizard may not be initialized correctly (e.g., module type  is not 'GRAV_TYPE').
+
+A solution is to completely remove the `.idea` folder of the project and re-open it in InteliJ IDEA.
+A notification will be displayed which proposes to convert the project to a <i>Grav project</i>.
 
 **"Grav plugin 'devtools' is not installed"**
 

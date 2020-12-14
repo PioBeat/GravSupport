@@ -5,14 +5,12 @@ import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.*;
-import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIcons;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
-import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +21,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -92,25 +91,20 @@ public class GravSdkType extends SdkType {
                 root.findFileByRelativePath("bin") != null;
     }
 
-    public static boolean operationIsAvailableFor(Project project) {
-        return operationIsAvailableFor(project, true);
-    }
-
-    public static boolean operationIsAvailableFor(Project project, boolean checkSettings) {
+    public static boolean isOperationBasicallyAvailableFor(@NotNull Project project) {
+        if (!isGravModuleType(project)) return false;
         if (project.getBasePath() == null) return false;
         VirtualFile projectPath = LocalFileSystem.getInstance().findFileByIoFile(new File(project.getBasePath()));
-        if (!isGravModuleType(project)) return false;
         if (projectPath == null ||
-                !GravSdkType.isValidGravSDK(projectPath) ||
-                (checkSettings && !GravProjectComponent.isEnabled(project))) return false;
+                !GravSdkType.isValidGravSDK(projectPath))
+            return false; //(checkSettings && !GravProjectComponent.isEnabled(project))
         return true;
     }
 
     public static boolean isGravModuleType(Project project) {
         for (Module module : ModuleManager.getInstance(project).getModules()) {
-//            System.out.println(module);
-//            System.out.println("\t" + (module.getModuleTypeName().equals(GravModuleType.getInstance().getId())));
-            if (module.getModuleTypeName().equals(GravModuleType.getInstance().getId())) {
+            if (Objects.nonNull(module.getModuleTypeName()) &&
+                    module.getModuleTypeName().equals(GravModuleType.getInstance().getId())) {
                 return true;
             }
         }

@@ -57,7 +57,7 @@ public class GravProjectConfigurable implements Configurable, Configurable.Varia
     @Override
     public JComponent createComponent() {
         currentGravVersionLbl.setText(versionContent);
-        if (!GravSdkType.operationIsAvailableFor(project, false)) {
+        if (!GravSdkType.isOperationBasicallyAvailableFor(project)) {
             currentGravVersionLbl.setEnabled(false);
             enabled.setEnabled(false);
             mainPanel.setEnabled(false);
@@ -88,9 +88,9 @@ public class GravProjectConfigurable implements Configurable, Configurable.Varia
     public void apply() throws ConfigurationException {
         if (Objects.nonNull(settings)) {
             settings.pluginEnabled = enabled.isSelected();
-            if (GravProjectComponent.isEnabled(project)) {
+            if (settings.pluginEnabled) {
                 GravProjectConfigurable.enableGravToolWindow(project, settings.pluginEnabled);
-                ProjectView.getInstance(project).refresh();
+//                ProjectView.getInstance(project).refresh();
             }
         }
     }

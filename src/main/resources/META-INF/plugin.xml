@@ -69,6 +69,10 @@
                 nonDefaultProject="true"
         />
 
+        <lang.substitutor order="first"
+                          implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.lang.substitutor.GravFileLanguageSubstitutor"
+        />
+
         <!--        <projectStructureValidator-->
         <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravProjectValidator"-->
         <!--        />-->
