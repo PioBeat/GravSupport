@@ -12,12 +12,12 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.table.JBTable;
+import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles;
-import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLDocument;
@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author Dominik Grzelak
  */
-public class LanguageFileEditorGUI implements ChangeListener {
+public class GravLanguageEditorForm implements ChangeListener {
     private Logger LOG = Logger.getInstance(this.getClass());
 
     public static final String UI_POPUP_JUMP_KEY = "UI_POPUP_JUMP_KEY";
@@ -47,8 +47,8 @@ public class LanguageFileEditorGUI implements ChangeListener {
     public static final String UI_BTN_INSERT_KEY = "UI_BTN_INSERT_KEY";
     public static final String UI_BTN_REMOVE_KEY = "UI_BTN_REMOVE_KEY";
 
-
-    private GravLangFileEditor fileEditor;
+    private FileEditorStrategy editorStrategy;
+    private GravYamlFiles.LangFileEditorType langFileEditorType;
     private TranslationTableModel model;
     private String currentLang = "de";
     private int selectedTab = -1;
@@ -63,18 +63,19 @@ public class LanguageFileEditorGUI implements ChangeListener {
     private JPanel centerPanel;
     private JButton btnDeleteKey;
 
-    LanguageFileEditorGUI(GravLangFileEditor fileEditor, TranslationTableModel model) {
+    GravLanguageEditorForm(FileEditorStrategy editorStrategy, GravYamlFiles.LangFileEditorType langFileEditorType, TranslationTableModel model) {
         this.model = model;
-        this.fileEditor = fileEditor;
+        this.editorStrategy = editorStrategy;
+        this.langFileEditorType = langFileEditorType;
 
         this.table1.setModel(model);
         this.tabbedPane.addChangeListener(this);
 
-        this.btnDeleteKey.addActionListener(fileEditor.editorStrategy);
+        this.btnDeleteKey.addActionListener(editorStrategy);
         this.btnDeleteKey.setName(UI_BTN_REMOVE_KEY);
         this.btnDeleteKey.setIcon(AllIcons.General.Remove);
 
-        this.btnAddNewKey.addActionListener(fileEditor.editorStrategy);
+        this.btnAddNewKey.addActionListener(editorStrategy);
         this.btnAddNewKey.setName(UI_BTN_INSERT_KEY);
         this.btnAddNewKey.setIcon(AllIcons.General.Add);
 
@@ -82,10 +83,14 @@ public class LanguageFileEditorGUI implements ChangeListener {
     }
 
     private void setDefaultLanguageForEditor() {
-        if (fileEditor.getFileMap().size() != 0) {
-            String lang = fileEditor.getFileMap().keys().hasMoreElements() ? fileEditor.getFileMap().keys().nextElement() : "";
+        if (editorStrategy.getFileMap().size() != 0) {
+            String lang = editorStrategy.getFileMap().keys().hasMoreElements() ? editorStrategy.getFileMap().keys().nextElement() : "";
             setCurrentLang(lang);
         }
+    }
+
+    public JButton getDeleteLanguageKeyBtn() {
+        return btnDeleteKey;
     }
 
     String getCurrentLang() {
@@ -100,7 +105,7 @@ public class LanguageFileEditorGUI implements ChangeListener {
     }
 
     private void createUIComponents() {
-        tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane(); //JBTabbedPane(); //
         table1 = new JBTable();
         table1.setFillsViewportHeight(true);
         table1.setComponentPopupMenu(createPopupMenu());
@@ -109,6 +114,8 @@ public class LanguageFileEditorGUI implements ChangeListener {
         setCellRenderer();
         btnAddNewKey = new JButton();
         btnDeleteKey = new JButton();
+        if (tabbedPane.getTabCount() > 0)
+            tabbedPane.setSelectedIndex(0);
     }
 
     private void setCellRenderer() {
@@ -118,15 +125,9 @@ public class LanguageFileEditorGUI implements ChangeListener {
     }
 
     void initTabs() {
-        Project project = fileEditor.getProject();
         tabbedPane.removeAll();
-        if (project.isDisposed()) {
-            fileEditor.editorStrategy.getFileMap().clear();
-            return;
-        }
-
         addTab("Overview", scrollPane1);
-        fileEditor.editorStrategy.initTab(this);
+        editorStrategy.initTab(this);
 
         setDefaultLanguageForEditor();
 
@@ -138,20 +139,19 @@ public class LanguageFileEditorGUI implements ChangeListener {
     }
 
     private JPopupMenu createPopupMenu() {
-
         final JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Delete Key");
         deleteItem.setName(UI_POPUP_DELETE_KEY);
         deleteItem.setIcon(AllIcons.General.Remove);
         deleteItem.addActionListener(e -> { // SwingUtilities.invokeLater(() ->
-            final Project project = GravProjectComponent.getEnabledProject();
-            if (project == null) return;
+            if (basicPopupListener.rowAtPoint >= model.getKeys(false).size() || basicPopupListener.rowAtPoint < 0)
+                return;
+
             String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
             List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
             ApplicationManager.getApplication().invokeLater(() -> {
-                fileEditor.editorStrategy.removeKeyComplete(qualifiedKey, key, model);
+                editorStrategy.removeKeyComplete(qualifiedKey, key, model);
             }, ModalityState.current());
-
 //            basicPopupListener.resetIndices();
         });
         popupMenu.add(deleteItem);
@@ -161,25 +161,26 @@ public class LanguageFileEditorGUI implements ChangeListener {
         jumpToKey.setIcon(AllIcons.General.Locate);
         popupMenu.add(jumpToKey);
         jumpToKey.addActionListener(e -> SwingUtilities.invokeLater(() -> {
-            final Project project = GravProjectComponent.getEnabledProject();
-            if (project == null) return;
+            if (basicPopupListener.rowAtPoint >= model.getKeys(false).size() || basicPopupListener.rowAtPoint < 0)
+                return;
+
             String key = model.getKeys(true).get(basicPopupListener.rowAtPoint);
             List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
             String lang = model.getLanguages().get(basicPopupListener.colAtPoint - 1);
             VirtualFile file;
-            switch (fileEditor.getLanguageFileEditorType()) {
+            switch (langFileEditorType) {
                 case LANGUAGE_FILE:
-                    file = fileEditor.getFileMap().elements().nextElement();
+                    file = editorStrategy.getFileMap().elements().nextElement();
                     qualifiedKey.add(0, lang);
                     break;
                 case LANGUAGE_FOLDER:
-                    file = fileEditor.getFileMap().get(lang);
+                    file = editorStrategy.getFileMap().get(lang);
                     break;
                 default:
-                    file = fileEditor.getFileMap().get(lang);
+                    file = editorStrategy.getFileMap().get(lang);
                     break;
             }
-            PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+            PsiFile psiFile = editorStrategy.getPsiManager().findFile(file);
             if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
             YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
 
@@ -189,12 +190,12 @@ public class LanguageFileEditorGUI implements ChangeListener {
             if (value == null || value.getOriginalElement() == null) return;
             PsiElement psiElement = value.getOriginalElement();
             EventQueue.invokeLater(() -> {
-                fileEditor.editorStrategy.editorMap.get(lang).getContentComponent().grabFocus();
-                fileEditor.editorStrategy.editorMap.get(lang).getContentComponent().requestFocusInWindow();
+                editorStrategy.editorMap.get(lang).getContentComponent().grabFocus();
+                editorStrategy.editorMap.get(lang).getContentComponent().requestFocusInWindow();
             });
 
-            ScrollingModel scrollingModel = fileEditor.editorStrategy.editorMap.get(lang).getScrollingModel();
-            CaretModel caretModel = fileEditor.editorStrategy.editorMap.get(lang).getCaretModel();
+            ScrollingModel scrollingModel = editorStrategy.editorMap.get(lang).getScrollingModel();
+            CaretModel caretModel = editorStrategy.editorMap.get(lang).getCaretModel();
             caretModel.moveToOffset(psiElement.getTextOffset() + psiElement.getTextLength(), false);
             scrollingModel.scrollToCaret(ScrollType.MAKE_VISIBLE);
             caretModel.getCurrentCaret().setSelection(caretModel.getOffset(), caretModel.getOffset());
@@ -204,6 +205,13 @@ public class LanguageFileEditorGUI implements ChangeListener {
         basicPopupListener = new BasicPopupListener(table1, popupMenu, deleteItem, jumpToKey);
         popupMenu.addPopupMenuListener(basicPopupListener);
         return popupMenu;
+    }
+
+    public void setTab(int tabIndex) {
+        if (tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
+            tabbedPane.setSelectedIndex(tabIndex);
+
+        }
     }
 
     public int getLastSelectedRow() {
@@ -227,7 +235,7 @@ public class LanguageFileEditorGUI implements ChangeListener {
         return tabbedPane;
     }
 
-    public JPanel getMainPanel() {
+    public JPanel getContentPane() {
         return mainPanel;
     }
 
@@ -247,7 +255,12 @@ public class LanguageFileEditorGUI implements ChangeListener {
         selectedTab = -1;
         if (e.getSource() instanceof JTabbedPane) {
             JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
-            selectedTab = tabbedPane.getSelectedIndex();
+            if (tabbedPane.getSelectedIndex() == -1 && tabbedPane.getTabCount() > 0) {
+                selectedTab = 0;
+                tabbedPane.setSelectedIndex(0);
+            } else {
+                selectedTab = tabbedPane.getSelectedIndex();
+            }
         }
     }
 

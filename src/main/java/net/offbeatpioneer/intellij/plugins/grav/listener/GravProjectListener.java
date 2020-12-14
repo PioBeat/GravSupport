@@ -20,6 +20,10 @@ public class GravProjectListener implements ProjectManagerListener {
         notifyPluginEnableDialog(project);
     }
 
+    @Override
+    public void projectClosed(@NotNull Project project) {
+    }
+
     private void notifyPluginEnableDialog(Project project) {
         if (GravSdkType.operationIsAvailableFor(project, false)) {
             GravProjectSettings settings = GravProjectSettings.getInstance(project);

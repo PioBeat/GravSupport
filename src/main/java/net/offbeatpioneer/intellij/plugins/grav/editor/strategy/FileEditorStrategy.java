@@ -1,25 +1,25 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor.strategy;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.IdeFrame;
-import com.intellij.openapi.wm.WindowManager;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiManager;
 import com.intellij.ui.awt.RelativePoint;
 import net.offbeatpioneer.intellij.plugins.grav.editor.GravLangFileEditor;
 import net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorProvider;
-import net.offbeatpioneer.intellij.plugins.grav.editor.LanguageFileEditorGUI;
+import net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorForm;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
 import net.offbeatpioneer.intellij.plugins.grav.editor.dialogs.InsertKeyValueDialog;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYAMLUtils;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
-import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLUtil;
 import org.jetbrains.yaml.psi.YAMLKeyValue;
@@ -55,38 +55,61 @@ public abstract class FileEditorStrategy implements ActionListener {
     public static final String ACTION_NAME = "GravRemoveKey";
     protected Logger LOG = Logger.getInstance(this.getClass());
     YAMLUtil yamlUtil = new YAMLUtil();
+    PsiManager psiManager;
+    PsiDocumentManager psiDocumentManager;
 
     protected String[] languages;
-    protected Project project;
     protected GravLangFileEditor fileEditor;
     public ConcurrentHashMap<String, Editor> editorMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<String, VirtualFile> fileMap = new ConcurrentHashMap<>();
     String currentLang = "";
     InsertKeyValueDialog dialog;
-//    TranslationTableModel model;
 
-    public FileEditorStrategy(Project project) {
-        this.project = project;
+    public FileEditorStrategy(PsiManager psiManager, PsiDocumentManager psiDocumentManager) {
+        this.psiManager = psiManager;
+        this.psiDocumentManager = psiDocumentManager;
+    }
+
+    /**
+     * For dispose process.
+     * Should not be called directly!
+     */
+    public void clearStrategy() {
+        for (Editor eachEditor : editorMap.values()) {
+            EditorFactory.getInstance().releaseEditor(eachEditor); // should already run in EDT (event dispatcher thread)
+//            SwingUtilities.invokeLater(() -> EditorFactory.getInstance().releaseEditor(eachEditor));
+        }
+        fileMap.clear();
+        fileMap = null;
+        psiManager = null;
+        psiDocumentManager = null;
+    }
+
+    public PsiManager getPsiManager() {
+        return psiManager;
+    }
+
+    public PsiDocumentManager getPsiDocumentManager() {
+        return psiDocumentManager;
     }
 
     /**
      * Factory method to create the concrete implementation.
      *
      * @param provider
-     * @param project
      * @return
      */
     @NotNull
     public static FileEditorStrategy create(GravLanguageEditorProvider provider, Project project) {
         switch (provider.getLangFileEditorType()) {
             case LANGUAGE_FOLDER:
-                return new LanguageFolderStrategy(project);
+                return new LanguageFolderStrategy(PsiManager.getInstance(project), PsiDocumentManager.getInstance(project));
             case LANGUAGE_FILE:
-                return new LanguageFileStrategy(project);
+                return new LanguageFileStrategy(PsiManager.getInstance(project), PsiDocumentManager.getInstance(project));
             default:
-                return new FileEditorStrategy(project) {
+                return new FileEditorStrategy(null, null) {
                     @Override
-                    public void initTab(LanguageFileEditorGUI gui) {
+                    public void initTab(GravLanguageEditorForm gui) {
 
                     }
 
@@ -105,14 +128,14 @@ public abstract class FileEditorStrategy implements ActionListener {
                     }
 
                     @Override
-                    protected void updateDocumentHook(Document document, Project project, String lang, String key, String value, TranslationTableModel model) {
+                    protected void updateDocumentHook(Document document, String lang, String key, String value, TranslationTableModel model) {
 
                     }
                 };
         }
     }
 
-    public abstract void initTab(LanguageFileEditorGUI gui);
+    public abstract void initTab(GravLanguageEditorForm gui);
 
     public abstract void createFileMap(@NotNull VirtualFile file);
 
@@ -128,12 +151,12 @@ public abstract class FileEditorStrategy implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public synchronized void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JComponent) {
-            if (((JComponent) e.getSource()).getName().equals(LanguageFileEditorGUI.UI_BTN_INSERT_KEY)) {
-                TranslationTableModel model = (TranslationTableModel) fileEditor.getGUI().getTable1().getModel();
-                int ixTab = fileEditor.getGUI().getSelectedTab();
-                dialog = new InsertKeyValueDialog(fileEditor.getProject(), model);
+            if (((JComponent) e.getSource()).getName().equals(GravLanguageEditorForm.UI_BTN_INSERT_KEY)) {
+                TranslationTableModel model = (TranslationTableModel) fileEditor.getForm().getTable1().getModel();
+                int ixTab = fileEditor.getForm().getSelectedTab();
+                dialog = new InsertKeyValueDialog(null, model);
                 if (ixTab >= 1) {
                     dialog.setSelectedLanguage(model.getLanguages().get(ixTab - 1));
                 } else {
@@ -142,29 +165,34 @@ public abstract class FileEditorStrategy implements ActionListener {
                 return;
             }
 
-            if (((JComponent) e.getSource()).getName().equals(LanguageFileEditorGUI.UI_BTN_REMOVE_KEY)) {
-                TranslationTableModel model = (TranslationTableModel) fileEditor.getGUI().getTable1().getModel();
-                final Project project = GravProjectComponent.getEnabledProject();
-                if (project == null) return;
-                int rowAtPoint = fileEditor.getGUI().getTable1().getSelectedRow();
-                if (rowAtPoint == -1) {
-                    IdeFrame ideFrame = WindowManager.getInstance().getIdeFrame(project);
-                    NotificationHelper.showBaloon("Please select a key first", MessageType.WARNING, fileEditor.getProject(),
-                            RelativePoint.getCenterOf(ideFrame.getComponent()), Balloon.Position.below, 3500);
+            if (((JComponent) e.getSource()).getName().equals(GravLanguageEditorForm.UI_BTN_REMOVE_KEY)) {
+                TranslationTableModel model = (TranslationTableModel) fileEditor.getForm().getTable1().getModel();
+                int rowAtPoint = fileEditor.getForm().getTable1().getSelectedRow();
+                if (rowAtPoint == -1 || rowAtPoint >= model.getKeys(false).size()) {
+//                    IdeFrame ideFrame = WindowManager.getInstance().getIdeFrame(project);
+                    NotificationHelper.showBaloon("Please select a language key first", MessageType.WARNING,
+                            RelativePoint.getCenterOf(fileEditor.getForm().getDeleteLanguageKeyBtn()), Balloon.Position.below, 3500);
+//                    NotificationHelper.showErrorNotification(null, "Please select a key first");
                     return;
                 }
-                String key = model.getKeys(true).get(rowAtPoint);
-//                fileEditor.getGUI().getBasicPopupListener().resetLastIndices();
-                List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    removeKeyComplete(qualifiedKey, key, model);
-                }, ModalityState.current());
+                if (rowAtPoint < model.getKeys(false).size()) {
+                    String key = model.getKeys(true).get(rowAtPoint);
+                    List<String> qualifiedKey = GravYAMLUtils.splitKeyAsList(key);
+                    WriteCommandAction.runWriteCommandAction(getPsiManager().getProject(), () -> {
+                        removeKeyComplete(qualifiedKey, key, model);
+                    });
+//                    ApplicationManager.getApplication().invokeLater(() -> {
+//                        removeKeyComplete(qualifiedKey, key, model);
+//                    }, ModalityState.current());
+                }
                 return;
             }
         }
     }
 
     public abstract void removeKeyComplete(List<String> qualifiedKey, String key, TranslationTableModel model);
+
+    protected abstract void updateDocumentHook(Document document, String lang, String key, String value, TranslationTableModel model);
 
     void getCompoundKeys0(YAMLKeyValue keyValue, String compKey, List<String> keysList, ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap, String lang) {
 
@@ -183,5 +211,5 @@ public abstract class FileEditorStrategy implements ActionListener {
         return fileMap;
     }
 
-    protected abstract void updateDocumentHook(Document document, Project project, String lang, String key, String value, TranslationTableModel model);
+
 }

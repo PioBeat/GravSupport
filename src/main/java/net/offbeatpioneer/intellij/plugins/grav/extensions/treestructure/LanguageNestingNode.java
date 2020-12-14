@@ -4,7 +4,6 @@ import com.intellij.icons.AllIcons;
 import com.intellij.ide.projectView.PresentationData;
 import com.intellij.ide.projectView.impl.nodes.NestingTreeNode;
 import com.intellij.ide.projectView.impl.nodes.PsiFileNode;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -26,7 +25,7 @@ public class LanguageNestingNode extends NestingTreeNode {
             setValue(null);
         } else {
             presentation.setPresentableText("localization");
-            presentation.setIcon(StdFileTypes.PROPERTIES.getIcon());
+            presentation.setIcon(AllIcons.FileTypes.Properties);
         }
     }
 }

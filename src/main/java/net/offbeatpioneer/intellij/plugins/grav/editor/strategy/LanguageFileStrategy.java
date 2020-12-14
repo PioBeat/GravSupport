@@ -1,19 +1,15 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor.strategy;
 
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.IncorrectOperationException;
 import com.intellij.util.ThrowableRunnable;
-import net.offbeatpioneer.intellij.plugins.grav.editor.LanguageFileEditorGUI;
+import net.offbeatpioneer.intellij.plugins.grav.editor.GravLanguageEditorForm;
 import net.offbeatpioneer.intellij.plugins.grav.editor.TranslationTableModel;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
 import org.jetbrains.annotations.NotNull;
@@ -30,21 +26,23 @@ import static com.intellij.openapi.ui.DialogWrapper.CANCEL_EXIT_CODE;
 
 public class LanguageFileStrategy extends FileEditorStrategy {
 
-    LanguageFileStrategy(Project project) {
-        super(project);
+    LanguageFileStrategy(PsiManager psiManager, PsiDocumentManager psiDocumentManager) {
+        super(psiManager, psiDocumentManager);
     }
 
     @Override
-    public void initTab(LanguageFileEditorGUI gui) {
-        VirtualFile file = fileMap.elements().nextElement();
-        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
-        if (psiFile != null) {
-            Document document = PsiDocumentManager.getInstance(project).getDocument(psiFile);
-            if (document != null) {
-                for (String eachLang : languages) {
-                    Editor editorTextField = gui.createEditor(document, project, psiFile.getFileType());
-                    editorMap.put(eachLang, editorTextField);
-                    gui.addTab(eachLang, editorTextField.getComponent());
+    public void initTab(GravLanguageEditorForm gui) {
+        if(fileMap != null && fileMap.size() > 0) {
+            VirtualFile file = fileMap.elements().nextElement();
+            PsiFile psiFile = getPsiManager().findFile(file);
+            if (psiFile != null) {
+                Document document = getPsiDocumentManager().getDocument(psiFile);
+                if (document != null) {
+                    for (String eachLang : languages) {
+                        Editor editorTextField = gui.createEditor(document, psiFile.getProject(), psiFile.getFileType()); //ieditor.getProject()
+                        editorMap.put(eachLang, editorTextField);
+                        gui.addTab(eachLang, editorTextField.getComponent());
+                    }
                 }
             }
         }
@@ -53,7 +51,7 @@ public class LanguageFileStrategy extends FileEditorStrategy {
     @Override
     public void createFileMap(@NotNull VirtualFile file) {
         fileMap.clear();
-        YAMLFile yamlFile = (YAMLFile) PsiManager.getInstance(project).findFile(file);
+        YAMLFile yamlFile = (YAMLFile) getPsiManager().findFile(file);
         if (yamlFile != null) {
             Collection<YAMLKeyValue> topLevelKeys = YAMLUtil.getTopLevelKeys(yamlFile);
             for (YAMLKeyValue each : topLevelKeys) {
@@ -68,7 +66,7 @@ public class LanguageFileStrategy extends FileEditorStrategy {
         Collection<String> availableKeys = new LinkedHashSet<>();//preserve order, no dups
         ConcurrentHashMap<String, Collection<YAMLKeyValue>> dataMap = new ConcurrentHashMap<>();
         VirtualFile virtualFile = fileMap.elements().nextElement();
-        YAMLFileImpl yamlFile = (YAMLFileImpl) PsiManager.getInstance(project).findFile(virtualFile);
+        YAMLFileImpl yamlFile = (YAMLFileImpl) getPsiManager().findFile(virtualFile);
         if (yamlFile != null) {
             Collection<YAMLKeyValue> topLevelKeys = YAMLUtil.getTopLevelKeys(yamlFile);
             for (String eachLanguage : languages) {
@@ -100,10 +98,10 @@ public class LanguageFileStrategy extends FileEditorStrategy {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public synchronized void actionPerformed(ActionEvent e) {
         super.actionPerformed(e);
         if (e.getSource() instanceof JComponent) {
-            if (((JComponent) e.getSource()).getName().equals(LanguageFileEditorGUI.UI_BTN_INSERT_KEY)) {
+            if (((JComponent) e.getSource()).getName().equals(GravLanguageEditorForm.UI_BTN_INSERT_KEY)) {
                 if (dialog == null) return;
                 dialog.show();
                 int exitCode = dialog.getExitCode();
@@ -113,11 +111,15 @@ public class LanguageFileStrategy extends FileEditorStrategy {
                     currentLang = dialog.getSelectedLangauge();
                     if (currentLang != null && !currentLang.isEmpty()) {
                         Editor ieditor = editorMap.get(currentLang);
+                        Objects.requireNonNull(ieditor);
                         Document document = ieditor.getDocument();
-                        TranslationTableModel model = (TranslationTableModel) fileEditor.getGUI().getTable1().getModel();
-                        WriteCommandAction.runWriteCommandAction(fileEditor.getProject(), () -> updateDocumentHook(document, ieditor.getProject(), currentLang, key, value, model));
+                        TranslationTableModel model = (TranslationTableModel) fileEditor.getForm().getTable1().getModel();
+                        WriteCommandAction.runWriteCommandAction(ieditor.getProject(), () -> {
+                            updateDocumentHook(document, currentLang, key, value, model);
+                        });
                     } else {
-                        NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
+//                        NotificationHelper.showBaloon("No language file available", MessageType.WARNING, fileEditor.getProject());
+                        NotificationHelper.showErrorNotification(null, "No language file available");
                     }
                 }
             }
@@ -125,15 +127,14 @@ public class LanguageFileStrategy extends FileEditorStrategy {
     }
 
     @Override
-    public void removeKeyComplete(List<String> qualifiedKey, String key, TranslationTableModel model) {
+    public synchronized void removeKeyComplete(List<String> qualifiedKey, String key, TranslationTableModel model) {
         VirtualFile file = fileEditor.getFileMap().elements().nextElement();
-        PsiFile psiFile = PsiManager.getInstance(project).findFile(file);
+        PsiFile psiFile = getPsiManager().findFile(file);
         if (psiFile == null || ((YAMLFile) psiFile).getDocuments() == null) return;
         YAMLDocument doc = ((YAMLFile) psiFile).getDocuments().get(0);
 
         try {
-            WriteCommandAction.writeCommandAction(project).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
-
+            WriteCommandAction.writeCommandAction(psiFile.getProject()).withName(ACTION_NAME).run((ThrowableRunnable<Throwable>) () -> {
                 for (String eachLang : model.getLanguages()) {
                     List<String> key0 = new ArrayList<>(qualifiedKey);
                     key0.add(0, eachLang);
@@ -151,11 +152,11 @@ public class LanguageFileStrategy extends FileEditorStrategy {
     }
 
     @Override
-    protected void updateDocumentHook(Document document, Project project, String lang, String key, String value, TranslationTableModel model) {
+    protected synchronized void updateDocumentHook(Document document, String lang, String key, String value, TranslationTableModel model) {
         if (!document.isWritable()) {
             return;
         }
-        YAMLFile yamlFile = (YAMLFile) PsiDocumentManager.getInstance(project).getPsiFile(document);
+        YAMLFile yamlFile = (YAMLFile) getPsiDocumentManager().getPsiFile(document);
         if (yamlFile != null) {
             try {
                 for (String eachLang : languages) {
@@ -171,7 +172,7 @@ public class LanguageFileStrategy extends FileEditorStrategy {
                     YAMLKeyValue yamlKeyValue = yamlUtil.createI18nRecord(yamlFile, key0, value0);
                     model.addElement(eachLang, yamlKeyValue, key);
                 }
-                PsiDocumentManager.getInstance(project).commitDocument(document);
+                getPsiDocumentManager().commitDocument(document);
 
             } catch (IncorrectOperationException e) {
 

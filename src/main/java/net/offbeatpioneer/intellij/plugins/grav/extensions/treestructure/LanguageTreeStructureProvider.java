@@ -9,6 +9,7 @@ import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +19,7 @@ import java.util.Collection;
 public class LanguageTreeStructureProvider implements TreeStructureProvider, DumbAware {
 
     private boolean isLanguageFolder(AbstractTreeNode parent) {
-        if (parent != null && GravSdkType.operationIsAvailableFor(parent.getProject())) {
+        if (parent != null && GravProjectComponent.isEnabled(parent.getProject())) {
             return parent.getName() != null && parent.getName().compareTo("languages") == 0;
         }
         return false;
@@ -26,7 +27,7 @@ public class LanguageTreeStructureProvider implements TreeStructureProvider, Dum
 
     @Override
     public @NotNull Collection<AbstractTreeNode<?>> modify(@NotNull AbstractTreeNode<?> parent, @NotNull Collection<AbstractTreeNode<?>> children, ViewSettings settings) {
-        ArrayList<AbstractTreeNode<?>> nodes = new ArrayList<AbstractTreeNode<?>>();
+        ArrayList<AbstractTreeNode<?>> nodes = new ArrayList<>();
         if (isLanguageFolder(parent)) {
             if (children.size() > 0 && parent.getValue() instanceof PsiDirectory) {
                 Collection<PsiFileNode> childrenPsi2 = new ArrayList<>();

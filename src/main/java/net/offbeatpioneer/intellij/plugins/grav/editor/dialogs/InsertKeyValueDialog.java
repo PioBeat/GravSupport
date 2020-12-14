@@ -21,7 +21,7 @@ public class InsertKeyValueDialog extends DialogWrapper {
         super(project, true);
         this.model = model;
         setModal(true);
-        setTitle("Add a New Key Value Pair");
+        setTitle("Add a New Language Key-Value Pair");
         init();
     }
 

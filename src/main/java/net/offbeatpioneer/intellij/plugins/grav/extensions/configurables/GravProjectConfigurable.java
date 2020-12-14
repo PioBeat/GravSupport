@@ -7,6 +7,7 @@ import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowManager;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
 import org.eclipse.lsp4j.jsonrpc.validation.NonNull;
 import org.jetbrains.annotations.Nls;
@@ -21,7 +22,7 @@ import java.util.Objects;
  *
  * @author Dominik Grzelak
  */
-public class GravProjectConfigurable implements Configurable {
+public class GravProjectConfigurable implements Configurable, Configurable.VariableProjectAppLevel {
     private GravProjectSettings settings;
     private JPanel mainPanel;
     private JCheckBox enabled;
@@ -35,6 +36,7 @@ public class GravProjectConfigurable implements Configurable {
         settings = GravProjectSettings.getInstance(project);
         versionContent = GravSdkType.findGravSdkVersion(project.getBasePath());
     }
+
 
     /**
      * Helper method to invoke this project settings page in the settings from everywhere
@@ -55,6 +57,15 @@ public class GravProjectConfigurable implements Configurable {
     @Override
     public JComponent createComponent() {
         currentGravVersionLbl.setText(versionContent);
+        if (!GravSdkType.operationIsAvailableFor(project, false)) {
+            currentGravVersionLbl.setEnabled(false);
+            enabled.setEnabled(false);
+            mainPanel.setEnabled(false);
+        } else {
+            mainPanel.setEnabled(true);
+            currentGravVersionLbl.setEnabled(true);
+            enabled.setEnabled(true);
+        }
         return mainPanel;
     }
 
@@ -77,8 +88,10 @@ public class GravProjectConfigurable implements Configurable {
     public void apply() throws ConfigurationException {
         if (Objects.nonNull(settings)) {
             settings.pluginEnabled = enabled.isSelected();
-            GravProjectConfigurable.enableGravToolWindow(project, settings.pluginEnabled);
-//            ProjectView.getInstance(project).refresh();
+            if (GravProjectComponent.isEnabled(project)) {
+                GravProjectConfigurable.enableGravToolWindow(project, settings.pluginEnabled);
+                ProjectView.getInstance(project).refresh();
+            }
         }
     }
 
@@ -96,5 +109,10 @@ public class GravProjectConfigurable implements Configurable {
 //        if(!gravToolWindowExists) {
 //            ToolWindowManager.getInstance(project).registerToolWindow("Grav", true, ToolWindowAnchor.RIGHT).setAvailable(true, () -> {});
 //        }
+    }
+
+    @Override
+    public boolean isProjectLevel() {
+        return true;
     }
 }

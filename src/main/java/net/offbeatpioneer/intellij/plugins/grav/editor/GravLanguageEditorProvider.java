@@ -1,9 +1,11 @@
 package net.offbeatpioneer.intellij.plugins.grav.editor;
 
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorPolicy;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.offbeatpioneer.intellij.plugins.grav.editor.strategy.FileEditorStrategy;
 import net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles;
@@ -16,8 +18,8 @@ import static net.offbeatpioneer.intellij.plugins.grav.helper.GravYamlFiles.Lang
 public class GravLanguageEditorProvider implements FileEditorProvider {
 
     private final String ID = "GravLanguageEditorProvider";
-    GravLangFileEditor gravLangFileEditor = null;
     GravYamlFiles.LangFileEditorType langFileEditorType = NONE;
+    String languageFile = "";
 
     public GravLanguageEditorProvider() {
     }
@@ -28,22 +30,25 @@ public class GravLanguageEditorProvider implements FileEditorProvider {
             return false;
         }
         langFileEditorType = GravYamlFiles.getLanguageFileType(file);
-        return gravLangFileEditor == null && langFileEditorType != NONE;
+        languageFile = file.getPath();
+        return langFileEditorType != NONE;
     }
 
     @NotNull
     @Override
     public FileEditor createEditor(@NotNull Project project, @NotNull VirtualFile file) {
-        if (gravLangFileEditor == null) {
-            FileEditorStrategy editorStrategy = FileEditorStrategy.create(this, project);
-            editorStrategy.createFileMap(file);
-            gravLangFileEditor = new GravLangFileEditor(this, editorStrategy, project);
-        }
+        FileEditorStrategy editorStrategy = FileEditorStrategy.create(this, project);
+        editorStrategy.createFileMap(file);
+        GravLangFileEditor gravLangFileEditor = new GravLangFileEditor(langFileEditorType, editorStrategy);
+        gravLangFileEditor.setConnect(project.getMessageBus().connect());
         return gravLangFileEditor;
     }
 
     @Override
     public void disposeEditor(@NotNull FileEditor editor) {
+        if (editor instanceof GravLangFileEditor) {
+            Disposer.dispose(editor); //same:  ((GravLangFileEditor) editor).dispose();
+        }
     }
 
     public GravYamlFiles.LangFileEditorType getLangFileEditorType() {
@@ -53,14 +58,14 @@ public class GravLanguageEditorProvider implements FileEditorProvider {
     @NotNull
     @Override
     public String getEditorTypeId() {
-        return ID + langFileEditorType;
+        return ID + langFileEditorType + languageFile;
     }
 
     @NotNull
     @Override
     public FileEditorPolicy getPolicy() {
-        if (gravLangFileEditor == null)
-            return FileEditorPolicy.HIDE_DEFAULT_EDITOR;
-        return FileEditorPolicy.PLACE_AFTER_DEFAULT_EDITOR;
+//        if (gravLangFileEditor == null)
+//            return FileEditorPolicy.HIDE_DEFAULT_EDITOR;
+        return FileEditorPolicy.PLACE_BEFORE_DEFAULT_EDITOR;
     }
 }

@@ -29,16 +29,15 @@ public class NotificationHelper {
 
     public static void showBaloon(String msg, MessageType messageType, @NotNull Project project, Balloon.Position position) {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-        showBaloon(msg, messageType, project, RelativePoint.getSouthEastOf(statusBar.getComponent()), position, 3500);
+        showBaloon(msg, messageType, RelativePoint.getSouthEastOf(statusBar.getComponent()), position, 3500);
     }
 
     public static void showBaloon(String msg, MessageType messageType, @NotNull Project project, Balloon.Position position, int time) {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
-        showBaloon(msg, messageType, project, RelativePoint.getSouthEastOf(statusBar.getComponent()), position, time);
+        showBaloon(msg, messageType, RelativePoint.getSouthEastOf(statusBar.getComponent()), position, time);
     }
 
-    public static void showBaloon(String msg, MessageType messageType, @NotNull Project project, RelativePoint relativePoint, Balloon.Position position, int time) {
-        StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
+    public static void showBaloon(String msg, MessageType messageType, RelativePoint relativePoint, Balloon.Position position, int time) {
         JBPopupFactory.getInstance()
                 .createHtmlTextBalloonBuilder(msg, messageType, null)
                 .setFadeoutTime(time)
