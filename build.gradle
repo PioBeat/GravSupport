@@ -14,7 +14,7 @@ def alternativeIdePathTesting = properties.getProperty('alternativeIdePathTestin
 def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
 
 group 'net.offbeatpioneer.intellij.plugins.grav'
-version '0.6.0-alpha'
+version '0.6.0'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -90,7 +90,7 @@ runIde {
 
 patchPluginXml {
     sinceBuild '202'
-//    untilBuild '203.*'
+    untilBuild '203.*'
     changeNotes = htmlFixer('src/main/resources/META-INF/change-notes.html')
 }
 

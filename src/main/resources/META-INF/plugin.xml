@@ -69,7 +69,7 @@
                 nonDefaultProject="true"
         />
 
-        <lang.substitutor order="first"
+        <lang.substitutor order="last"
                           id="GravLangSubstitutor"
                           implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.lang.substitutor.GravFileLanguageSubstitutor"
         />
@@ -78,9 +78,10 @@
         <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravProjectValidator"-->
         <!--        />-->
 
-        <!--        <projectStructureDetector-->
-        <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravProjectStructureDetector"-->
-        <!--        />-->
+<!--        <projectStructureDetector-->
+<!--                id="GravProjectStructureDetector"-->
+<!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.projectstructuredetector.GravProjectStructureDetector"-->
+<!--        />-->
 
         <iconProvider implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIconProvider"
                       order="first"/>
