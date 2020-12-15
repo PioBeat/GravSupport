@@ -80,7 +80,7 @@ public class GravFileTemplateUtil {
      */
     public static String getDefaultTheme(Project project) {
         if (Objects.isNull(project.getBasePath())) {
-            IdeHelper.notifyShowGenericErrorMessage(project);
+            IdeHelper.notifyShowGenericErrorMessage();
             return "";
         }
         VirtualFile projectPath = LocalFileSystem.getInstance().findFileByIoFile(new File(project.getBasePath()));

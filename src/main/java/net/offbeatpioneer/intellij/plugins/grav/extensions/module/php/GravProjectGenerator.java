@@ -16,6 +16,7 @@ import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravProjectGeneratorUtil;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.helper.NotificationHelper;
+import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravPersistentStateComponent;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
 import org.jetbrains.annotations.Nls;
@@ -92,7 +93,7 @@ public class GravProjectGenerator extends WebProjectTemplate<GravProjectSettings
         if (vf == null || !GravSdkType.isValidGravSDK(vf)) {
             NotificationHelper.showErrorNotification(project, "Project '" + project.getName() + "' couldn't be created because the selected Grav download seems invalid");
         } else {
-            module.setModuleType(createModuleBuilder().getModuleType().getId());
+            GravProjectComponent.convertModuleToGravModule(module);
             storage.setDefaultGravDownloadPath(settings.gravInstallationPath);
             PropertiesComponent.getInstance().setValue(LAST_USED_GRAV_HOME, new File(settings.gravInstallationPath).getAbsolutePath());
             GravProjectGeneratorUtil projectGenerator = new GravProjectGeneratorUtil(project);

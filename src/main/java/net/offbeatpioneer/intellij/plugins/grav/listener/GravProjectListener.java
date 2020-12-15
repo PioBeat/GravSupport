@@ -42,15 +42,16 @@ public class GravProjectListener implements ProjectManagerListener {
         }
     }
 
-
     private void checkIfGravProjectModuleTyp(Project project) {
         if (project.getBasePath() != null) {
             VirtualFile projectPath = LocalFileSystem.getInstance().findFileByIoFile(new File(project.getBasePath()));
-            if (projectPath != null && GravSdkType.isValidGravSDK(projectPath)) {
+            GravProjectSettings gravSettings = GravProjectSettings.getInstance(project);
+            if (projectPath != null &&
+                    GravSdkType.isValidGravSDK(projectPath) &&
+                    (gravSettings != null && !gravSettings.dismissEnableNotification)) {
                 for (Module module : ModuleManager.getInstance(project).getModules()) {
                     if (!GravModuleType.ID.equals(module.getModuleTypeName())) {
                         IdeHelper.notifyConvertMessage(project, module);
-//                        module.setModuleType(createModuleBuilder().getModuleType().getId());
                     }
                 }
             }

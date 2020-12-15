@@ -3,7 +3,6 @@ package net.offbeatpioneer.intellij.plugins.grav.extensions.module.wizard;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.util.BrowseFilesListener;
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.ide.util.projectWizard.ModuleWizardStep;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.WriteAction;
@@ -15,7 +14,6 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.platform.ProjectGeneratorPeer;
-import com.intellij.platform.WebProjectGenerator;
 import com.intellij.platform.templates.github.DownloadUtil;
 import com.intellij.platform.templates.github.Outcome;
 import com.intellij.ui.FieldPanel;
@@ -36,8 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,8 +41,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -273,11 +269,11 @@ public class GravCreateProjectForm implements ActionListener {
                             try {
                                 VirtualFile finalDir = dir.get();
                                 completed = ProgressManager.getInstance().runProcessWithProgressSynchronously(() -> {
-//                                    ProgressIndicator parentIndicator; // = ProgressManager.getInstance().getProgressIndicator();
-//                                    parentIndicator = new EmptyProgressIndicator();
-//                                    parentIndicator.setIndeterminate(false);
-//                                    parentIndicator.setModalityProgress(parentIndicator);
-//                                    parentIndicator.setText("Please wait ...");
+//                                    ProgressIndicator parentIndicator2 = ProgressManager.getInstance().getProgressIndicator();
+//                                    parentIndicator2.setIndeterminate(false);
+//                                    //                                    parentIndicator = new EmptyProgressIndicator();
+////                                    parentIndicator.setModalityProgress(parentIndicator);
+//                                    parentIndicator2.setText("Please wait ...");
                                     try {
 //                                        ZipUtil.extract(VfsUtil.virtualToIoFile(files.get(0)).toPath(),
 //                                                VfsUtil.virtualToIoFile(finalDir).toPath(),

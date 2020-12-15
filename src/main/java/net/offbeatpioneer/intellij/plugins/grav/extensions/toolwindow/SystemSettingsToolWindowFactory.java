@@ -230,7 +230,7 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
     private SmartPsiElementPointer<YAMLFile> getGravSystemYamlFile(@NotNull Project project) {
         String prefix = "";
         if (Objects.isNull(project.getBasePath())) {
-            IdeHelper.notifyShowGenericErrorMessage(project);
+            IdeHelper.notifyShowGenericErrorMessage();
         }
         VirtualFile projectPath = LocalFileSystem.getInstance().findFileByIoFile(new File(project.getBasePath()));
         if (Objects.nonNull(projectPath) && projectPath.exists()) {

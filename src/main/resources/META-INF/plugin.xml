@@ -70,6 +70,7 @@
         />
 
         <lang.substitutor order="first"
+                          id="GravLangSubstitutor"
                           implementationClass="net.offbeatpioneer.intellij.plugins.grav.extensions.lang.substitutor.GravFileLanguageSubstitutor"
         />
 

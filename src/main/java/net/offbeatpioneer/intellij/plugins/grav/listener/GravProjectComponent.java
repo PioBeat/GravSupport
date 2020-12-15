@@ -1,9 +1,13 @@
 package net.offbeatpioneer.intellij.plugins.grav.listener;
 
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravModuleType;
 import net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravSdkType;
 import net.offbeatpioneer.intellij.plugins.grav.storage.GravProjectSettings;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -29,6 +33,29 @@ public class GravProjectComponent {
             return settings.pluginEnabled;
         }
         return false;
+    }
+
+    /**
+     * Sets for all modules of a project the module type to {@link GravModuleType}.
+     *
+     * @param project the project
+     */
+    public static synchronized void convertProjectToGravProject(@NotNull Project project) {
+        if (!project.isDisposed()) {
+            for (Module module : ModuleManager.getInstance(project).getModules()) {
+                convertModuleToGravModule(module);
+            }
+        }
+    }
+
+    /**
+     * Sets the module type for the given module to {@link GravModuleType}.
+     *
+     * @param module the module
+     */
+    public static synchronized void convertModuleToGravModule(@NotNull Module module) {
+        if (!module.isDisposed())
+            module.setModuleType(GravModuleType.ID);
     }
 
     /**
