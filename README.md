@@ -13,14 +13,6 @@ This plugin helps to increase the development speed for Grav-based projects for 
 **Releases:** 
 The plugin is primarily made available via [JetBrain's Plugin Repository](https://plugins.jetbrains.com/plugin/9971-grav-support).
 
-## Supported Versions of Grav and PHP
-
-The latest plugin supports the following Grav versions: 1.6.*, ...
-
-Furthermore, I only provide support for **PHP 7.***. 
-If you have a lower version than the plugin may not work correctly. 
-To work with Grav, the PHP extensions `mbstring`, `curl` and `openssl` must be enabled.
-
 ## Install
 
 ### JetBrains Plugins Repository
@@ -39,6 +31,7 @@ from Disk...**.
 ### Requirements
 
 The following requirements must be met in order to use **Grav Support**:
+
 _(basically required if not using PhpStorm or IntelliJ IDEA Ultimate)_
 
 - YAML (already bundled with IntelliJ IDEA)
@@ -46,6 +39,21 @@ _(basically required if not using PhpStorm or IntelliJ IDEA Ultimate)_
 - (**Required**) [Twig Support](https://plugins.jetbrains.com/plugin/7303-twig-support)
 - (**Required**) [PHP Annotations](https://plugins.jetbrains.com/plugin/7320-php-annotations)
 - **(Optional)** [PHP Toolbox](https://plugins.jetbrains.com/plugin/8133-php-toolbox)
+
+This plugin supports only IntelliJ IDEA Ultimate or PhpStorm.
+
+**Remark: Supported Versions of PHP and Grav**
+
+This plugin needs a valid PHP installation on the machine. 
+PHP should be found in the ``PATH``,
+
+The latest plugin supports the following Grav versions: 1.6.*, ...
+
+The plugin uses the scripts in the ``bin`` directory of Grav to offer the functionality Grav supports via those scripts.
+
+Furthermore, I only provide support for **PHP 7.***.
+If you have a lower version than the plugin may not work correctly.
+To work with Grav, the PHP extensions `mbstring`, `curl` and `openssl` must be enabled.
 
 ## Configuration
 
@@ -81,18 +89,8 @@ project.
 
 ![Language Editor](.README_images/languageeditor.png)
 
-## Requirements
 
-The plugin requires IDEA Community / Ultimate Edition 2017.2.* or PhpStorm 2017.2.1. With Ultimate you have also PHP
-support.
-
-**Additional**
-
-You need a valid PHP installation on your machine. Php should be found in the ``PATH``.
-
-The plugin uses the scripts in the ``bin`` directory of Grav to offer the functionality Grav supports via those scripts.
-
-## Help and Common Issues
+## Common Issues
 
 **Supported Grav versions**
 
@@ -158,10 +156,10 @@ alternativeIdePathTesting=/path/to/your/phpstorm/installation
 - The `gradle :runIde` task can be started with the following arguments:
 
 ```shell
-$ gradle runIde
+$ gradlew runIde
 
 # this will use the path specified by 'alternativeIdePathTesting' in 'local.properties' 
-$ gradle runIde -PidePhpStorm 
+$ gradlew runIde -PidePhpStorm 
 ```
 
 ### Reporting Bugs
