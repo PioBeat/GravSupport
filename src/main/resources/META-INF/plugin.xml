@@ -22,8 +22,8 @@
     <depends>com.jetbrains.twig</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
     <depends config-file="grav-php-features.xml">com.jetbrains.php</depends>
-    <depends optional="true">de.espend.idea.php.annotation</depends>
-    <depends optional="true">de.espend.idea.php.toolbox</depends>
+    <depends optional="true" config-file="php-annotation.xml">de.espend.idea.php.annotation</depends>
+    <depends optional="true" config-file="php-toolbox.xml">de.espend.idea.php.toolbox</depends>
     <!--    <depends optional="true" config-file="">com.jetbrains.php</depends>-->
     <!--    <depends optional="true">org.intellij.plugins.markdown</depends>-->
     <!--<depends>com.intellij.modules.all</depends>-->
@@ -78,10 +78,10 @@
         <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.module.GravProjectValidator"-->
         <!--        />-->
 
-<!--        <projectStructureDetector-->
-<!--                id="GravProjectStructureDetector"-->
-<!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.projectstructuredetector.GravProjectStructureDetector"-->
-<!--        />-->
+        <!--        <projectStructureDetector-->
+        <!--                id="GravProjectStructureDetector"-->
+        <!--                implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.projectstructuredetector.GravProjectStructureDetector"-->
+        <!--        />-->
 
         <iconProvider implementation="net.offbeatpioneer.intellij.plugins.grav.extensions.icons.GravIconProvider"
                       order="first"/>
