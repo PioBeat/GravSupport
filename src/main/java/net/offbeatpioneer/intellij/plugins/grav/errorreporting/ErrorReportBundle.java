@@ -20,7 +20,7 @@
  */
 package net.offbeatpioneer.intellij.plugins.grav.errorreporting;
 
-import com.intellij.CommonBundle;
+import com.intellij.AbstractBundle;
 import org.jetbrains.annotations.PropertyKey;
 
 import java.lang.ref.Reference;
@@ -29,26 +29,28 @@ import java.util.ResourceBundle;
 
 /**
  * Messages and strings used by the error reporter
+ *
+ * @author modified by Dominik Grzelak
  */
 class ErrorReportBundle {
-  private static final String BUNDLE = "net.offbeatpioneer.intellij.plugins.grav.errorreporting.ErrorReportBundle";
-  private static Reference<ResourceBundle> ourBundle = null;
+    private static final String BUNDLE = "net.offbeatpioneer.intellij.plugins.grav.errorreporting.ErrorReportBundle";
+    private static Reference<ResourceBundle> ourBundle = null;
 
-  private ErrorReportBundle() {
-  }
-
-  public static String message(@PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
-    return CommonBundle.message(getBundle(), key, params);
-  }
-
-
-  private static ResourceBundle getBundle() {
-    ResourceBundle bundle = null;
-    if (ourBundle != null) bundle = ourBundle.get();
-    if (bundle == null) {
-      bundle = ResourceBundle.getBundle(BUNDLE);
-      ourBundle = new SoftReference<>(bundle);
+    private ErrorReportBundle() {
     }
-    return bundle;
-  }
+
+    public static String message(@PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
+        return AbstractBundle.message(getBundle(), key, params);
+    }
+
+
+    private static ResourceBundle getBundle() {
+        ResourceBundle bundle = null;
+        if (ourBundle != null) bundle = ourBundle.get();
+        if (bundle == null) {
+            bundle = ResourceBundle.getBundle(BUNDLE);
+            ourBundle = new SoftReference<>(bundle);
+        }
+        return bundle;
+    }
 }

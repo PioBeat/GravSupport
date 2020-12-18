@@ -83,7 +83,7 @@ public class SystemSettingsToolWindowFactory implements ToolWindowFactory, PsiTr
 //        Project project = ProjectChecker.getFirstOpenedProject();
         String title = "Configuration";
         title += " for '" + project.getName() + "'";
-        PsiManager.getInstance(project).addPsiTreeChangeListener(this);
+        PsiManager.getInstance(project).addPsiTreeChangeListener(this, toolWindow.getDisposable());
         toolWindow.setTitle(title);
 
     }
