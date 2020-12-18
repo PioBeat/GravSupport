@@ -17,7 +17,7 @@ def alternativeIdePathTestingIU = properties.getProperty('alternativeIdePathTest
 def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
 
 group 'net.offbeatpioneer.intellij.plugins.grav'
-version '0.7.0-SNAPSHOT'
+version '0.6.1'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
     implementation 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
-    implementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
     implementation 'com.google.code.gson:gson:2.8.5'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

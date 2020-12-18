@@ -22,13 +22,14 @@ package net.offbeatpioneer.intellij.plugins.grav.errorreporting;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.DumbAware;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Provides functionality to throw a runtime exception when the action is invoked. It is used to test the error reporting
  * functions. Don't forget to register the action in plugin.xml to make it work.
  */
-public class TriggerExceptionAction extends AnAction {
+public class TriggerExceptionAction extends AnAction implements DumbAware {
 
   public TriggerExceptionAction() {
     this("Throw Test Exception");
