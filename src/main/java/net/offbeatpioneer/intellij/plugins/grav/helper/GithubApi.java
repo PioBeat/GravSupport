@@ -3,7 +3,6 @@ package net.offbeatpioneer.intellij.plugins.grav.helper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
-import com.google.gson.internal.StringMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -21,6 +21,7 @@ import net.offbeatpioneer.intellij.plugins.grav.listener.GravProjectComponent;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.util.Objects;
 
 /**
  * Creates various Grav specific configuration file stubs for a theme:
@@ -48,6 +49,7 @@ public class NewThemeConfigurationFileAction extends CustomCreateFromTemplateAct
         if (!pluginEnabled) return false;
         if (dataContext.getData(PlatformDataKeys.NAVIGATABLE) instanceof PsiDirectory) {
             PsiDirectory psiDirectory = (PsiDirectory) dataContext.getData(PlatformDataKeys.NAVIGATABLE);
+            if (Objects.isNull(psiDirectory) || Objects.isNull(psiDirectory.getParent())) return false;
             String themeFolder = psiDirectory.getParent().getVirtualFile().getName();
             themeName = psiDirectory.getName();
             GravFileTypes.setModuleName(themeName);
@@ -70,7 +72,7 @@ public class NewThemeConfigurationFileAction extends CustomCreateFromTemplateAct
 
     @Override
     protected void buildDialog(Project project, PsiDirectory directory, CustomCreateFileFromTemplateDialog.Builder builder) {
-        builder.setTitle(IdeBundle.message("action.create.new.class"));
+        builder.setTitle("New Grav theme file");
         for (FileTemplate fileTemplate : GravFileTemplateUtil.getAvailableThemeConfigurationTemplates(project)) {
             final String templateName = fileTemplate.getName();
             final String shortName = GravFileTemplateUtil.getTemplateShortName(templateName);

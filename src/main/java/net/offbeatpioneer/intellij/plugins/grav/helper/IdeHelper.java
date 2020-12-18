@@ -18,7 +18,7 @@ import java.util.Objects;
  */
 public class IdeHelper {
     public final static String NOTIFICATION_GROUP_ID = "Grav Plugin";
-    public final static NotificationGroup GRAV_NOTIFY_GROUP = new NotificationGroup(NOTIFICATION_GROUP_ID, NotificationDisplayType.STICKY_BALLOON);
+    public final static NotificationGroup GRAV_NOTIFY_GROUP = new NotificationGroup(NOTIFICATION_GROUP_ID, NotificationDisplayType.STICKY_BALLOON, true);
 
     public static void notifyShowGenericErrorMessage() {
 //        ReportMessages.GROUP.createNotification()
