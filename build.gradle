@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.tasks.RunPluginVerifierTask
+
 plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.6.5'
@@ -10,6 +12,7 @@ if (propertiesFile.exists()) {
     properties.load(propertiesFile.newDataInputStream())
 }
 def alternativeIdePathTesting = properties.getProperty('alternativeIdePathTesting')
+def alternativeIdePathTestingIU = properties.getProperty('alternativeIdePathTestingIU')
 
 def htmlFixer = { htmlFile -> file(htmlFile).text.replace('<html>', '').replace('</html>', '') }
 
@@ -18,9 +21,9 @@ version '0.6.0'
 
 apply plugin: 'idea'
 apply plugin: 'java'
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
 apply plugin: 'org.jetbrains.intellij'
+project.sourceCompatibility = JavaVersion.VERSION_11
+project.targetCompatibility = JavaVersion.VERSION_11
 
 
 repositories {
@@ -31,7 +34,9 @@ repositories {
 }
 
 dependencies {
-    implementation group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
+    implementation 'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5'
+    implementation 'junit:junit:4.13.1'
+    implementation 'com.google.code.gson:gson:2.8.5'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
@@ -49,14 +54,14 @@ intellij {
             "com.jetbrains.twig:${twigPluginVersion}",
             "de.espend.idea.php.annotation:${phpAnnotationPluginVersion}",
             "de.espend.idea.php.toolbox:${toolboxPluginVersion}",
-            'coverage',
+//            'coverage',
             'webDeployment',
             'yaml',
             'CSS',
-            'java-i18n',
+//            'java-i18n',
             'properties',
             'xpath',
-            'java'
+//            'java'
     ]
 
     // Can't instantiate configurable for PHP Toolbox
@@ -84,9 +89,23 @@ runIde {
     maxHeapSize "2g"
 }
 
-//runPluginVerifier {
-
-//}
+runPluginVerifier {
+//    ideVersions("PS-202.6948.87,IU-202.8194.7")
+    // IDEs to check
+//    ideVersions("IU-202.8194.7")
+    setJbrVersion("11_0_9b944.49")
+    // A list of the paths to locally installed IDE distributions that should be used for verification in addition to those specified in ideVersions
+    if (alternativeIdePathTesting != null && alternativeIdePathTesting.trim() != "" &&
+            alternativeIdePathTestingIU != null && alternativeIdePathTestingIU.trim() != "") {
+        setLocalPaths(Arrays.asList("${alternativeIdePathTesting}", "${alternativeIdePathTestingIU}"))
+    } else if (alternativeIdePathTesting != null && alternativeIdePathTesting.trim() != "") {
+        setLocalPaths(Arrays.asList("${alternativeIdePathTesting}"))
+    }
+    failureLevel(RunPluginVerifierTask.FailureLevel.ALL)
+    downloadDirectory(project.buildDir)
+    verificationReportsDirectory("${project.buildDir}/reports/pluginVerifier")
+    setSubsystemsToCheck("without-android")
+}
 
 patchPluginXml {
     sinceBuild '202'
