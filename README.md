@@ -3,7 +3,7 @@
 [Grav](https://getgrav.org/) is a flat-file open source CMS.
 This plugin helps to increase the development speed for Grav-based projects for PhpStorm and IntelliJ IDEA Community / Ultimate.
 
-**Current version:** 0.6.0
+**Current version:** 0.6.1
 
 **Tested with:**
 
